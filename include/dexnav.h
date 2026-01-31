@@ -80,5 +80,6 @@ void IncrementDexNavChain(void);
 bool32 OnStep_DexNavSearch(void);
 
 extern u16 gDexNavSpecies;
+extern u8 *gBg1TilemapBuffer;
 
 #endif // GUARD_DEXNAV_H
