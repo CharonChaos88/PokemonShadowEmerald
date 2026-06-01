@@ -4,6 +4,9 @@ UNUSEDGFXDIR := graphics/unused
 BATINTGFXDIR := graphics/battle_interface
 BATTRANSGFXDIR := graphics/battle_transitions
 TYPESGFXDIR := graphics/types
+TYPESBWGFXDIR := graphics/types_bw
+TYPESBWTERAGFXDIR := graphics/types_bw/tera
+RAYQUAZAGFXDIR := graphics/rayquaza_scene
 ROULETTEGFXDIR := graphics/roulette
 SLOTMACHINEGFXDIR := graphics/slot_machine
 PKNAVOPTIONSGFXDIR := graphics/pokenav/options
@@ -102,6 +105,38 @@ $(TYPESGFXDIR)/move_types.gbapal: $(TYPESGFXDIR)/move_types_1.gbapal \
                                   $(TYPESGFXDIR)/move_types_2.gbapal \
                                   $(TYPESGFXDIR)/move_types_3.gbapal
 	@cat $^ >$@
+
+$(TYPESBWGFXDIR)/move_types_bw.4bpp: $(types:%=$(TYPESBWGFXDIR)/%.4bpp) $(contest_types:%=$(TYPESBWGFXDIR)/contest_%.4bpp)
+	@cat $^ >$@
+
+$(TYPESBWGFXDIR)/move_types_bw.gbapal: $(TYPESBWGFXDIR)/move_types_bw_1.gbapal \
+                                  $(TYPESBWGFXDIR)/move_types_bw_2.gbapal \
+                                  $(TYPESBWGFXDIR)/move_types_bw_3.gbapal
+	@cat $^ >$@
+
+$(TYPESBWTERAGFXDIR)/tera_types_bw.4bpp: $(types:%=$(TYPESBWTERAGFXDIR)/%.4bpp)
+	@cat $^ >$@
+
+graphics/bag/menu.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 53 -Wnum_tiles
+
+$(RAYQUAZAGFXDIR)/scene_2/rayquaza.8bpp: %.8bpp: %.png
+	$(GFX) $< $@ -num_tiles 227 -Wnum_tiles
+
+$(RAYQUAZAGFXDIR)/scene_2/bg.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 313 -Wnum_tiles
+
+$(RAYQUAZAGFXDIR)/scene_3/rayquaza.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 128 -Wnum_tiles
+
+$(RAYQUAZAGFXDIR)/scene_4/streaks.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 19 -Wnum_tiles
+
+$(RAYQUAZAGFXDIR)/scene_4/rayquaza.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 155 -Wnum_tiles
+
+graphics/picture_frame/lobby.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 86 -Wnum_tiles
 
 $(ROULETTEGFXDIR)/roulette_tilt.4bpp: $(ROULETTEGFXDIR)/shroomish.4bpp \
                                       $(ROULETTEGFXDIR)/tailow.4bpp

@@ -12,6 +12,9 @@
 #include "battle_z_move.h"
 #include "battle_stat_change.h"
 #include "battle_move_resolution.h"
+#include "bw_summary_screen.h"
+#include "constants/moves.h"
+#include "constants/abilities.h"
 #include "item.h"
 #include "util.h"
 #include "pokemon.h"
@@ -74,6 +77,7 @@
 #include "test/battle.h"
 #include "follower_npc.h"
 #include "load_save.h"
+#include "battle_damage_numbers.h"
 
 // Helper for accessing command arguments and advancing gBattlescriptCurrInstr.
 //
@@ -1504,39 +1508,41 @@ static void DoublesHPBarReduction(void)
 
 static void Cmd_healthbarupdate(void)
 {
-    CMD_ARGS(u8 battler, u8 updateState);
+    CMD_ARGS(u8 battler, u8 updateType);
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
 
-    if (gBattleControllerExecFlags)
-        return;
-
-    switch (cmd->updateState)
+    switch (cmd->updateType)
     {
     case PASSIVE_HP_UPDATE:
+        if (gBattleStruct->passiveHpUpdate[battler] != 0)
+            ShowDamageNumbers(battler, gBattleStruct->passiveHpUpdate[battler]);
+
         BtlController_EmitHealthBarUpdate(battler, B_COMM_TO_CONTROLLER, min(gBattleStruct->passiveHpUpdate[battler], 10000));
         MarkBattlerForControllerExec(battler);
         break;
+
     case MOVE_DAMAGE_HP_UPDATE:
         if (IsDoubleSpreadMove())
         {
+            // Call your mandatory function!
             DoublesHPBarReduction();
-            if (DoesSubstituteBlockMove(gBattlerAttacker, battler, gCurrentMove))
-                PrepareStringBattle(STRINGID_SUBSTITUTEDAMAGED, battler);
         }
-        else if (DoesSubstituteBlockMove(gBattlerAttacker, battler, gCurrentMove))
+        else
         {
-            PrepareStringBattle(STRINGID_SUBSTITUTEDAMAGED, battler);
-        }
-        else if (!IsBattlerUnaffectedByMove(battler)
-              && !DoesDisguiseBlockMove(battler, gCurrentMove)
-              && !DoesIceFaceBlockMove(battler, gCurrentMove))
-        {
-            s32 damage = min(gBattleStruct->moveDamage[battler], 10000);
-            BtlController_EmitHealthBarUpdate(battler, B_COMM_TO_CONTROLLER, damage);
+            if (gBattleStruct->moveDamage[battler] != 0)
+                ShowDamageNumbers(battler, gBattleStruct->moveDamage[battler]);
+
+            BtlController_EmitHealthBarUpdate(battler, B_COMM_TO_CONTROLLER, min(gBattleStruct->moveDamage[battler], 10000));
             MarkBattlerForControllerExec(battler);
-            if (IsOnPlayerSide(battler) && damage > 0)
-                gBattleResults.playerMonWasDamaged = TRUE;
         }
+        break;
+
+    default:
+        if (gBattleStruct->moveDamage[battler] != 0)
+            ShowDamageNumbers(battler, gBattleStruct->moveDamage[battler]);
+            
+        BtlController_EmitHealthBarUpdate(battler, B_COMM_TO_CONTROLLER, min(gBattleStruct->moveDamage[battler], 10000));
+        MarkBattlerForControllerExec(battler);
         break;
     }
 
@@ -5700,18 +5706,15 @@ static void Cmd_yesnoboxlearnmove(void)
     case 2:
         if (!gPaletteFade.active)
         {
-            CloseMainBattleScreen();
-            ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, ReshowBattleScreenAfterMenu, gMoveToLearn);
+            FreeAllWindowBuffers();
+            if (BW_SUMMARY_SCREEN)
+                ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, gPlayerPartyCount - 1, ReshowBattleScreenAfterMenu, gMoveToLearn);
+            else
+                ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, ReshowBattleScreenAfterMenu, gMoveToLearn);
             gBattleScripting.learnMoveState++;
         }
         break;
     case 3:
-        if (!gPaletteFade.active && gMain.callback2 == BattleMainCB2)
-        {
-            gBattleScripting.learnMoveState++;
-        }
-        break;
-    case 4:
         if (!gPaletteFade.active && gMain.callback2 == BattleMainCB2)
         {
             u8 movePosition = GetMoveSlotToReplace();
@@ -5721,29 +5724,23 @@ static void Cmd_yesnoboxlearnmove(void)
             }
             else
             {
-                enum Move move = GetMonData(&gParties[B_TRAINER_PLAYER][gBattleStruct->expGetterMonId], MON_DATA_MOVE1 + movePosition);
-                if (CannotForgetMove(move))
+                if (CannotForgetMove(gBattleMons[gBattlerAttacker].moves[movePosition]))
                 {
-                    PrepareStringBattle(STRINGID_HMMOVESCANTBEFORGOTTEN, GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
+                    BattleStringExpandPlaceholdersToDisplayedString(gBattleStringsTable[STRINGID_HMMOVESCANTBEFORGOTTEN]);
+                    BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
                     gBattleScripting.learnMoveState = 6;
                 }
                 else
                 {
+                    gBattleScripting.learnMoveState = 4;
                     gBattlescriptCurrInstr = cmd->forgotMovePtr;
-
-                    PREPARE_MOVE_BUFFER(gBattleTextBuff2, move)
-
-                    RemoveMonPPBonus(&gParties[B_TRAINER_PLAYER][gBattleStruct->expGetterMonId], movePosition);
-                    SetMonMoveSlot(&gParties[B_TRAINER_PLAYER][gBattleStruct->expGetterMonId], gMoveToLearn, movePosition);
 
                     if (gBattlerPartyIndexes[0] == gBattleStruct->expGetterMonId && MOVE_IS_PERMANENT(0, movePosition))
                     {
                         RemoveBattleMonPPBonus(&gBattleMons[0], movePosition);
                         SetBattleMonMoveSlot(&gBattleMons[0], gMoveToLearn, movePosition);
                     }
-                    if (IsDoubleBattle()
-                        && gBattlerPartyIndexes[2] == gBattleStruct->expGetterMonId
-                        && MOVE_IS_PERMANENT(2, movePosition))
+                    if (IsDoubleBattle() && gBattlerPartyIndexes[2] == gBattleStruct->expGetterMonId && MOVE_IS_PERMANENT(2, movePosition))
                     {
                         RemoveBattleMonPPBonus(&gBattleMons[2], movePosition);
                         SetBattleMonMoveSlot(&gBattleMons[2], gMoveToLearn, movePosition);
@@ -5829,6 +5826,9 @@ static void Cmd_hitanimation(void)
              || !(DoesSubstituteBlockMove(gBattlerAttacker, battler, gCurrentMove))
              || gBattleMons[battler].volatiles.substituteHP == 0)
             {
+                // FIXED: Passed the second argument (moveDamage)
+                // ShowDamageNumbers(battler, gBattleStruct->moveDamage[battler]); 
+
                 BtlController_EmitHitAnimation(battler, B_COMM_TO_CONTROLLER);
                 MarkBattlerForControllerExec(battler);
             }
@@ -5844,6 +5844,9 @@ static void Cmd_hitanimation(void)
             if (!(DoesSubstituteBlockMove(gBattlerAttacker, battlerDef, gCurrentMove))
              || gBattleMons[battlerDef].volatiles.substituteHP == 0)
             {
+                // FIXED: Passed the second argument (moveDamage)
+                ShowDamageNumbers(battlerDef, gBattleStruct->moveDamage[battlerDef]); 
+
                 BtlController_EmitHitAnimation(battlerDef, B_COMM_TO_CONTROLLER);
                 MarkBattlerForControllerExec(battlerDef);
             }
@@ -13979,4 +13982,3 @@ void BS_RestoreStatChangeQueue(void)
     ClearOtherStatChangeValues(gBattlerAttacker);
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
-
