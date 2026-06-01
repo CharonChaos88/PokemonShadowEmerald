@@ -159,7 +159,6 @@ static const u8 sFontColorTable[][3] =
     {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_WHITE,      TEXT_COLOR_DARK_GRAY},  // Unused
     {TEXT_COLOR_WHITE,       TEXT_COLOR_RED,        TEXT_COLOR_LIGHT_RED},  // Move relearner
 };
-
 static const struct WindowTemplate sSinglePartyMenuWindowTemplate[] =
 {
     { // Party mon 1
@@ -629,7 +628,7 @@ static const struct WindowTemplate sDefaultPartyMsgWindowTemplate =
     .tilemapTop = 17,
     .width = 21,
     .height = 2,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x24F,
 };
 
@@ -640,7 +639,7 @@ static const struct WindowTemplate sDoWhatWithMonMsgWindowTemplate =
     .tilemapTop = 17,
     .width = 16,
     .height = 2,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x279,
 };
 
@@ -651,7 +650,7 @@ static const struct WindowTemplate sDoWhatWithItemMsgWindowTemplate =
     .tilemapTop = 17,
     .width = 20,
     .height = 2,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x299,
 };
 
@@ -662,7 +661,7 @@ static const struct WindowTemplate sDoWhatWithMailMsgWindowTemplate =
     .tilemapTop = 17,
     .width = 18,
     .height = 2,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x299,
 };
 
@@ -673,7 +672,7 @@ static const struct WindowTemplate sWhichMoveMsgWindowTemplate =
     .tilemapTop = 17,
     .width = 16,
     .height = 2,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x299,
 };
 
@@ -684,7 +683,7 @@ static const struct WindowTemplate sAlreadyHoldingOneMsgWindowTemplate =
     .tilemapTop = 15,
     .width = 20,
     .height = 4,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x299,
 };
 
@@ -695,7 +694,7 @@ static const struct WindowTemplate sOrderWhichApplianceMsgWindowTemplate =
     .tilemapTop = 15,
     .width = 14,
     .height = 4,
-    .paletteNum = 15,
+    .paletteNum = 14,
     .baseBlock = 0x299,
 };
 
@@ -1002,16 +1001,16 @@ struct
     TaskFunc func;
 } static const sCursorOptions[MENU_FIELD_MOVES] =
 {
-    [MENU_SUMMARY]         = {COMPOUND_STRING("SUMMARY"),         CursorCb_Summary},
-    [MENU_SWITCH]          = {COMPOUND_STRING("SWITCH"),          CursorCb_Switch},
+    [MENU_SUMMARY]         = {COMPOUND_STRING("Summary"),         CursorCb_Summary},
+    [MENU_SWITCH]          = {COMPOUND_STRING("Switch"),          CursorCb_Switch},
     [MENU_CANCEL1]         = {gText_Cancel2,                      CursorCb_Cancel1},
-    [MENU_ITEM]            = {COMPOUND_STRING("ITEM"),            CursorCb_Item},
+    [MENU_ITEM]            = {COMPOUND_STRING("Item"),            CursorCb_Item},
     [MENU_GIVE]            = {gMenuText_Give,                     CursorCb_Give},
-    [MENU_TAKE_ITEM]       = {COMPOUND_STRING("TAKE"),            CursorCb_TakeItem},
-    [MENU_MOVE_ITEM]       = {COMPOUND_STRING("MOVE"),            CursorCb_MoveItem},
-    [MENU_MAIL]            = {COMPOUND_STRING("MAIL"),            CursorCb_Mail},
-    [MENU_TAKE_MAIL]       = {COMPOUND_STRING("TAKE"),            CursorCb_TakeMail},
-    [MENU_READ]            = {COMPOUND_STRING("READ"),            CursorCb_Read},
+    [MENU_TAKE_ITEM]       = {COMPOUND_STRING("Take"),            CursorCb_TakeItem},
+    [MENU_MOVE_ITEM]       = {COMPOUND_STRING("Move"),            CursorCb_MoveItem},
+    [MENU_MAIL]            = {COMPOUND_STRING("Mail"),            CursorCb_Mail},
+    [MENU_TAKE_MAIL]       = {COMPOUND_STRING("Take"),            CursorCb_TakeMail},
+    [MENU_READ]            = {COMPOUND_STRING("Read"),            CursorCb_Read},
     [MENU_CANCEL2]         = {gText_Cancel2,                      CursorCb_Cancel2},
     [MENU_SHIFT]           = {COMPOUND_STRING("SHIFT"),           CursorCb_SendMon},
     [MENU_SEND_OUT]        = {COMPOUND_STRING("SEND OUT"),        CursorCb_SendMon},

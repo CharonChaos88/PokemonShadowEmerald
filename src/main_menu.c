@@ -22,7 +22,6 @@
 #include "option_menu.h"
 #include "overworld.h"
 #include "palette.h"
-#include "party_menu.h"
 #include "pokeball.h"
 #include "pokedex.h"
 #include "pokemon.h"
@@ -187,7 +186,7 @@ static void ClearMainMenuWindowTilemap(const struct WindowTemplate *);
 static void Task_DisplayMainMenu(u8);
 static void Task_WaitForBatteryDryErrorWindow(u8);
 static void MainMenu_FormatSavegameText(void);
-static void HighlightSelectedMainMenuItem(enum PartyMenuType, u8, s16);
+static void HighlightSelectedMainMenuItem(u8, u8, s16);
 static void Task_HandleMainMenuInput(u8);
 static void Task_HandleMainMenuAPressed(u8);
 static void Task_HandleMainMenuBPressed(u8);
@@ -219,7 +218,11 @@ static void Task_NewGameBirchSpeech_ChooseGender(u8);
 static void NewGameBirchSpeech_ShowGenderMenu(void);
 static s8 NewGameBirchSpeech_ProcessGenderMenuInput(void);
 static void NewGameBirchSpeech_ClearGenderWindow(u8, u8);
+static void Task_NewGameBirchSpeech_ShowNameList(u8 taskId);
+static void Task_NewGameBirchSpeech_ProcessNameMenuInput(u8 taskId);
+static void Task_NewGameBirchSpeech_SoItsPlayerName(u8 taskId);
 static void Task_NewGameBirchSpeech_WhatsYourName(u8);
+static void Task_NewGameBirchSpeech_ProcessNameMenuInput(u8 taskId);
 static void Task_NewGameBirchSpeech_SlideOutOldGenderSprite(u8);
 static void Task_NewGameBirchSpeech_SlideInNewGenderSprite(u8);
 static void Task_NewGameBirchSpeech_WaitForWhatsYourNameToPrint(u8);
@@ -248,33 +251,33 @@ static void MainMenu_FormatSavegameBadges(void);
 // .rodata
 
 static const u16 sBirchSpeechBgPals[][16] = {
-    INCGFX_U16("graphics/birch_speech/bg0.pal", ".gbapal"),
-    INCGFX_U16("graphics/birch_speech/bg1.pal", ".gbapal")
+    INCBIN_U16("graphics/birch_speech/bg0.gbapal"),
+    INCBIN_U16("graphics/birch_speech/bg1.gbapal")
 };
 
-static const u32 sBirchSpeechShadowGfx[] = INCGFX_U32("graphics/birch_speech/shadow.png", ".4bpp.smol");
-static const u32 sBirchSpeechBgMap[] = INCGFX_U32("graphics/birch_speech/map.bin", ".smolTM");
-static const u16 sBirchSpeechBgGradientPal[] = INCGFX_U16("graphics/birch_speech/bg2.pal", ".gbapal");
+static const u32 sBirchSpeechShadowGfx[] = INCBIN_U32("graphics/birch_speech/shadow.4bpp.smol");
+static const u32 sBirchSpeechBgMap[] = INCBIN_U32("graphics/birch_speech/map.bin.smolTM");
+static const u16 sBirchSpeechBgGradientPal[] = INCBIN_U16("graphics/birch_speech/bg2.gbapal");
 
 static const u8 gText_SaveFileCorrupted[] = _("The save file is corrupted. The\nprevious save file will be loaded.");
 static const u8 gText_SaveFileErased[] = _("The save file has been erased\ndue to corruption or damage.");
 static const u8 gJPText_No1MSubCircuit[] = _("1Mサブきばんが ささっていません！");
 static const u8 gText_BatteryRunDry[] = _("The internal battery has run dry.\nThe game can be played.\pHowever, clock-based events will\nno longer occur.");
 
-static const u8 gText_MainMenuNewGame[] = _("NEW GAME");
-static const u8 gText_MainMenuContinue[] = _("CONTINUE");
-static const u8 gText_MainMenuOption[] = _("OPTION");
-static const u8 gText_MainMenuMysteryGift[] = _("MYSTERY GIFT");
-static const u8 gText_MainMenuMysteryGift2[] = _("MYSTERY GIFT");
-static const u8 gText_MainMenuMysteryEvents[] = _("MYSTERY EVENTS");
+static const u8 gText_MainMenuNewGame[] = _("New Game");
+static const u8 gText_MainMenuContinue[] = _("Continue");
+static const u8 gText_MainMenuOption[] = _("Option");
+static const u8 gText_MainMenuMysteryGift[] = _("Mystery Gift");
+static const u8 gText_MainMenuMysteryGift2[] = _("Mystery Gift");
+static const u8 gText_MainMenuMysteryEvents[] = _("Mystery Events");
 static const u8 gText_WirelessNotConnected[] = _("The Wireless Adapter is not\nconnected.");
-static const u8 gText_MysteryGiftCantUse[] = _("MYSTERY GIFT can't be used while\nthe Wireless Adapter is attached.");
-static const u8 gText_MysteryEventsCantUse[] = _("MYSTERY EVENTS can't be used while\nthe Wireless Adapter is attached.");
+static const u8 gText_MysteryGiftCantUse[] = _("Mystery Gift can't be used while\nthe Wireless Adapter is attached.");
+static const u8 gText_MysteryEventsCantUse[] = _("Mystery Events can't be used while\nthe Wireless Adapter is attached.");
 
-static const u8 gText_ContinueMenuPlayer[] = _("PLAYER");
-static const u8 gText_ContinueMenuTime[] = _("TIME");
-static const u8 gText_ContinueMenuPokedex[] = _("POKéDEX");
-static const u8 gText_ContinueMenuBadges[] = _("BADGES");
+static const u8 gText_ContinueMenuPlayer[] = _("Player");
+static const u8 gText_ContinueMenuTime[] = _("Time");
+static const u8 gText_ContinueMenuPokedex[] = _("Pokédex");
+static const u8 gText_ContinueMenuBadges[] = _("Badges");
 
 #define MENU_LEFT 2
 #define MENU_TOP_WIN0 1
@@ -423,8 +426,18 @@ static const struct WindowTemplate sNewGameBirchSpeechTextWindows[] =
     DUMMY_WIN_TEMPLATE
 };
 
-static const u16 sMainMenuBgPal[] = INCGFX_U16("graphics/interface/main_menu_bg.pal", ".gbapal");
-static const u16 sMainMenuTextPal[] = INCGFX_U16("graphics/interface/main_menu_text.pal", ".gbapal");
+static const struct WindowTemplate sNameListWindowTemplate = {
+        .bg = 0,
+        .tilemapLeft = 3,
+        .tilemapTop = 2,
+        .width = 9,
+        .height = 10,
+        .paletteNum = 15,
+        .baseBlock = 0x85 // Perfectly safe baseBlock!
+};
+
+static const u16 sMainMenuBgPal[] = INCBIN_U16("graphics/interface/main_menu_bg.gbapal");
+static const u16 sMainMenuTextPal[] = INCBIN_U16("graphics/interface/main_menu_text.gbapal");
 
 static const u8 sTextColor_Headers[] = {TEXT_DYNAMIC_COLOR_1, TEXT_DYNAMIC_COLOR_2, TEXT_DYNAMIC_COLOR_3};
 static const u8 sTextColor_MenuInfo[] = {TEXT_DYNAMIC_COLOR_1, TEXT_COLOR_WHITE, TEXT_DYNAMIC_COLOR_3};
@@ -478,53 +491,47 @@ static const struct MenuAction sMenuActions_Gender[] = {
 };
 
 static const u8 *const sMalePresetNames[] = {
-    COMPOUND_STRING("STU"),
-    COMPOUND_STRING("MILTON"),
-    COMPOUND_STRING("TOM"),
-    COMPOUND_STRING("KENNY"),
-    COMPOUND_STRING("REID"),
-    COMPOUND_STRING("JUDE"),
-    COMPOUND_STRING("JAXSON"),
-    COMPOUND_STRING("EASTON"),
-    COMPOUND_STRING("WALKER"),
-    COMPOUND_STRING("TERU"),
-    COMPOUND_STRING("JOHNNY"),
-    COMPOUND_STRING("BRETT"),
-    COMPOUND_STRING("SETH"),
-    COMPOUND_STRING("TERRY"),
-    COMPOUND_STRING("CASEY"),
-    COMPOUND_STRING("DARREN"),
-    COMPOUND_STRING("LANDON"),
-    COMPOUND_STRING("COLLIN"),
-    COMPOUND_STRING("STANLEY"),
-    COMPOUND_STRING("QUINCY")
+    COMPOUND_STRING("Custom Name"),
+    COMPOUND_STRING("Sky"),
+    COMPOUND_STRING("Jay"),
+    COMPOUND_STRING("Michael"),
+    COMPOUND_STRING("Taylor"),    
+    COMPOUND_STRING("Tom"),
+    COMPOUND_STRING("Landon"),
 };
 
 static const u8 *const sFemalePresetNames[] = {
-    COMPOUND_STRING("KIMMY"),
-    COMPOUND_STRING("TIARA"),
-    COMPOUND_STRING("BELLA"),
-    COMPOUND_STRING("JAYLA"),
-    COMPOUND_STRING("ALLIE"),
-    COMPOUND_STRING("LIANNA"),
-    COMPOUND_STRING("SARA"),
-    COMPOUND_STRING("MONICA"),
-    COMPOUND_STRING("CAMILA"),
-    COMPOUND_STRING("AUBREE"),
-    COMPOUND_STRING("RUTHIE"),
-    COMPOUND_STRING("HAZEL"),
-    COMPOUND_STRING("NADINE"),
-    COMPOUND_STRING("TANJA"),
-    COMPOUND_STRING("YASMIN"),
-    COMPOUND_STRING("NICOLA"),
-    COMPOUND_STRING("LILLIE"),
-    COMPOUND_STRING("TERRA"),
-    COMPOUND_STRING("LUCY"),
-    COMPOUND_STRING("HALIE")
+    COMPOUND_STRING("Custom Name"),
+    COMPOUND_STRING("Vivi"),
+    COMPOUND_STRING("Erica"),
+    COMPOUND_STRING("Tori"),
+    COMPOUND_STRING("Zoey"),
+    COMPOUND_STRING("Ayla"),
+    COMPOUND_STRING("Jane"),
 };
 
-// The number of male vs. female names is assumed to be the same.
-// If they aren't, the smaller of the two sizes will be used and any extra names will be ignored.
+// Map the strings to List Menu items
+static const struct ListMenuItem sMaleNameMenuItems[] = {
+    {sMalePresetNames[0], 0},
+    {sMalePresetNames[1], 1},
+    {sMalePresetNames[2], 2},
+    {sMalePresetNames[3], 3},
+    {sMalePresetNames[4], 4},
+    {sMalePresetNames[5], 5},
+    {sMalePresetNames[6], 6},
+};
+
+static const struct ListMenuItem sFemaleNameMenuItems[] = {
+    {sFemalePresetNames[0], 0},
+    {sFemalePresetNames[1], 1},
+    {sFemalePresetNames[2], 2},
+    {sFemalePresetNames[3], 3},
+    {sFemalePresetNames[4], 4},
+    {sFemalePresetNames[5], 5},
+    {sFemalePresetNames[6], 6},
+};
+
+// Calculate the number of names dynamically
 #define NUM_PRESET_NAMES min(ARRAY_COUNT(sMalePresetNames), ARRAY_COUNT(sFemalePresetNames))
 
 enum
@@ -1199,7 +1206,7 @@ static void Task_DisplayMainMenuInvalidActionError(u8 taskId)
 
 #undef tArrowTaskIsScrolled
 
-static void HighlightSelectedMainMenuItem(enum PartyMenuType menuType, u8 selectedMenuItem, s16 isScrolled)
+static void HighlightSelectedMainMenuItem(u8 menuType, u8 selectedMenuItem, s16 isScrolled)
 {
     SetGpuReg(REG_OFFSET_WIN0H, MENU_WIN_HCOORDS);
 
@@ -1405,7 +1412,7 @@ static void Task_NewGameBirchSpeechSub_InitPokeBall(u8 taskId)
     gSprites[spriteId].y = 75;
     gSprites[spriteId].invisible = FALSE;
     gSprites[spriteId].data[0] = 0;
-
+    LoadBallGfx(BALL_ULTRA);
     CreatePokeballSpriteToReleaseMon(spriteId, gSprites[spriteId].oam.paletteNum, 112, 58, 0, 0, 32, PALETTES_BG, SPECIES_LOTAD);
     gTasks[taskId].func = Task_NewGameBirchSpeechSub_WaitForLotad;
     gTasks[sBirchSpeechMainTaskId].tTimer = 0;
@@ -1541,13 +1548,15 @@ static void Task_NewGameBirchSpeech_ChooseGender(u8 taskId)
         PlaySE(SE_SELECT);
         gSaveBlock2Ptr->playerGender = gender;
         NewGameBirchSpeech_ClearGenderWindow(1, 1);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_WhatsYourName;
+        // Changed to route to the list menu
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ShowNameList; 
         break;
     case FEMALE:
         PlaySE(SE_SELECT);
         gSaveBlock2Ptr->playerGender = gender;
         NewGameBirchSpeech_ClearGenderWindow(1, 1);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_WhatsYourName;
+        // Changed to route to the list menu
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ShowNameList; 
         break;
     default: //repeat task if nothing is selected
         break;
@@ -1605,6 +1614,111 @@ static void Task_NewGameBirchSpeech_SlideInNewGenderSprite(u8 taskId)
     }
 }
 
+static void Task_NewGameBirchSpeech_ShowNameList(u8 taskId)
+{
+    struct ListMenuTemplate listTemplate;
+    u8 windowId = 2; 
+
+    // --- HARDWARE RNG FIX ---
+    // The standard Naming Screen normally starts these timers to generate the Trainer ID.
+    // Since we bypass the Naming Screen for preset names, we MUST start them here 
+    // so the native ID generator has actual, wildly spinning entropy!
+    StartTimer1();
+    // ------------------------
+
+    DrawMainMenuWindowBorder(&sNewGameBirchSpeechTextWindows[windowId], 0xF3);
+    FillWindowPixelBuffer(windowId, PIXEL_FILL(1));
+
+    if (gSaveBlock2Ptr->playerGender == MALE)
+        listTemplate.items = sMaleNameMenuItems;
+    else
+        listTemplate.items = sFemaleNameMenuItems;
+
+    listTemplate.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
+    listTemplate.itemPrintFunc = NULL;
+    listTemplate.totalItems = 7;
+    listTemplate.maxShowed = 5; 
+    listTemplate.windowId = windowId;
+    listTemplate.header_X = 0;
+    listTemplate.item_X = 8;
+    listTemplate.cursor_X = 0;
+    listTemplate.upText_Y = 1;
+    listTemplate.cursorPal = 2;
+    listTemplate.fillValue = 1;
+    listTemplate.cursorShadowPal = 3;
+    listTemplate.lettersSpacing = 0;
+    listTemplate.itemVerticalPadding = 0;
+    listTemplate.scrollMultiple = LIST_NO_MULTIPLE_SCROLL;
+    listTemplate.fontId = FONT_NORMAL;
+    listTemplate.cursorKind = 0;
+
+    gTasks[taskId].data[0] = ListMenuInit(&listTemplate, 0, 0);
+    gTasks[taskId].data[1] = windowId;
+
+    PutWindowTilemap(windowId);
+    CopyWindowToVram(windowId, COPYWIN_FULL);
+
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessNameMenuInput;
+}
+
+static void Task_NewGameBirchSpeech_ProcessNameMenuInput(u8 taskId)
+{
+    s32 input = ListMenu_ProcessInput(gTasks[taskId].data[0]);
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+
+        DestroyListMenuTask(gTasks[taskId].data[0], NULL, NULL);
+        NewGameBirchSpeech_ClearGenderWindow(gTasks[taskId].data[1], TRUE);
+
+        if (input == 0) // "Custom Name" Selected
+        {
+            gTasks[taskId].func = Task_NewGameBirchSpeech_WhatsYourName;
+        }
+        else // Preset Name Selected
+        {
+            const u8 *chosenName;
+            u8 i;
+            
+            if (gSaveBlock2Ptr->playerGender == MALE)
+                chosenName = sMalePresetNames[input];
+            else
+                chosenName = sFemalePresetNames[input];
+
+            // 1. Safely copy the letters
+            for (i = 0; i < PLAYER_NAME_LENGTH; i++)
+            {
+                if (chosenName[i] == 0xFF || chosenName[i] == 0x00)
+                    break;
+                    
+                gSaveBlock2Ptr->playerName[i] = chosenName[i];
+            }
+
+            // 2. Safely fill the rest of the name array with EOS (0xFF)
+            while (i <= PLAYER_NAME_LENGTH)
+            {
+                gSaveBlock2Ptr->playerName[i] = 0xFF; 
+                i++;
+            }
+
+            // 3. NATIVE FIX: Generate the Trainer ID safely!
+            // Because we called StartTimer1() when the menu opened, 
+            // this native function will now successfully pull a completely unique ID.
+            SeedRngAndSetTrainerId();
+
+            gTasks[taskId].func = Task_NewGameBirchSpeech_SoItsPlayerName;
+        }
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        DestroyListMenuTask(gTasks[taskId].data[0], NULL, NULL);
+        NewGameBirchSpeech_ClearGenderWindow(gTasks[taskId].data[1], TRUE);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_BoyOrGirl;
+    }
+}
+
 static void Task_NewGameBirchSpeech_WhatsYourName(u8 taskId)
 {
     NewGameBirchSpeech_ClearWindow(0);
@@ -1634,7 +1748,10 @@ static void Task_NewGameBirchSpeech_StartNamingScreen(u8 taskId)
     {
         FreeAllWindowBuffers();
         FreeAndDestroyMonPicSprite(gTasks[taskId].tLotadSpriteId);
-        NewGameBirchSpeech_SetDefaultPlayerName(Random() % NUM_PRESET_NAMES);
+        
+        // Generate a random preset name to suggest, strictly skipping index 0 ("Custom Name")
+        NewGameBirchSpeech_SetDefaultPlayerName((Random() % (NUM_PRESET_NAMES - 1)) + 1);
+        
         DestroyTask(taskId);
         DoNamingScreen(NAMING_SCREEN_PLAYER, gSaveBlock2Ptr->playerName, gSaveBlock2Ptr->playerGender, 0, 0, CB2_NewGameBirchSpeech_ReturnFromNamingScreen);
     }
@@ -1814,6 +1931,7 @@ static void Task_NewGameBirchSpeech_Cleanup(u8 taskId)
         FreeAllWindowBuffers();
         FreeAndDestroyMonPicSprite(gTasks[taskId].tLotadSpriteId);
         ResetAllPicSprites();
+
         SetMainCallback2(CB2_NewGame);
         DestroyTask(taskId);
     }

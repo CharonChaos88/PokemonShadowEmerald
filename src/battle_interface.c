@@ -569,8 +569,8 @@ static const struct WindowTemplate sHealthboxWindowTemplate = {
 static const union TextColor sHealthBoxTextColor =
 {
     .background = 0,
-    .foreground = 1,
-    .shadow = 3,
+    .foreground = 3,
+    .shadow = 1,
     .accent = 0
 };
 
@@ -585,6 +585,53 @@ static const union TextColor sHealthBoxTextColor =
 #define hMain_Battler               data[6]
 #define hMain_Data7                 data[7]
 
+
+#define TAG_EXPBAR_TILE 0x2722 // Choose a unique tag
+#define TAG_EXPBAR_PAL  0x2722 // Choose a unique tag
+
+// Data field aliases for the new EXP bar
+#define hMain_ExpBarSpriteId     data[4]
+#define hExp_HealthBoxSpriteId   data[5]
+
+static void SpriteCB_ExpBar(struct Sprite *sprite);
+
+static const struct OamData sOamData_ExpBar =
+{
+    .y = 0,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_4BPP,
+    .shape = SPRITE_SHAPE(32x8),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(32x8),
+    .tileNum = 0,
+    .priority = 1,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const struct Subsprite sExpBar_Subsprites[] =
+{
+    { .x = -32, .y = 0, .shape = SPRITE_SHAPE(32x8), .size = SPRITE_SIZE(32x8), .tileOffset = 0, .priority = 1 },
+    { .x = 0,   .y = 0, .shape = SPRITE_SHAPE(32x8), .size = SPRITE_SIZE(32x8), .tileOffset = 4, .priority = 1 }
+};
+
+static const struct SubspriteTable sExpBar_SubspriteTable[] =
+{
+    {ARRAY_COUNT(sExpBar_Subsprites), sExpBar_Subsprites}
+};
+
+static const struct SpriteTemplate sExpBarSpriteTemplate =
+{
+    .tileTag = TAG_EXPBAR_TILE,
+    .paletteTag = TAG_EXPBAR_PAL,
+    .oam = &sOamData_ExpBar,
+    .callback = SpriteCB_ExpBar
+};
+
+
 // data fields for healthboxRight
 #define hOther_HealthBoxSpriteId    data[5]
 
@@ -593,12 +640,12 @@ static const union TextColor sHealthBoxTextColor =
 #define hBar_Data6                  data[6]
 
 // This function is here to cover a specific case - one player's mon in a 2 vs 1 double battle. In this scenario - display singles layout.
-// The same goes for a 2 vs 1 where opponent has only one Pokémon.
+// The same goes for a 2 vs 1 where opponent has only one pokemon.
 enum BattleCoordTypes GetBattlerCoordsIndex(enum BattlerId battler)
 {
-    if (GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT && gPartiesCount[B_TRAINER_PLAYER] == 1 && !(gBattleTypeFlags & BATTLE_TYPE_MULTI))
+    if (GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT && gPlayerPartyCount == 1 && !(gBattleTypeFlags & BATTLE_TYPE_MULTI))
         return BATTLE_COORDS_SINGLES;
-    else if (GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT && gPartiesCount[B_TRAINER_OPPONENT_A] == 1 && !(gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS))
+    else if (GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT && gEnemyPartyCount == 1 && !(gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS))
         return BATTLE_COORDS_SINGLES;
     else if (IsDoubleBattle())
         return BATTLE_COORDS_DOUBLES;
@@ -690,6 +737,24 @@ u8 CreateBattlerHealthboxSprites(enum BattlerId battler)
     gBattleStruct->ballSpriteIds[1] = MAX_SPRITES;
     gBattleStruct->moveInfoSpriteId = MAX_SPRITES;
 
+    // ... existing code creating healthBarSpriteId ...
+    
+    // ADD THIS: Create the separate EXP bar sprite (Only needed for Player side)
+    if (IsOnPlayerSide(battler))
+    {
+        u8 expBarSpriteId = CreateSpriteAtEnd(&sExpBarSpriteTemplate, 140, 60, 0);
+        struct Sprite *expBarSpritePtr = &gSprites[expBarSpriteId];
+        
+        SetSubspriteTables(expBarSpritePtr, sExpBar_SubspriteTable);
+        expBarSpritePtr->subspriteMode = SUBSPRITES_IGNORE_PRIORITY;
+        expBarSpritePtr->oam.priority = 1;
+        expBarSpritePtr->invisible = TRUE;
+        
+        // Link them together
+        gSprites[healthboxLeftSpriteId].hMain_ExpBarSpriteId = expBarSpriteId;
+        expBarSpritePtr->hExp_HealthBoxSpriteId = healthboxLeftSpriteId;
+    }
+
     return healthboxLeftSpriteId;
 }
 
@@ -716,6 +781,18 @@ u8 CreateSafariPlayerHealthboxSprites(void)
 static const u8 *GetHealthboxElementGfxPtr(u8 elementId)
 {
     return gHealthboxElementsGfxTable[elementId];
+}
+
+static void SpriteCB_ExpBar(struct Sprite *sprite)
+{
+    u8 healthboxSpriteId = sprite->hExp_HealthBoxSpriteId;
+
+    // Adjust these offsets to place the EXP bar exactly where it belongs on the healthbox frame
+    sprite->x = gSprites[healthboxSpriteId].x + 40; 
+    sprite->y = gSprites[healthboxSpriteId].y + 24; 
+
+    sprite->x2 = gSprites[healthboxSpriteId].x2;
+    sprite->y2 = gSprites[healthboxSpriteId].y2;
 }
 
 // Syncs the position of healthbar accordingly with the healthbox.
@@ -1212,16 +1289,12 @@ u8 CreatePartyStatusSummarySprites(enum BattlerId battler, struct HpAndStatus *p
     u8 ballIconSpritesIds[PARTY_SIZE];
     u8 taskId;
 
-    if (!skipPlayer)
+    if (!skipPlayer || GetBattlerPosition(battler) != B_POSITION_OPPONENT_RIGHT)
     {
         if (IsOnPlayerSide(battler))
         {
             isOpponent = FALSE;
-            bar_X = 136;
-            if (BattleSideHasTwoTrainers(B_SIDE_PLAYER))
-                bar_Y = GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT ? 90 : 106;
-            else
-                bar_Y = 96;
+            bar_X = 136, bar_Y = 96;
             bar_pos2_X = 100;
             bar_data0 = -5;
         }
@@ -1229,20 +1302,10 @@ u8 CreatePartyStatusSummarySprites(enum BattlerId battler, struct HpAndStatus *p
         {
             isOpponent = TRUE;
 
-            if (GetBattlerCoordsIndex(battler) == BATTLE_COORDS_SINGLES)
-            {
-                bar_X = 104, bar_Y = 24;
-                if (GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT)
-                    bar_Y = 40;
-            }
+            if (!skipPlayer || GetBattlerCoordsIndex(battler) == BATTLE_COORDS_SINGLES)
+                bar_X = 104, bar_Y = 40;
             else
-            {
-                bar_X = 104;
-                if (BattleSideHasTwoTrainers(B_SIDE_OPPONENT) && GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT)
-                    bar_Y = 16;
-                else
-                    bar_Y = 32;
-            }
+                bar_X = 104, bar_Y = 16;
 
             bar_pos2_X = -100;
             bar_data0 = 5;
@@ -1252,8 +1315,6 @@ u8 CreatePartyStatusSummarySprites(enum BattlerId battler, struct HpAndStatus *p
     {
         isOpponent = TRUE;
         bar_X = 104, bar_Y = 40;
-        if (GetBattlerCoordsIndex(battler) == BATTLE_COORDS_DOUBLES && GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT)
-            bar_Y = 24;
         bar_pos2_X = -100;
         bar_data0 = 5;
     }
@@ -1960,7 +2021,7 @@ static void UpdateLeftNoOfBallsTextOnHealthbox(u8 healthboxSpriteId)
     txtPtr = StringCopy(text, gText_SafariBallLeft);
     ConvertIntToDecimalStringN(txtPtr, gNumSafariBalls, STR_CONV_MODE_LEFT_ALIGN, 2);
 
-    FillSpriteRectColor(healthboxSpriteId, 55, 19, 40, 12, HEALTHBOX_BG_INDEX);
+    FillSpriteRectColor(healthboxSpriteId, 55, 19, 31, 12, HEALTHBOX_BG_INDEX);
     AddSpriteTextPrinterParameterized6(healthboxSpriteId, FONT_SMALL, 55, 19, 0, 0, sHealthBoxTextColor, 0, text);
 
     gSprites[healthboxSpriteId].data[1] = savedValue1;
@@ -1996,7 +2057,7 @@ void UpdateHealthboxAttribute(u8 healthboxSpriteId, struct Pokemon *mon, u8 elem
 
         if (!isDoubles && (elementId == HEALTHBOX_EXP_BAR || elementId == HEALTHBOX_ALL))
         {
-            enum Species species;
+            u16 species;
             u32 exp, currLevelExp;
             s32 currExpBarValue, maxExpBarValue;
             u8 level;
@@ -2152,29 +2213,51 @@ static void MoveBattleBarGraphically(enum BattlerId battler, u8 whichBar)
         }
         break;
     case EXP_BAR:
-        CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
-                    gBattleSpritesDataPtr->battleBars[battler].oldValue,
-                    gBattleSpritesDataPtr->battleBars[battler].receivedValue,
-                    &gBattleSpritesDataPtr->battleBars[battler].currValue,
-                    array, B_EXPBAR_PIXELS / 8);
+    {
+        s32 currValue = gBattleSpritesDataPtr->battleBars[battler].currValue;
+        s32 maxValue = gBattleSpritesDataPtr->battleBars[battler].maxValue;
+        u8 text[16];
+        u8 *txtPtr;
+        
+        // Define strings locally because the _() macro expands to a curly-brace array
+        const u8 sText_Max[] = _("MAX");
+        const u8 sText_Percent[] = _("%");
+
+        // The battle engine stores values smaller than the bar width in Q_24_8 fixed-point format.
+        if (maxValue < B_EXPBAR_PIXELS)
+            currValue = Q_24_8_TO_INT(currValue);
+
         level = GetMonData(GetBattlerMon(battler), MON_DATA_LEVEL);
+        
         if (level >= MAX_LEVEL)
         {
-            for (i = 0; i < 8; i++)
-                array[i] = 0;
+            StringCopy(text, sText_Max);
         }
-        for (i = 0; i < 8; i++)
+        else
         {
-            if (i < 4)
-                CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_12) + array[i] * 32,
-                          (void *)(OBJ_VRAM0 + (gSprites[gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId].oam.tileNum + 0x24 + i) * TILE_SIZE_4BPP), 32);
-            else
-                CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_12) + array[i] * 32,
-                          (void *)(OBJ_VRAM0 + 0xB80 + (i + gSprites[gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId].oam.tileNum) * TILE_SIZE_4BPP), 32);
+            u32 percentage = 0;
+            if (maxValue > 0)
+                percentage = (currValue * 100) / maxValue;
+            
+            // Clamp to 100 just in case of rounding overflow
+            if (percentage > 100) 
+                percentage = 100;
+                
+            // Convert to string and append the % symbol
+            txtPtr = ConvertIntToDecimalStringN(text, percentage, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            StringCopy(txtPtr, sText_Percent);
         }
+
+        u8 healthboxSpriteId = gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId;
+        
+        // Clear the old text and print the new percentage
+        FillSpriteRectColor(healthboxSpriteId, 12, 20, 28, 12, HEALTHBOX_BG_INDEX);
+        AddSpriteTextPrinterParameterized6(healthboxSpriteId, FONT_SMALL, 12, 20, 0, 0, sHealthBoxTextColor, 0, text);
+        
         break;
     }
-}
+    } // Closes the switch(whichBar) statement
+} // Closes the MoveBattleBarGraphically function
 
 static s32 CalcNewBarValue(s32 maxValue, s32 oldValue, s32 receivedValue, s32 *currValue, u8 scale, u16 toAdd)
 {
@@ -2404,8 +2487,8 @@ enum
     TAG_LAST_BALL_WINDOW,
 };
 
-static const u32 sAbilityPopUpGfx[] = INCGFX_U32("graphics/battle_interface/ability_pop_up.png", ".4bpp", "-mwidth 8 -mheight 4");
-static const u16 sAbilityPopUpPalette[] = INCGFX_U16("graphics/battle_interface/ability_pop_up.pal", ".gbapal");
+static const u32 sAbilityPopUpGfx[] = INCBIN_U32("graphics/battle_interface/ability_pop_up.4bpp");
+static const u16 sAbilityPopUpPalette[] = INCBIN_U16("graphics/battle_interface/ability_pop_up.gbapal");
 
 static const struct SpriteSheet sSpriteSheet_AbilityPopUp =
 {
@@ -2793,13 +2876,13 @@ static const struct SpriteTemplate sSpriteTemplate_MoveInfoWindow =
 };
 
 #if B_LAST_USED_BALL_BUTTON == R_BUTTON && B_LAST_USED_BALL_CYCLE == TRUE
-    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCGFX_U8("graphics/battle_interface/last_used_ball_r_cycle.png", ".4bpp");
+    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCBIN_U8("graphics/battle_interface/last_used_ball_r_cycle.4bpp");
 #elif B_LAST_USED_BALL_CYCLE == TRUE
-    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCGFX_U8("graphics/battle_interface/last_used_ball_l_cycle.png", ".4bpp");
+    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCBIN_U8("graphics/battle_interface/last_used_ball_l_cycle.4bpp");
 #elif B_LAST_USED_BALL_BUTTON == R_BUTTON
-    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCGFX_U8("graphics/battle_interface/last_used_ball_r.png", ".4bpp");
+    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCBIN_U8("graphics/battle_interface/last_used_ball_r.4bpp");
 #else
-    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCGFX_U8("graphics/battle_interface/last_used_ball_l.png", ".4bpp");
+    static const u8 ALIGNED(4) sLastUsedBallWindowGfx[] = INCBIN_U8("graphics/battle_interface/last_used_ball_l.4bpp");
 #endif
 static const struct SpriteSheet sSpriteSheet_LastUsedBallWindow =
 {
@@ -2807,9 +2890,9 @@ static const struct SpriteSheet sSpriteSheet_LastUsedBallWindow =
 };
 
 #if B_MOVE_DESCRIPTION_BUTTON == R_BUTTON
-static const u8 sMoveInfoWindowGfx[] = INCGFX_U8("graphics/battle_interface/move_info_window_r.png", ".4bpp");
+static const u8 sMoveInfoWindowGfx[] = INCBIN_U8("graphics/battle_interface/move_info_window_r.4bpp");
 #else
-static const u8 sMoveInfoWindowGfx[] = INCGFX_U8("graphics/battle_interface/move_info_window_l.png", ".4bpp");
+static const u8 sMoveInfoWindowGfx[] = INCBIN_U8("graphics/battle_interface/move_info_window_l.4bpp");
 #endif
 
 static const struct SpriteSheet sSpriteSheet_MoveInfoWindow =
@@ -3175,3 +3258,4 @@ void CategoryIcons_LoadSpritesGfx(void)
     LoadCompressedSpriteSheet(&gSpriteSheet_CategoryIcons);
     LoadSpritePalette(&gSpritePal_CategoryIcons);
 }
+
