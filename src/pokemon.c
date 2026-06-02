@@ -5262,7 +5262,20 @@ const u16 sBattleMusicItems[] =
     MUS_VS_ELITE_FOUR,
     MUS_VS_CHAMPION,
     MUS_VS_AQUA_MAGMA,
-    MUS_VS_WILD
+    MUS_VS_WILD,
+    MUS_VS_AQUA_MAGMA_LEADER,
+    MUS_VS_REGI,
+    MUS_VS_KYOGRE_GROUDON,
+    MUS_VS_RAYQUAZA,
+    MUS_RG_VS_WILD,
+    MUS_RG_VS_TRAINER,
+    MUS_RG_VS_GYM_LEADER,
+    MUS_RG_VS_CHAMPION,
+    MUS_RG_VS_LEGEND,
+    MUS_RG_VS_DEOXYS,
+    MUS_RG_VS_MEWTWO,
+    MUS_C_VS_LEGEND_BEAST,
+    MUS_VS_MEW
 };
 
 u32 GetOptionsBattleMusic(u32 option)
@@ -5280,7 +5293,12 @@ u32 GetOptionsBattleMusic(u32 option)
 
 u16 GetBattleBGM(void)
 {
-    u32 musicOption = gSaveBlock2Ptr->optionsBattleMusic;
+    u32 musicOption;
+
+    if (gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
+        musicOption = gSaveBlock2Ptr->optionsBattleMusic;
+    else
+        musicOption = gSaveBlock2Ptr->optionsWildMusic;
 
     if (musicOption != OPTIONS_BATTLE_MUSIC_DEFAULT)
         return GetOptionsBattleMusic(musicOption);

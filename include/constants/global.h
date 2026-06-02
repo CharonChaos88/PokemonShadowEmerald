@@ -213,7 +213,8 @@ enum Gender
 
 #define OPTIONS_BATTLE_MUSIC_DEFAULT 0
 #define OPTIONS_BATTLE_MUSIC_RANDOM 1
-#define OPTIONS_BATTLE_MUSIC_COUNT 10
+#define OPTIONS_BATTLE_MUSIC_COUNT 23
+#define OPTIONS_WILD_MUSIC_COUNT 23
 
 enum __attribute__((packed)) Direction
 {
