@@ -378,7 +378,7 @@ static void HandleInputChooseAction(enum BattlerId battler)
             BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_CANCEL_PARTNER, 0);
             BtlController_Complete(battler);
         }
-        else if (B_QUICK_MOVE_CURSOR_TO_RUN)
+        else if (B_QUICK_MOVE_CURSOR_TO_RUN || gSaveBlock2Ptr->optionsQuickRunButton == OPTIONS_QUICK_RUN_B_BUTTON)
         {
             if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)) // If wild battle, pressing B moves cursor to "Run".
             {
@@ -405,6 +405,15 @@ static void HandleInputChooseAction(enum BattlerId battler)
         TryHideLastUsedBall();
         BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_THROW_BALL, 0);
         BtlController_Complete(battler);
+    }
+    else if (JOY_NEW(R_BUTTON) && gSaveBlock2Ptr->optionsQuickRunButton == OPTIONS_QUICK_RUN_R_BUTTON)
+    {
+        if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)) // If wild battle, pressing R "Runs" away.
+        {
+            PlaySE(SE_SELECT);
+            BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_RUN, 0);
+            PlayerBufferExecCompleted(battler);
+        }
     }
 }
 
@@ -1753,7 +1762,7 @@ static void MoveSelectionDisplayMoveType(enum BattlerId battler)
 
 static void TryMoveSelectionDisplayMoveDescription(enum BattlerId battler)
 {
-    if (!B_SHOW_MOVE_DESCRIPTION)
+    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowMoveInfoOff)
         return;
 
     if (gBattleStruct->descriptionSubmenu)
@@ -2019,7 +2028,10 @@ static void PlayerHandleChooseAction(enum BattlerId battler)
 
     gBattlerControllerFuncs[battler] = HandleChooseActionAfterDma3;
     BattleTv_ClearExplosionFaintCause();
-    BattlePutTextOnWindow(gText_BattleMenu, B_WIN_ACTION_MENU);
+    if (IsAllowedToUseBag())
+        BattlePutTextOnWindow(gText_BattleMenu, B_WIN_ACTION_MENU);
+    else
+        BattlePutTextOnWindow(gText_BattleMenuNoBag, B_WIN_ACTION_MENU);
 
     for (i = 0; i < 4; i++)
         ActionSelectionDestroyCursorAt(i);

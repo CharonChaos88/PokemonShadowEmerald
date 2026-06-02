@@ -305,25 +305,19 @@ static const u8 sMenuCursorDimensions[][2] =
 // these three arrays are most for readability, ie instead of returning a magic number 8
 static const u8 sTextSpeedFrameDelays[] =
 {
-    [OPTIONS_TEXT_SPEED_SLOW]    = 8,
-    [OPTIONS_TEXT_SPEED_MID]     = 4,
-    [OPTIONS_TEXT_SPEED_FAST]    = 1,
+    [OPTIONS_TEXT_SPEED_NORMAL] = 1, 
     [OPTIONS_TEXT_SPEED_INSTANT] = 1,
 };
 
 static const u8 sTextSpeedModifiers[] =
 {
-    [OPTIONS_TEXT_SPEED_SLOW]    = TEXT_SPEED_SLOW_MODIFIER,
-    [OPTIONS_TEXT_SPEED_MID]     = TEXT_SPEED_MEDIUM_MODIFIER,
-    [OPTIONS_TEXT_SPEED_FAST]    = TEXT_SPEED_FAST_MODIFIER,
+    [OPTIONS_TEXT_SPEED_NORMAL] = TEXT_SPEED_FAST_MODIFIER,
     [OPTIONS_TEXT_SPEED_INSTANT] = TEXT_SPEED_INSTANT_MODIFIER,
 };
 
 static const u8 sTextScrollSpeeds[] =
 {
-    [OPTIONS_TEXT_SPEED_SLOW]    = 1,
-    [OPTIONS_TEXT_SPEED_MID]     = 2,
-    [OPTIONS_TEXT_SPEED_FAST]    = 4,
+    [OPTIONS_TEXT_SPEED_NORMAL] = 4, 
     [OPTIONS_TEXT_SPEED_INSTANT] = 6,
 };
 
@@ -337,10 +331,7 @@ static void SetFontsPointer(const struct FontInfo *fonts)
 u32 GetPlayerTextSpeed(void)
 {
     if (gTextFlags.forceMidTextSpeed)
-        return OPTIONS_TEXT_SPEED_MID;
-
-    if (gSaveBlock2Ptr->optionsTextSpeed > OPTIONS_TEXT_SPEED_INSTANT)
-        gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
+        return OPTIONS_TEXT_SPEED_NORMAL;
 
     if (FlagGet(FLAG_TEXT_SPEED_INSTANT) || TEXT_SPEED_INSTANT)
         return OPTIONS_TEXT_SPEED_INSTANT;
@@ -2437,7 +2428,7 @@ static u32 GetGlyphWidth_Normal(u16 glyphId, bool32 isJapanese)
 {
     if (isJapanese == TRUE)
         return 8;
-    else
+    else 
         return gFontNormalLatinGlyphWidths[glyphId];
 }
 

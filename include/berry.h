@@ -255,5 +255,7 @@ extern const u16 gBerryPalette_Kee[];
 extern const u16 gBerryPalette_Maranga[];
 
 extern const struct Berry gBerries[];
+extern const u8 sBerryDescriptionPart1_WatmelMetric[];
+extern const u8 sBerryDescriptionPart2_WatmelMetric[];
 
 #endif // GUARD_BERRY_H

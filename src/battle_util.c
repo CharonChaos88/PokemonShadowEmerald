@@ -10691,6 +10691,9 @@ bool32 IsBattlerInvalidForSpreadMove(enum BattlerId battlerAtk, enum BattlerId b
 
 bool32 IsAllowedToUseBag(void)
 {
+    return !gSaveBlock2Ptr->optionsDisableBagUse;
+
+    /*
     switch (VarGet(B_VAR_NO_BAG_USE))
     {
     case NO_BAG_RESTRICTION:
@@ -10702,6 +10705,7 @@ bool32 IsAllowedToUseBag(void)
     default:
         return TRUE; // Undefined Behavior
     }
+        */
 }
 
 bool32 IsMimikyuDisguised(enum BattlerId battler)

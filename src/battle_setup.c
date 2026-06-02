@@ -883,7 +883,10 @@ enum BattleTransition GetTrainerBattleTransition(void)
     switch (GetTrainerBattleType(trainerId))
     {
     case TRAINER_BATTLE_TYPE_SINGLES:
-        minPartyCount = 1;
+        if (gSaveBlock2Ptr->optionsBattlesType == OPTIONS_BATTLE_TYPE_DOUBLES && GetTrainerPartySizeFromId(trainerId) >= 2)
+            minPartyCount = 2; // double battles always at least have 2 Pokémon.
+        else
+            minPartyCount = 1;
         break;
     case TRAINER_BATTLE_TYPE_DOUBLES:
         minPartyCount = 2; // double battles always at least have 2 Pokémon.
@@ -1357,7 +1360,7 @@ void BattleSetup_StartTrainerBattle(void)
 
         SetHillTrainerFlag();
     }
-    else if (GetTrainerBattleType(TRAINER_BATTLE_PARAM.opponentA) == TRAINER_BATTLE_TYPE_DOUBLES)
+    else if (gSaveBlock2Ptr->optionsBattlesType == OPTIONS_BATTLE_TYPE_DOUBLES || GetTrainerBattleType(TRAINER_BATTLE_PARAM.opponentA) == TRAINER_BATTLE_TYPE_DOUBLES)
     {
         gBattleTypeFlags |= BATTLE_TYPE_DOUBLE;
     }
@@ -1519,7 +1522,7 @@ static void CB2_EndRematchBattle(void)
 void BattleSetup_StartRematchBattle(void)
 {
     gBattleTypeFlags = BATTLE_TYPE_TRAINER;
-    if (GetTrainerBattleType(TRAINER_BATTLE_PARAM.opponentA) == TRAINER_BATTLE_TYPE_DOUBLES)
+    if (gSaveBlock2Ptr->optionsBattlesType == OPTIONS_BATTLE_TYPE_DOUBLES || GetTrainerBattleType(TRAINER_BATTLE_PARAM.opponentA) == TRAINER_BATTLE_TYPE_DOUBLES)
         gBattleTypeFlags |= BATTLE_TYPE_DOUBLE;
     
     gMain.savedCallback = CB2_EndRematchBattle;

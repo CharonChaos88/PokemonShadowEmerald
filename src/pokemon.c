@@ -5253,8 +5253,39 @@ bool32 IsSpeciesInHoennDex(enum Species species)
         return TRUE;
 }
 
+const u16 sBattleMusicItems[] =
+{
+    MUS_VS_FRONTIER_BRAIN,
+    MUS_VS_TRAINER,
+    MUS_VS_RIVAL,
+    MUS_VS_GYM_LEADER,
+    MUS_VS_ELITE_FOUR,
+    MUS_VS_CHAMPION,
+    MUS_VS_AQUA_MAGMA,
+    MUS_VS_WILD
+};
+
+u32 GetOptionsBattleMusic(u32 option)
+{
+    u32 musCount = ARRAY_COUNT(sBattleMusicItems);
+
+    if (option > musCount)
+        option = musCount;
+
+    if (option == OPTIONS_BATTLE_MUSIC_RANDOM)
+        return sBattleMusicItems[Random32() % musCount];
+
+    return sBattleMusicItems[option - 2]; // first two options are default and random
+}
+
 u16 GetBattleBGM(void)
 {
+    u32 musicOption = gSaveBlock2Ptr->optionsBattleMusic;
+
+    if (musicOption != OPTIONS_BATTLE_MUSIC_DEFAULT)
+        return GetOptionsBattleMusic(musicOption);
+
+    // The default music
     if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY)
     {
         switch (GetMonData(&gParties[B_TRAINER_OPPONENT_A][0], MON_DATA_SPECIES))
