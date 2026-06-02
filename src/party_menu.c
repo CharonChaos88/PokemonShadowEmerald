@@ -83,6 +83,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "config/pokemon.h"
+#include "ui_stat_editor.h"
 #if __has_include("config/party_menu.h")
 #include "config/party_menu.h"
 #endif
@@ -105,6 +106,7 @@
 
 enum {
     MENU_SUMMARY,
+    MENU_STAT_EDIT,
     MENU_SWITCH,
     MENU_CANCEL1,
     MENU_ITEM,
@@ -477,6 +479,7 @@ static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, u8);
 static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, u8);
 static void BlitBitmapToPartyWindow_Equal(u8, u8, u8, u8, u8, u8); //Custom party menu
 static void CursorCb_Summary(u8);
+static void CursorCb_StatEdit(u8);
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
 static void CursorCb_Item(u8);
@@ -2858,6 +2861,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
+    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_STAT_EDIT);
 
     u16 species = GetMonData(&mons[slotId], MON_DATA_SPECIES);
 
@@ -4681,6 +4685,23 @@ void LoadPartyMenuAilmentGfx(void)
     LoadSpritePalette(&sSpritePalette_StatusIcons);
 }
 
+static void ChangePokemonStatsPartyScreen_CB(void)
+{
+    CB2_ReturnToPartyMenuFromSummaryScreen();
+}
+
+static void ChangePokemonStatsPartyScreen(void)
+{
+    StatEditor_Init(ChangePokemonStatsPartyScreen_CB);
+}
+static void CursorCb_StatEdit(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    gSpecialVar_0x8004 = gPartyMenu.slotId;
+    sPartyMenuInternal->exitCallback = ChangePokemonStatsPartyScreen;
+    Task_ClosePartyMenu(taskId);
+}
+
 void CB2_ShowPartyMenuForItemUse(void)
 {
     MainCallback callback = CB2_ReturnToBagMenu;
@@ -4765,12 +4786,12 @@ static bool32 IsHPRecoveryItem(enum Item item)
         return FALSE;
 }
 
-// --- CUSTOM VACCINE TEXT STRINGS ---
-static const u8 sText_StrainX[] = _("X");
-static const u8 sText_StrainY[] = _("Y");
-static const u8 sText_StrainZ[] = _("Z");
-static const u8 sText_StrainUnknown[] = _("?");
-static const u8 sText_CuredOfStrain[] = _("{STR_VAR_1} was cured of the\nStrain: {STR_VAR_2} Virus!{PAUSE_UNTIL_PRESS}");
+// // --- CUSTOM VACCINE TEXT STRINGS ---
+// static const u8 sText_StrainX[] = _("X");
+// static const u8 sText_StrainY[] = _("Y");
+// static const u8 sText_StrainZ[] = _("Z");
+// static const u8 sText_StrainUnknown[] = _("?");
+// static const u8 sText_CuredOfStrain[] = _("{STR_VAR_1} was cured of the\nStrain: {STR_VAR_2} Virus!{PAUSE_UNTIL_PRESS}");
 // -----------------------------------
 
 static void GetMedicineItemEffectMessage(enum Item item, u32 statusCured)
