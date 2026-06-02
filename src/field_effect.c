@@ -40,6 +40,7 @@
 #include "constants/metatile_behaviors.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "field_move.h"
 
 #define subsprite_table(ptr) {.subsprites = ptr, .subspriteCount = (sizeof ptr) / (sizeof(struct Subsprite))}
 
@@ -2936,9 +2937,24 @@ bool8 FldEff_FieldMoveShowMon(void)
 
 bool8 FldEff_FieldMoveShowMonInit(void)
 {
+    if (GetFieldMoveSource() == FIELD_MOVE_SOURCE_ITEM)
+    {
+        // The last field move was triggered by an item, so skip the animation.
+        FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON_INIT);
+        return FALSE;
+    }
     struct Pokemon *pokemon;
     bool32 noDucking = gFieldEffectArguments[0] & SHOW_MON_CRY_NO_DUCKING;
     pokemon = &gParties[B_TRAINER_PLAYER][(u8)gFieldEffectArguments[0]];
+
+    // If argument 1 is TRUE, it means we are using an item.
+    if (gFieldEffectArguments[1] == TRUE)
+    {
+        // Skip showing a Pokémon and end this effect.
+        FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON_INIT);
+        return FALSE;
+    }
+
     gFieldEffectArguments[0] = GetMonData(pokemon, MON_DATA_SPECIES);
     gFieldEffectArguments[1] = GetMonData(pokemon, MON_DATA_IS_SHINY);
     gFieldEffectArguments[2] = GetMonData(pokemon, MON_DATA_PERSONALITY);

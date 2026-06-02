@@ -1,5 +1,6 @@
-# About `pokeemerald-expansion`
+# `pokeemerald-expansion` Features
 
+<<<<<<< HEAD
 ## DS Party Screen (Expansion)
 This feature branch is a port of the DS party screen patch for Fire Red / Emerald.
 
@@ -24,35 +25,12 @@ If you use **`pokeemerald-expansion`**, please credit **RHH (Rom Hacking Hideout
 ```
 Based off RHH's pokeemerald-expansion 1.16.0 https://github.com/rh-hideout/pokeemerald-expansion/
 ```
+=======
+Based off RHH's pokeemerald-expansion 1.15.0 https://github.com/rh-hideout/pokeemerald-expansion/
+>>>>>>> 6084f2c397cd06fe640d9de1cfbec7e0b8954af2
 
-Please consider [crediting all contributors](CREDITS.md) involved in the project!
+A collection of feature branches to implement flexible systems to the [pokeemerald-expansion codebase](https://github.com/rh-hideout/pokeemerald-expansion).
 
-# Choosing `pokeemerald` or **`pokeemerald-expansion`**
+Please visit [the wiki](https://github.com/fisham-org/pokeemerald-expansion-features/wiki) for detailed descriptions, videos & implementation details for the feature branches within this repo.
 
-- **`pokeemerald-expansion`** supports multiplayer functionality with other games built on **`pokeemerald-expansion`**. It is not compatible with official Pokémon games.
-- If compatibility with official games is important, use [`pokeemerald`](https://github.com/pret/pokeemerald). Otherwise, we recommend using **`pokeemerald-expansion`**.
-- **`pokeemerald-expansion`** incorporates regular updates from `pokeemerald`, including bug fixes and documentation improvements.
-
-# [Getting Started](INSTALL.md)
-
-❗❗ **Important**: Do not use GitHub's "Download Zip" option as it will not include commit history. This is necessary if you want to update or merge other feature branches.
-
-If you're new to git and GitHub, [Team Aqua's Asset Repo](https://github.com/Pawkkie/Team-Aquas-Asset-Repo/) has a [guide to forking and cloning the repository](https://github.com/Pawkkie/Team-Aquas-Asset-Repo/wiki/The-Basics-of-GitHub). Then you can follow one of the following guides:
-
-## 📥 [Installing **`pokeemerald-expansion`**](INSTALL.md)
-## 🏗️ [Building **`pokeemerald-expansion`**](INSTALL.md#Building-pokeemerald-expansion)
-## 🚚 [Migrating from **`pokeemerald`**](INSTALL.md#Migrating-from-pokeemerald)
-## 🚀 [Updating **`pokeemerald-expansion`**](INSTALL.md#Updating-pokeemerald-expansion)
-
-# [Documentation](https://rh-hideout.github.io/pokeemerald-expansion/)
-
-For detailed documentation, visit the [pokeemerald-expansion documentation page](https://rh-hideout.github.io/pokeemerald-expansion/).
-
-# [Contributions](CONTRIBUTING.md)
-If you are looking to [report a bug](CONTRIBUTING.md#Bug-Report), [open a pull request](CONTRIBUTING.md#Pull-Requests), or [request a feature](CONTRIBUTING.md#Feature-Request), our [`CONTRIBUTING.md`](CONTRIBUTING.md) has guides for each.
-
-# [Community](https://discord.gg/6CzjAG6GZk)
-
-[![](https://dcbadge.limes.pink/api/server/6CzjAG6GZk)](https://discord.gg/6CzjAG6GZk)
-
-Our community uses the [ROM Hacking Hideout (RHH) Discord server](https://discord.gg/6CzjAG6GZk) to communicate and organize. Most of our discussions take place there, and we welcome anybody to join us!
+> Note: In addition to hand-writing it, AI has been used to generate documentation & code used for these features.

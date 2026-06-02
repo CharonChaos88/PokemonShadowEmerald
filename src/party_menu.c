@@ -4292,7 +4292,7 @@ bool32 SetUpFieldMove_Fly(void)
     if (Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
         {
         // If it does, then perform a check for a valid Pokémon or item.
-        // if (CanUseFly() == TRUE)
+        if (CanUseFly() == TRUE)
             return TRUE;
     }
 
