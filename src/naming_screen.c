@@ -30,7 +30,6 @@
 #include "decompress.h"
 #include "constants/event_objects.h"
 #include "constants/rgb.h"
-
 enum {
     INPUT_NONE,
     INPUT_DPAD_UP,
@@ -1401,11 +1400,15 @@ static void NamingScreen_NoIcon(void)
 
 static void NamingScreen_CreatePlayerIcon(void)
 {
-    u16 rivalGfxId;
+    u16 playerGfxId;
     u8 spriteId;
 
-    rivalGfxId = GetRivalAvatarGraphicsIdByStateIdAndGender(PLAYER_AVATAR_STATE_NORMAL, (enum Gender)sNamingScreen->monSpecies);
-    spriteId = CreateObjectGraphicsSprite(rivalGfxId, SpriteCallbackDummy, 56, 37, 0);
+    if ((enum Gender)sNamingScreen->monSpecies == MALE)
+        playerGfxId = OBJ_EVENT_GFX_MAGMA_GRUNT_M_NORMAL;
+    else
+        playerGfxId = OBJ_EVENT_GFX_MAGMA_GRUNT_F_NORMAL;
+
+    spriteId = CreateObjectGraphicsSprite(playerGfxId, SpriteCallbackDummy, 56, 37, 0);
     gSprites[spriteId].oam.priority = 3;
     StartSpriteAnim(&gSprites[spriteId], ANIM_STD_GO_SOUTH);
 }

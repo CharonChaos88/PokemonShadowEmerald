@@ -102,8 +102,8 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsButtonMode = OPTIONS_BUTTON_MODE_NORMAL;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
     gSaveBlock2Ptr->optionsFollowersOff = FALSE;
-    gSaveBlock2Ptr->optionsAutoRunOff = FALSE;
-    gSaveBlock2Ptr->optionsDisableMatchCall = FALSE;
+    gSaveBlock2Ptr->optionsAutoRunOff = TRUE;
+    gSaveBlock2Ptr->optionsDisableMatchCall = TRUE;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSpeed = OPTIONS_BATTLE_SPEED_1X;
@@ -111,7 +111,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsDisableBagUse = FALSE;
     gSaveBlock2Ptr->optionsQuickRunButton = OPTIONS_QUICK_RUN_R_BUTTON;
     gSaveBlock2Ptr->optionsShowMoveInfoOff = FALSE;
-    gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
+    gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_STEREO;
     gSaveBlock2Ptr->optionsBattleMusic = OPTIONS_BATTLE_MUSIC_DEFAULT;
     gSaveBlock2Ptr->optionsBikeMusicOff = FALSE;
     gSaveBlock2Ptr->optionsSurfMusicOff = FALSE;
@@ -148,9 +148,28 @@ static void WarpToTruck(void)
 {
     if (IS_FRLG)
         SetWarpDestination(MAP_GROUP(MAP_PALLET_TOWN_PLAYERS_HOUSE_2F), MAP_NUM(MAP_PALLET_TOWN_PLAYERS_HOUSE_2F), WARP_ID_NONE, 6, 6);
-    else
-        SetWarpDestination(MAP_GROUP(MAP_INSIDE_OF_TRUCK), MAP_NUM(MAP_INSIDE_OF_TRUCK), WARP_ID_NONE, -1, -1);
+    
+    else if (gSaveBlock2Ptr->playerGender == MALE)
+    SetWarpDestination(MAP_GROUP(MAP_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F), MAP_NUM(MAP_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F), WARP_ID_NONE, -1, -1);
+    else if (gSaveBlock2Ptr->playerGender == FEMALE)
+    SetWarpDestination(MAP_GROUP(MAP_LITTLEROOT_TOWN_MAYS_HOUSE_2F), MAP_NUM(MAP_LITTLEROOT_TOWN_MAYS_HOUSE_2F), WARP_ID_NONE, -1, -1);
     WarpIntoMap();
+    AddBagItem(ITEM_POKE_BALL, 10);
+    AddBagItem(ITEM_POTION, 10);
+    AddBagItem(ITEM_ADAMANT_MINT, 10);
+    AddBagItem(ITEM_MODEST_MINT, 10);
+    AddBagItem(ITEM_TIMID_MINT, 10);
+    AddBagItem(ITEM_JOLLY_MINT, 10);
+    AddBagItem(ITEM_BOLD_MINT, 10);
+    AddBagItem(ITEM_CALM_MINT, 10);
+    AddBagItem(ITEM_HASTY_MINT, 10);
+    AddBagItem(ITEM_RELAXED_MINT, 10);
+    AddBagItem(ITEM_CAREFUL_MINT, 10);
+    AddBagItem(ITEM_BRAVE_MINT, 10);
+    AddBagItem(ITEM_ABILITY_CAPSULE, 10);
+    AddBagItem(ITEM_ABILITY_PATCH, 10);
+    AddBagItem(ITEM_LINKING_CORD, 10);
+    AddBagItem(ITEM_POKEMON_BOX, 1);
 }
 
 void Sav2_ClearSetDefault(void)
