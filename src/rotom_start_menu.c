@@ -226,30 +226,30 @@ void RotomPhone_StartMenu_Open(bool32 firstInit)
 }
 
 
-static const u32 sRotomPhone_OverworldTiles[] =                 INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone_tiles.4bpp.lz");
-static const u32 sRotomPhone_OverworldTilemap[] =               INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone.bin.lz");
-static const u32 sRotomPhone_OverworldSpeechTilemap[] =         INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone_speech.bin.lz");
-static const u32 sFlipPhone_OverworldTiles[] =                  INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_tiles.4bpp.lz");
-static const u32 sFlipPhone_OverworldOpenTilemap[] =            INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_open.bin.lz");
-static const u32 sFlipPhone_OverworldClosedTilemap[] =          INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_closed.bin.lz");
-static const u32 sRotomFlipPhone_OverworldIconsGfx[] =          INCBIN_U32("graphics/rotom_start_menu/overworld/icons.4bpp.lz");
+static const u32 sRotomPhone_OverworldTiles[] =                 INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone_tiles.4bpp.smol");
+static const u32 sRotomPhone_OverworldTilemap[] =               INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone.bin.smolTM");
+static const u32 sRotomPhone_OverworldSpeechTilemap[] =         INCBIN_U32("graphics/rotom_start_menu/overworld/rotom_phone_speech.bin.smolTM");
+static const u32 sFlipPhone_OverworldTiles[] =                  INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_tiles.4bpp.smol");
+static const u32 sFlipPhone_OverworldOpenTilemap[] =            INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_open.bin.smolTM");
+static const u32 sFlipPhone_OverworldClosedTilemap[] =          INCBIN_U32("graphics/rotom_start_menu/overworld/flip_phone_closed.bin.smolTM");
+static const u32 sRotomFlipPhone_OverworldIconsGfx[] =          INCBIN_U32("graphics/rotom_start_menu/overworld/icons.4bpp.smol");
 
-static const u32 sRotomPhone_RotomRealityMenuTiles[] =          INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone_tiles.4bpp.lz");
-static const u32 sRotomPhone_RotomRealityMenuTilemap[] =        INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone.bin.lz");
-static const u32 sRotomPhone_RotomRealityMenuPanelTilemap[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone_panel.bin.lz");
-static const u32 sRotomPhone_RotomRealityMenuIconsGfx_One[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/icons_1.4bpp.lz");
-static const u32 sRotomPhone_RotomRealityMenuIconsGfx_Two[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/icons_2.4bpp.lz");
+static const u32 sRotomPhone_RotomRealityMenuTiles[] =          INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone_tiles.4bpp.smol");
+static const u32 sRotomPhone_RotomRealityMenuTilemap[] =        INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone.bin.smolTM");
+static const u32 sRotomPhone_RotomRealityMenuPanelTilemap[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/rotom_phone_panel.bin.smolTM");
+static const u32 sRotomPhone_RotomRealityMenuIconsGfx_One[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/icons_1.4bpp.smol");
+static const u32 sRotomPhone_RotomRealityMenuIconsGfx_Two[] =   INCBIN_U32("graphics/rotom_start_menu/rotom_reality/icons_2.4bpp.smol");
 static const u16 sRotomPhone_RotomRealityMenuIconsPal_Two[] =   INCBIN_U16("graphics/rotom_start_menu/rotom_reality/icons_2.gbapal");
-static const u32 sRotomPhone_RotomRealityMenuShortcutGfx[] =    INCBIN_U32("graphics/rotom_start_menu/rotom_reality/shortcut.4bpp.lz");
+static const u32 sRotomPhone_RotomRealityMenuShortcutGfx[] =    INCBIN_U32("graphics/rotom_start_menu/rotom_reality/shortcut.4bpp.smol");
 static const u16 sRotomPhone_RotomRealityMenuShortcutPal[] =    INCBIN_U16("graphics/rotom_start_menu/rotom_reality/shortcut.gbapal");
-static const u32 sRotomPhone_DaycareCompatability_Gfx[] =       INCBIN_U32("graphics/rotom_start_menu/rotom_reality/panel/daycare/heart.4bpp.lz");
+static const u32 sRotomPhone_DaycareCompatability_Gfx[] =       INCBIN_U32("graphics/rotom_start_menu/rotom_reality/panel/daycare/heart.4bpp.smol");
 static const u16 sRotomPhone_DaycareCompatability_Pal[] =       INCBIN_U16("graphics/rotom_start_menu/rotom_reality/panel/daycare/heart.gbapal");
 
 static const u16 sRotomPhone_StartMenuRotomFaceIconsPal[] =     INCBIN_U16("graphics/rotom_start_menu/rotom_face.gbapal");
-static const u32 sRotomPhone_StartMenuRotomFaceGfx[] =          INCBIN_U32("graphics/rotom_start_menu/rotom_face.4bpp.lz");
+static const u32 sRotomPhone_StartMenuRotomFaceGfx[] =          INCBIN_U32("graphics/rotom_start_menu/rotom_face.4bpp.smol");
 
-static const u32 sRotomPhone_SaveScreenTiles[] =                INCBIN_U32("graphics/rotom_start_menu/save_screen/save_screen_tiles.4bpp.lz");
-static const u32 sRotomPhone_SaveScreenTilemap[] =              INCBIN_U32("graphics/rotom_start_menu/save_screen/save_screen.bin.lz");
+static const u32 sRotomPhone_SaveScreenTiles[] =                INCBIN_U32("graphics/rotom_start_menu/save_screen/save_screen_tiles.4bpp.smol");
+static const u32 sRotomPhone_SaveScreenTilemap[] =              INCBIN_U32("graphics/rotom_start_menu/save_screen/save_screen.bin.smolTM");
 static const u16 sRotomPhone_SaveScreenPalette[] =              INCBIN_U16("graphics/rotom_start_menu/save_screen/save_screen.gbapal");
 
 static const u16 sRotomPhonePalette_OG[] =                      INCBIN_U16("graphics/rotom_start_menu/palettes/og.gbapal");
@@ -1684,7 +1684,7 @@ static void RotomPhone_OverworldMenu_LoadBgGfx(bool32 firstInit)
     if (RP_CONFIG_USE_ROTOM_PHONE)
     {
         DecompressAndCopyTileDataToVram(0, sRotomPhone_OverworldTiles, 0, 0, 0);
-        LZDecompressWram(sRotomPhone_OverworldTilemap, buf);
+        DecompressDataWithHeaderWram(sRotomPhone_OverworldTilemap, buf);
     }
     else
     {
@@ -1694,7 +1694,7 @@ static void RotomPhone_OverworldMenu_LoadBgGfx(bool32 firstInit)
             tilemap = sFlipPhone_OverworldOpenTilemap;
         
         DecompressAndCopyTileDataToVram(0, sFlipPhone_OverworldTiles, 0, 0, 0);
-        LZDecompressWram(tilemap, buf);
+        DecompressDataWithHeaderWram(tilemap, buf);
     }
 
     RotomPhone_OverworldMenu_LoadBgPalette(TRUE);
@@ -1708,7 +1708,7 @@ static void RotomPhone_OverworldMenu_CreateSpeechWindows(void)
     if (!RP_CONFIG_USE_ROTOM_PHONE)
         return;
 
-    LZDecompressWram(sRotomPhone_OverworldSpeechTilemap, GetBgTilemapBuffer(0));
+    DecompressDataWithHeaderWram(sRotomPhone_OverworldSpeechTilemap, GetBgTilemapBuffer(0));
 
     sRotomPhone_StartMenu->menuOverworldRotomSpeechTopWindowId = AddWindow(&sWindowTemplate_RotomSpeech_Top);
     FillWindowPixelBuffer(sRotomPhone_StartMenu->menuOverworldRotomSpeechTopWindowId, PIXEL_FILL(OW_ROTOM_PHONE_TEXT_BG_COLOUR));
@@ -1729,7 +1729,7 @@ static void RotomPhone_OverworldMenu_CreateFlipPhoneWindow(void)
     PutWindowTilemap(sRotomPhone_StartMenu->menuOverworldFlipPhoneWindowId);
 }
 
-static const u8 sText_ClearWindow[] = COMPOUND_STRING("{CLEAR_TO 190}");
+static const u8 sText_ClearWindow[] = ("{CLEAR_TO 190}");
 static void RotomPhone_OverworldMenu_PrintRotomSpeech(u8 textBuffer[80], bool32 top, bool32 copy)
 {
     u8 fontId = GetFontIdToFit(textBuffer, FONT_SHORT, 0, ROTOM_SPEECH_WINDOW_WIDTH_PXL);
@@ -2336,7 +2336,7 @@ static void Task_RotomPhone_OverworldMenu_PhoneSlideOpen(u8 taskId)
     else if (GetEasingComfyAnim_CurrentFrame(&gComfyAnims[tPhoneComfyAnimId]) == PHONE_COMFY_SLIDE_DURATION / 2
         && !RP_CONFIG_USE_ROTOM_PHONE)
     {
-        LZDecompressWram(sFlipPhone_OverworldOpenTilemap, GetBgTilemapBuffer(0));
+        DecompressDataWithHeaderWram(sFlipPhone_OverworldOpenTilemap, GetBgTilemapBuffer(0));
         ScheduleBgCopyTilemapToVram(0);
     }
     else if (tPhoneY > 0)
@@ -2371,9 +2371,9 @@ static void Task_RotomPhone_OverworldMenu_PhoneSlideClose(u8 taskId)
         RotomPhone_OverworldMenu_RemoveWindows();
         RotomPhone_OverworldMenu_DestroySprites();
         if (RP_CONFIG_USE_ROTOM_PHONE)
-            LZDecompressWram(sRotomPhone_OverworldTilemap, GetBgTilemapBuffer(0));
+            DecompressDataWithHeaderWram(sRotomPhone_OverworldTilemap, GetBgTilemapBuffer(0));
         else
-            LZDecompressWram(sFlipPhone_OverworldClosedTilemap, GetBgTilemapBuffer(0));
+            DecompressDataWithHeaderWram(sFlipPhone_OverworldClosedTilemap, GetBgTilemapBuffer(0));
         ScheduleBgCopyTilemapToVram(0);
         tPhoneY = ReadComfyAnimValueSmooth(&gComfyAnims[tPhoneComfyAnimId]);
         SetGpuReg(REG_OFFSET_BG0VOFS, -tPhoneY);
@@ -3092,8 +3092,8 @@ static bool32 RotomPhone_RotomRealityMenu_LoadGraphics(void)
     case 1:
         if (FreeTempTileDataBuffersIfPossible() != TRUE)
         {
-            LZDecompressWram(sRotomPhone_RotomRealityMenuTilemap, sBg1TilemapBuffer);
-            LZDecompressWram(sRotomPhone_RotomRealityMenuPanelTilemap, sBg2TilemapBuffer);
+            DecompressDataWithHeaderWram(sRotomPhone_RotomRealityMenuTilemap, sBg1TilemapBuffer);
+            DecompressDataWithHeaderWram(sRotomPhone_RotomRealityMenuPanelTilemap, sBg2TilemapBuffer);
             sRotomPhone_StartMenu->menuRotomRealityLoadState++;
         }
         break;
@@ -3366,8 +3366,8 @@ static void RotomPhone_RotomRealityMenu_PrintTime(void)
 
     FillWindowPixelBuffer(RP_RR_WIN_TIME, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
 
-    AddTextPrinterParameterized4(RP_RR_WIN_TIME, FONT_NORMAL,
-        GetStringCenterAlignXOffset(FONT_NORMAL, time, sRotomPhone_RotomRealityMenuWindowTemplates[RP_RR_WIN_TIME].width * 8),
+    AddTextPrinterParameterized4(RP_RR_WIN_TIME, FONT_SMALL_NARROWER,
+        GetStringCenterAlignXOffset(FONT_SMALL_NARROWER, time, sRotomPhone_RotomRealityMenuWindowTemplates[RP_RR_WIN_TIME].width * 8),
         1, 0, 0,
         sRotomPhone_StartMenu_FontColours[FONT_RR_ROTOM_PHONE], TEXT_SKIP_DRAW, time);
 
@@ -3468,7 +3468,7 @@ static void RotomPhone_SaveScreen_SetupCB(void)
     case 4:
         if (FreeTempTileDataBuffersIfPossible() != TRUE)
         {
-            LZDecompressWram(sRotomPhone_SaveScreenTilemap, sBg1TilemapBuffer);
+            DecompressDataWithHeaderWram(sRotomPhone_SaveScreenTilemap, sBg1TilemapBuffer);
             gMain.state++;
         }
         else
