@@ -1361,6 +1361,132 @@ static const struct SpriteFrameImage sPicTable_ApricornTree[] = {
     overworld_frame(gObjectEventPic_ApricornTree, 2, 2, 0),
 };
 
+static const struct SpriteFrameImage sPicTable_Magma_M_Normal[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_M_NormalRunning, 2, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_MachBike[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_M_MachBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_AcroBike[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_M_AcroBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_Surfing[] = {
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_M_Surfing, 4, 4, 5),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_Underwater[] = {
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Underwater, 4, 4, 2),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_Watering[] = {
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 5),
+    overworld_frame(gObjectEventPic_Magma_M_Watering, 4, 4, 5),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_FieldMove[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_M_FieldMove, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_Decorating[] = {
+    obj_frame_tiles(gObjectEventPic_Magma_M_Decorating),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_M_Fishing[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_M_Fishing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Normal[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_F_NormalRunning, 2, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_MachBike[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_F_MachBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_AcroBike[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_F_AcroBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Surfing[] = {
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_F_Surfing, 4, 4, 5),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Underwater[] = {
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Underwater, 4, 4, 2),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_FieldMove[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_F_FieldMove, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Decorating[] = {
+    obj_frame_tiles(gObjectEventPic_Magma_F_Decorating),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Fishing[] = {
+    overworld_ascending_frames(gObjectEventPic_Magma_F_Fishing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_Magma_F_Watering[] = {
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 0),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 2),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 4),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 1),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 3),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 5),
+    overworld_frame(gObjectEventPic_Magma_F_Watering, 4, 4, 5),
+};
+
 #if IS_FRLG
 
 static const struct SpriteFrameImage sPicTable_RedNormal[] = {

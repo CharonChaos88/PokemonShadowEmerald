@@ -400,6 +400,24 @@ extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Giddy;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan1;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan2;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_ApricornTree;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Normal;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_MachBike;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_AcroBike;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Surfing;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_FieldMove;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Underwater;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Fishing;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Watering;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_F_Decorating;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Normal;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_MachBike;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_AcroBike;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Surfing;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_FieldMove;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Underwater;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Fishing;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Watering;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Magma_M_Decorating;
 
 const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM_OBJ_EVENT_GFX] = {
     [OBJ_EVENT_GFX_BRENDAN_NORMAL] =           &gObjectEventGraphicsInfo_BrendanNormal,
@@ -645,6 +663,24 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_OW_MON] =                   &gObjectEventGraphicsInfo_Follower,
     [OBJ_EVENT_GFX_LIGHT_SPRITE] =             &gObjectEventGraphicsInfo_BallLight,
     [OBJ_EVENT_GFX_APRICORN_TREE] =            &gObjectEventGraphicsInfo_ApricornTree,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_NORMAL] =           &gObjectEventGraphicsInfo_Magma_M_Normal,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_MACH_BIKE] =        &gObjectEventGraphicsInfo_Magma_M_MachBike,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_ACRO_BIKE] =        &gObjectEventGraphicsInfo_Magma_M_AcroBike,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_SURFING] =          &gObjectEventGraphicsInfo_Magma_M_Surfing,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_FIELD_MOVE] =       &gObjectEventGraphicsInfo_Magma_M_FieldMove,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_FISHING] =          &gObjectEventGraphicsInfo_Magma_M_Fishing,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_UNDERWATER] =       &gObjectEventGraphicsInfo_Magma_M_Underwater,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_WATERING] =         &gObjectEventGraphicsInfo_Magma_M_Watering,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_M_DECORATING] =       &gObjectEventGraphicsInfo_Magma_M_Decorating,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_NORMAL] =           &gObjectEventGraphicsInfo_Magma_F_Normal,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_MACH_BIKE] =        &gObjectEventGraphicsInfo_Magma_F_MachBike,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_ACRO_BIKE] =        &gObjectEventGraphicsInfo_Magma_F_AcroBike,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_SURFING] =          &gObjectEventGraphicsInfo_Magma_F_Surfing,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_FIELD_MOVE] =       &gObjectEventGraphicsInfo_Magma_F_FieldMove,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_FISHING] =          &gObjectEventGraphicsInfo_Magma_F_Fishing,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_UNDERWATER] =       &gObjectEventGraphicsInfo_Magma_F_Underwater,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_WATERING] =         &gObjectEventGraphicsInfo_Magma_F_Watering,
+    [OBJ_EVENT_GFX_MAGMA_GRUNT_F_DECORATING] =       &gObjectEventGraphicsInfo_Magma_F_Decorating,
 #if IS_FRLG
     [OBJ_EVENT_GFX_RED_NORMAL] =               &gObjectEventGraphicsInfo_RedNormal,
     [OBJ_EVENT_GFX_RED_BIKE] =                 &gObjectEventGraphicsInfo_RedBike,

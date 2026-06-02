@@ -486,6 +486,14 @@ const u16 gTrainerBackPicPalette_Leaf[] = INCGFX_U16("graphics/trainers/back_pic
 const u16 gTrainerBackPicPalette_Pokedude[] = INCGFX_U16("graphics/trainers/back_pics/pokedude.png", ".gbapal");
 const u16 gTrainerBackPicPalette_OldMan[] = INCGFX_U16("graphics/trainers/back_pics/old_man.png", ".gbapal");
 
+const u32 gTrainerFrontPic_MagmaGrunt_M[] = INCGFX_U32("graphics/trainers/front_pics/magma_grunt_m_player.png", ".4bpp.smol");
+const u16 gTrainerPalette_MagmaGrunt_M[] = INCGFX_U16("graphics/trainers/palettes/magma_grunt_m_player.pal", ".gbapal");
+
+const u32 gTrainerFrontPic_MagmaGrunt_F[] = INCGFX_U32("graphics/trainers/front_pics/magma_grunt_f_player.png", ".4bpp.smol");
+const u16 gTrainerPalette_MagmaGrunt_F[] = INCGFX_U16("graphics/trainers/palettes/magma_grunt_f_player.pal", ".gbapal");
+
+const u8 gTrainerBackPic_MagmaGrunt_M[] = INCGFX_U8("graphics/trainers/back_pics/magma_grunt_m_player.png", ".4bpp");
+const u8 gTrainerBackPic_MagmaGrunt_F[] = INCGFX_U8("graphics/trainers/back_pics/magma_grunt_f_player.png", ".4bpp");
 
 static const union AnimCmd sAnimCmd_Hoenn[] =
 {
@@ -1225,5 +1233,15 @@ const struct TrainerPicInfo gTrainerPicInfo[TRAINER_PIC_COUNT] =
     [TRAINER_PIC_PAINTER_FRLG] =
     {
         .frontPic = TRAINER_FRONT_PIC(gTrainerFrontPic_PainterFrlg, gTrainerPalette_PainterFrlg),
+    },
+    [TRAINER_PIC_MAGMA_GRUNT_M_PLAYER] =
+    {
+        .frontPic = TRAINER_FRONT_PIC(gTrainerFrontPic_MagmaGrunt_M, gTrainerPalette_MagmaGrunt_M),
+        .backPic = TRAINER_BACK_PIC(4, gTrainerBackPic_MagmaGrunt_M, gTrainerPalette_MagmaGrunt_M, sBackAnims_Hoenn),
+    },
+    [TRAINER_PIC_MAGMA_GRUNT_F_PLAYER] =
+    {
+        .frontPic = TRAINER_FRONT_PIC(gTrainerFrontPic_MagmaGrunt_F, gTrainerPalette_MagmaGrunt_F),
+        .backPic = TRAINER_BACK_PIC(4, gTrainerBackPic_MagmaGrunt_F, gTrainerPalette_MagmaGrunt_F, sBackAnims_Hoenn),
     },
 };

@@ -470,6 +470,33 @@ const u32 gObjectEventPic_ApricornTree[] = INCGFX_U32("graphics/object_events/pi
 
 const u32 gFieldEffectObjectPic_ShinySparkle[] = INCGFX_U32("graphics/field_effects/pics/shiny_sparkle.png", ".4bpp", "-mwidth 2 -mheight 4");
 
+//New Player objects
+const u32 gObjectEventPic_Magma_F_NormalRunning[] = INCBIN_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/walking.4bpp", "graphics/object_events/pics/people/team_magma/magma_grunt_f/running.4bpp");
+const u32 gObjectEventPic_Magma_F_MachBike[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/mach_bike.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_AcroBike[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/acro_bike.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_Surfing[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/surfing.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_FieldMove[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/field_move.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_Fishing[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/fishing.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_Watering[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/watering.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_Underwater[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/underwater.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_F_Decorating[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_f/decorating.png", ".4bpp");
+
+const u32 gObjectEventPic_Magma_M_NormalRunning[] = INCBIN_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/walking.4bpp", "graphics/object_events/pics/people/team_magma/magma_grunt_m/running.4bpp");
+const u32 gObjectEventPic_Magma_M_MachBike[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/mach_bike.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_AcroBike[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/acro_bike.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_Surfing[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/surfing.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_FieldMove[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/field_move.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_Fishing[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/fishing.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_Watering[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/watering.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_Underwater[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/underwater.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_Magma_M_Decorating[] = INCGFX_U32("graphics/object_events/pics/people/team_magma/magma_grunt_m/decorating.png", ".4bpp");
+
+const u16 gObjectEventPal_Magma_F[] = INCGFX_U16("graphics/object_events/palettes/magma_f.pal", ".gbapal");
+const u16 gObjectEventPal_Magma_F_Reflection[] = INCGFX_U16("graphics/object_events/palettes/magma_f_reflection.pal", ".gbapal");
+
+const u16 gObjectEventPal_Magma_M[] = INCGFX_U16("graphics/object_events/palettes/magma_m.pal", ".gbapal");
+const u16 gObjectEventPal_Magma_M_Reflection[] = INCGFX_U16("graphics/object_events/palettes/magma_m_reflection.pal", ".gbapal");
+
 #if IS_FRLG
 
 const u16 gObjectEventPic_RedNormal[] = INCGFX_U16("graphics/object_events/pics/people/red/red_normal.png", ".4bpp", "-mwidth 2 -mheight 4");
