@@ -137,21 +137,21 @@
     },
     {
       "type": "trigger",
-      "x": 9,
-      "y": 19,
-      "elevation": 3,
-      "var": "VAR_OLDALE_RIVAL_STATE",
-      "var_value": "1",
-      "script": "OldaleTown_EventScript_RivalTrigger2"
-    },
-    {
-      "type": "trigger",
       "x": 10,
       "y": 19,
       "elevation": 3,
       "var": "VAR_OLDALE_RIVAL_STATE",
       "var_value": "1",
       "script": "OldaleTown_EventScript_RivalTrigger3"
+    },
+    {
+      "type": "trigger",
+      "x": 9,
+      "y": 19,
+      "elevation": 3,
+      "var": "VAR_OLDALE_RIVAL_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_RivalTrigger2"
     }
   ],
   "bg_events": [

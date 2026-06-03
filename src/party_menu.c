@@ -587,7 +587,7 @@ static void InitPartyMenu(u8 menuType, u8 layout, u8 partyAction, bool8 keepCurs
         else if (gPartyMenu.slotId > PARTY_SIZE - 1 || GetMonData(&gPlayerParty[gPartyMenu.slotId], MON_DATA_SPECIES) == SPECIES_NONE)
             gPartyMenu.slotId = 0;
 
-        if (gPlayerPartyCount == 0)
+        if (gPartiesCount[B_TRAINER_PLAYER] == 0)
             gPartyMenu.slotId = PARTY_SIZE + 1; // Cancel
 
         gTextFlags.autoScroll = 0;
@@ -1770,28 +1770,29 @@ static void UpdateCurrentPartySelection(s8 *slotPtr, s8 movementDir)
 
 static void UpdatePartySelectionSingleLayout(s8 *slotPtr, s8 movementDir)
 {
+    enum BattleTrainer partyTrainer = (gPartyMenu.layout == PARTY_LAYOUT_MULTI_FULL_PARTNER) ? B_TRAINER_PARTNER : B_TRAINER_PLAYER;
     // PARTY_SIZE + 1 is Cancel, PARTY_SIZE is Confirm
     switch (movementDir)
     {
     case MENU_DIR_UP:
-        if (*slotPtr == 0)
+        if (*slotPtr == 0 || *slotPtr == 1)
         {
             *slotPtr = PARTY_SIZE + 1;
         }
         else if (*slotPtr == PARTY_SIZE)
         {
-            *slotPtr = gPlayerPartyCount - 1;
+            *slotPtr = gPartiesCount[partyTrainer] - 1;
         }
         else if (*slotPtr == PARTY_SIZE + 1)
         {
             if (sPartyMenuInternal->chooseHalf)
                 *slotPtr = PARTY_SIZE;
             else
-                *slotPtr = gPlayerPartyCount - 1;
+                *slotPtr = gPartiesCount[partyTrainer] - 1;
         }
-        else if (*slotPtr-2 >= 0)
+        else
         {
-            *slotPtr -= 2; //(*slotPtr)--;
+            (*slotPtr) -= 2;
         }
         break;
     case MENU_DIR_DOWN:
@@ -1799,38 +1800,37 @@ static void UpdatePartySelectionSingleLayout(s8 *slotPtr, s8 movementDir)
         {
             *slotPtr = 0;
         }
+        else if (*slotPtr == PARTY_SIZE)
+        {
+            *slotPtr = PARTY_SIZE + 1;
+        }
         else
         {
-            if (*slotPtr == gPlayerPartyCount - 1)
+            *slotPtr += 2;
+            if (*slotPtr >= gPartiesCount[partyTrainer])
             {
                 if (sPartyMenuInternal->chooseHalf)
                     *slotPtr = PARTY_SIZE;
                 else
                     *slotPtr = PARTY_SIZE + 1;
             }
-            else if(*slotPtr+2 < gPlayerPartyCount)
-            {
-                *slotPtr += 2;//(*slotPtr)++;
-            }else
-                (*slotPtr)++;
         }
         break;
     case MENU_DIR_RIGHT:
-        if (gPlayerPartyCount != 1 && *slotPtr%2 == 0)
+        if (*slotPtr == PARTY_SIZE || *slotPtr == PARTY_SIZE + 1)
+            break;
+        if (*slotPtr % 2 == 0)
         {
-            if (*slotPtr+1 < gPlayerPartyCount)
+            if (*slotPtr + 1 < gPartiesCount[partyTrainer])
                 (*slotPtr)++;
-            // else
-            //     *slotPtr = sPartyMenuInternal->lastSelectedSlot;
         }
         break;
     case MENU_DIR_LEFT:
-        if (*slotPtr != 0 && *slotPtr != PARTY_SIZE && *slotPtr != PARTY_SIZE + 1)
+        if (*slotPtr == PARTY_SIZE || *slotPtr == PARTY_SIZE + 1)
+            break;
+        if (*slotPtr % 2 != 0)
         {
-            if (*slotPtr-1 >= 0 && *slotPtr%2 == 1)
-                (*slotPtr)--;
-            // sPartyMenuInternal->lastSelectedSlot = *slotPtr;
-            // *slotPtr = 0;
+            (*slotPtr)--;
         }
         break;
     }
@@ -2096,12 +2096,12 @@ static void SetPartyMonsAllowedInMinigame(void)
         gPartyMenu.data1 = 0;
         if (gSpecialVar_0x8005 == 0)
         {
-            for (i = 0; i < gPlayerPartyCount; i++)
+            for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
                 *ptr += IsMonAllowedInPokemonJump(&gPlayerParty[i]) << i;
         }
         else
         {
-            for (i = 0; i < gPlayerPartyCount; i++)
+            for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
                 *ptr += IsMonAllowedInDodrioBerryPicking(&gPlayerParty[i]) << i;
         }
     }
@@ -2696,7 +2696,7 @@ void DisplayPartyMenuStdMessage(u32 stringId)
             else if (!ShouldUseChooseMonText())
                 stringId = PARTY_MSG_CHOOSE_MON_OR_CANCEL;
 
-            if (gPlayerPartyCount == 0)
+            if (gPartiesCount[B_TRAINER_PLAYER] == 0)
                 stringId = PARTY_MSG_NO_POKEMON;
         }
         DrawStdFrameWithCustomTileAndPalette(*windowPtr, FALSE, 0x4F, 13);
@@ -3081,26 +3081,80 @@ static void CursorCb_Summary(u8 taskId)
     Task_ClosePartyMenu(taskId);
 }
 
+static void GetMultiPartyForSummaryScreen(void)
+{
+    // Consolidate player and partner party into player party for summary screen
+    gParties[B_TRAINER_PLAYER][3] = gParties[B_TRAINER_PLAYER][2];
+    gParties[B_TRAINER_PLAYER][2] = gParties[B_TRAINER_PLAYER][1];
+    gParties[B_TRAINER_PLAYER][1] = gParties[B_TRAINER_PARTNER][0];
+    gParties[B_TRAINER_PLAYER][4] = gParties[B_TRAINER_PARTNER][1];
+    gParties[B_TRAINER_PLAYER][5] = gParties[B_TRAINER_PARTNER][2];
+}
+
+static void LoadBattlePartyCurrentOrderForLayout(void)
+{
+    if (!gMain.inBattle || !IsMultiBattle())
+        return;
+
+    enum BattlerId battler = gBattlerInMenuId;
+
+    if (gPartyMenu.layout == PARTY_LAYOUT_MULTI_FULL_PARTNER || gPartyMenu.layout == PARTY_LAYOUT_MULTI_FULL_SHOWCASE_PARTNER)
+        battler = B_BATTLER_2;
+
+    if (battler < gBattlersCount) // Including check given recent cases where animations set battlers OOB
+        memcpy(gBattlePartyCurrentOrder, gBattleStruct->battlerPartyOrders[battler], sizeof(gBattlePartyCurrentOrder));
+}
+
 static void CB2_ShowPokemonSummaryScreen(void)
 {
     if (gPartyMenu.menuType == PARTY_MENU_TYPE_IN_BATTLE)
     {
+        if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
+            LoadBattlePartyCurrentOrderForLayout();
+
         UpdatePartyToBattleOrder();
-        if (BW_SUMMARY_SCREEN)
-            ShowPokemonSummaryScreen_BW(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+
+        if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
+        {
+            if (!AreMultiPartiesFullTeams())
+                GetMultiPartyForSummaryScreen();
+        }
+
+        if (gPartyMenu.layout == PARTY_LAYOUT_MULTI_FULL_PARTNER)
+        {
+            if (BW_SUMMARY_SCREEN)
+                ShowPokemonSummaryScreen_BW(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PARTNER], gPartyMenu.slotId, CalculatePartyCount(B_TRAINER_PARTNER) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+            else
+                ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PARTNER], gPartyMenu.slotId, CalculatePartyCount(B_TRAINER_PARTNER) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        }
+        else if (gPartyMenu.layout == PARTY_LAYOUT_MULTI_FULL)
+        {
+            if (BW_SUMMARY_SCREEN)
+                ShowPokemonSummaryScreen_BW(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, CalculatePartyCount(B_TRAINER_PLAYER) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+            else
+                ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, CalculatePartyCount(B_TRAINER_PLAYER) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        }
         else
-            ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        {
+            if (BW_SUMMARY_SCREEN)
+                ShowPokemonSummaryScreen_BW(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, CalculatePartyCountOfSide(B_BATTLER_0) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+            else
+                ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, CalculatePartyCountOfSide(B_BATTLER_0) - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        }
     }
     else if (gPartyMenu.menuType == PARTY_MENU_TYPE_CHOOSE_HALF)
     {
-        ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        if (BW_SUMMARY_SCREEN)
+            ShowPokemonSummaryScreen_BW(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, gPartiesCount[B_TRAINER_PLAYER] - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        else
+            ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, gPartiesCount[B_TRAINER_PLAYER] - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
     }
     else
     {
         if (BW_SUMMARY_SCREEN)
-            ShowPokemonSummaryScreen_BW(SUMMARY_MODE_NORMAL, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+            ShowPokemonSummaryScreen_BW(SUMMARY_MODE_NORMAL, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, gPartiesCount[B_TRAINER_PLAYER] - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
         else
-            ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+            ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gParties[B_TRAINER_PLAYER], gPartyMenu.slotId, gPartiesCount[B_TRAINER_PLAYER] - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
     }
 }
 
@@ -6462,7 +6516,7 @@ static void RestoreFusionMon(struct Pokemon *mon)
     else
     {
         CopyMon(&gPlayerParty[i], mon, sizeof(*mon));
-        gPlayerPartyCount = i + 1;
+        gPartiesCount[B_TRAINER_PLAYER] = i + 1;
     }
 }
 
@@ -6692,7 +6746,7 @@ void ItemUseCB_Fusion(u8 taskId, TaskFunc taskFunc)
     case UNFUSE_MON:
         if (task->fusionType == FUSE_MON) // Cancel if An already Fused Mon Is Chosen For The Second Fusion Mon
             break;
-        if (gPlayerPartyCount == PARTY_SIZE)
+        if (gPartiesCount[B_TRAINER_PLAYER] == PARTY_SIZE)
         {
             gPartyMenuUseExitCallback = FALSE;
             DisplayPartyMenuMessage(gText_YourPartysFull, TRUE);
@@ -7530,7 +7584,7 @@ static u8 GetPartyLayoutFromBattleType(void)
 {
     if (IsMultiBattle() == TRUE)
         return PARTY_LAYOUT_MULTI;
-    if (!IsDoubleBattle() || gPlayerPartyCount == 1) // Draw the single layout in a double battle where the player has only one pokemon.
+    if (!IsDoubleBattle() || gPartiesCount[B_TRAINER_PLAYER] == 1) // Draw the single layout in a double battle where the player has only one pokemon.
         return PARTY_LAYOUT_SINGLE;
     return PARTY_LAYOUT_DOUBLE;
 }

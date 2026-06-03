@@ -213,24 +213,26 @@ DadsPackage::
 # 113 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
 	giveitem ITEM_FULL_HEAL, 10
 # 114 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
-	checkplayergender
+	giveitem ITEM_CRAFT_BUNDLE, 1
 # 115 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
+	checkplayergender
+# 116 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
 	compare VAR_RESULT, MALE
 	goto_if_eq DadsPackage_1
-# 121 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
 # 122 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
-	removeobject LOCALID_DADS_PACKAGE_FEMALE
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
 # 123 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
+	removeobject LOCALID_DADS_PACKAGE_FEMALE
+# 124 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
 	release
 	end
 
 DadsPackage_1:
-# 116 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
 # 117 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
-	removeobject LOCALID_DADS_PACKAGE_MALE
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
 # 118 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
+	removeobject LOCALID_DADS_PACKAGE_MALE
+# 119 "data/maps/LittlerootTown_BrendansHouse_2F/scripts.pory"
 	release
 	end
 

@@ -861,7 +861,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
     {
         u16 partyid = sStatEditorDataPtr->partyid;
         if (partyid == 0)
-            partyid = gPlayerPartyCount - 1;
+            partyid = gPartiesCount[B_TRAINER_PLAYER] - 1;
         else
             partyid -= 1;
         sStatEditorDataPtr->partyid = partyid;
@@ -871,7 +871,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
     if (JOY_NEW(R_BUTTON))
     {
         u16 partyid = sStatEditorDataPtr->partyid;
-        if (partyid == gPlayerPartyCount - 1)
+        if (partyid == gPartiesCount[B_TRAINER_PLAYER] - 1)
             partyid = 0;
         else
             partyid += 1;

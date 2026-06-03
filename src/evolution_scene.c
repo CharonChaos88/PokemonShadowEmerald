@@ -985,7 +985,7 @@ static void Task_EvolutionScene(u8 taskId)
                 if (BW_SUMMARY_SCREEN)
                 {
                     ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gTasks[taskId].tPartyId,
-                            gPlayerPartyCount - 1,
+                            gPartiesCount[B_TRAINER_PLAYER] - 1,
                             CB2_EvolutionSceneLoadGraphics,
                             gMoveToLearn);
                 }
