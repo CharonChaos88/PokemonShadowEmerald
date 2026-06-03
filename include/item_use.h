@@ -62,6 +62,7 @@ void ItemUseOutOfBattle_Flash(u8 taskId);
 void ItemUseOutOfBattle_RockSmash(u8 taskId);
 void ItemUseOutOfBattle_Waterfall(u8 taskId);
 void ItemUseOutOfBattle_Dive(u8 taskId); // field items end
+void ItemUseOutOfBattle_CraftBundle(u8);
 
 enum {
     BALL_THROW_UNABLE_TWO_MONS,

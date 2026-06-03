@@ -15956,6 +15956,20 @@ const struct ItemInfo gItemsInfo[] =
         .iconPic = gItemIcon_QuestionMark,
         .iconPalette = gItemIconPalette_QuestionMark,
     },
+    [ITEM_CRAFT_BUNDLE] =
+    {
+        .name = ITEM_NAME("Workbench"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A roll-out tool kit\n"
+            "packed full of\n"
+            "crafting supplies."),
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_CraftBundle,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
+    },
 };
 
 #undef ITEM_NAME

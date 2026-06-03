@@ -791,5 +791,6 @@ extern const u8 EventScript_Indigo_HighestAuthority[];
 
 extern const u8 EventScript_DisableAutoRun[];
 extern const u8 EventScript_EnableAutoRun[];
+extern const u8 Craft_EventScript_OpenCraftMenu[];
 
 #endif // GUARD_EVENT_SCRIPTS_H

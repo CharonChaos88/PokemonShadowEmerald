@@ -120,6 +120,9 @@ $(TYPESBWTERAGFXDIR)/tera_types_bw.4bpp: $(types:%=$(TYPESBWTERAGFXDIR)/%.4bpp)
 graphics/bag/menu.4bpp: %.4bpp: %.png
 	$(GFX) $< $@ -num_tiles 53 -Wnum_tiles
 
+graphics/crafting/recipe_book_menu.4bpp: %.4bpp: %.png
+	$(GFX) $< $@ -num_tiles 32 -Wnum_tiles
+
 $(RAYQUAZAGFXDIR)/scene_2/rayquaza.8bpp: %.8bpp: %.png
 	$(GFX) $< $@ -num_tiles 227 -Wnum_tiles
 

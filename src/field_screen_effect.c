@@ -43,6 +43,7 @@
 #include "trainer_hill.h"
 #include "fldeff.h"
 #include "battle.h"
+#include "craft_menu.h"
 
 static void Task_ExitNonAnimDoor(u8);
 static void Task_ExitNonDoor(u8);
@@ -1729,4 +1730,9 @@ bool32 IsDirectionalStairWarpMetatileBehavior(u16 metatileBehavior, enum Directi
             return TRUE;
     }
     return FALSE;
+}
+
+void ReturnToField_OpenCraftMenu(void)
+{
+    SetMainCallback2(CB2_ReturnToField_OpenCraftMenu);
 }
