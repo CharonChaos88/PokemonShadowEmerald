@@ -46,7 +46,7 @@
 #include "constants/pokemon.h"
 #include "naming_screen.h"
 #include "tv.h"
-
+// #include "bad_egg_virus.h"
  /*
     9 Starter Selection Birch Case
 
@@ -63,6 +63,7 @@ struct MenuResources
     u16 pokeballSpriteIds[9];
     u16 handSpriteId;
     u16 handPosition;
+    u8 currentPage;
     u16 selector_x;
     u16 selector_y;
     u16 movingSelector;
@@ -91,7 +92,7 @@ enum Colors
 static const u8 sMenuWindowFontColors[][3] = 
 {
     [FONT_BLACK]  = {TEXT_COLOR_TRANSPARENT,  TEXT_COLOR_DARK_GRAY,  TEXT_COLOR_LIGHT_GRAY},
-    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT,  TEXT_COLOR_WHITE,  TEXT_COLOR_DARK_GRAY},
+    [FONT_WHITE]  = {TEXT_COLOR_TRANSPARENT,  TEXT_COLOR_DARK_GRAY, TEXT_COLOR_LIGHT_GRAY},
     [FONT_RED]   = {TEXT_COLOR_TRANSPARENT,  TEXT_COLOR_RED,        TEXT_COLOR_LIGHT_GRAY},
     [FONT_BLUE]  = {TEXT_COLOR_TRANSPARENT,  TEXT_COLOR_BLUE,       TEXT_COLOR_LIGHT_GRAY},
 };
@@ -126,7 +127,7 @@ struct MonChoiceData{ // This is the format used to define a mon, everything lef
     u8 gender; // MON_MALE, MON_FEMALE, MON_GENDERLESS
     u8 evs[6]; // use format {255, 255, 0, 0, 0, 0}
     u8 ivs[6]; // use format {31, 31, 31, 31, 31, 31}
-    u16 moves[4]; // use format {MOVE_FIRE_BLAST, MOVE_SHEER_COLD, MOVE_NONE, MOVE_NONE}
+    u16 moves[4]; // use format {MOVE_FIRE_BLAST, MOVE_SHEER_COLD, MOVE_QUICK_ATTACK, MOVE_QUICK_ATTACK}
     bool8 ggMaxFactor;      // only work in Expansion set to 0 otherwise or leave blank
     u8 teraType;            // only work in Expansion set to 0 otherwise or leave blank
     bool8 isShinyExpansion; // only work in Expansion set to 0 otherwise or leave blank
@@ -142,26 +143,92 @@ struct MonChoiceData{ // This is the format used to define a mon, everything lef
 //of storing grass starter fire starter or water starter
 //Id value to VAR_STARTER_MON
 //needed for rival to have right pick etc.
-static const struct MonChoiceData sStarterChoices[9] = 
+
+
+static const struct MonChoiceData sStarterChoices[3][9] = 
 {
-    [BALL_TOP_FIRST]        = {SPECIES_MUDKIP, 5, WATER_STARTER, ITEM_POTION, BALL_NET, NATURE_JOLLY, 1, MON_MALE, {255, 255, 0, 0, 0, 0}, {31, 31, 31, 31, 31, 31}, {MOVE_FIRE_BLAST, MOVE_SHEER_COLD, MOVE_WATER_GUN, MOVE_THUNDER}, 0, 0, 0},
-    [BALL_TOP_SECOND]       = {SPECIES_TREECKO, 5, GRASS_STARTER},
-    [BALL_MIDDLE_FIRST]     = {SPECIES_TORCHIC, 5, FIRE_STARTER},
+    // PAGE 0: Hoenn, Johto, Kanto
+    {
+        [BALL_MIDDLE_FIRST]     = {SPECIES_MUDKIP, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_GROWL, MOVE_WATER_GUN, MOVE_QUICK_ATTACK,}},
+        [BALL_TOP_SECOND]       = {SPECIES_TREECKO, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_POUND, MOVE_LEER, MOVE_ABSORB, MOVE_QUICK_ATTACK,}},
+        [BALL_TOP_FIRST]        = {SPECIES_TORCHIC, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_QUICK_ATTACK, MOVE_EMBER, MOVE_GROWL, MOVE_SCRATCH,}},
 
-    [BALL_TOP_THIRD]        = {SPECIES_CHIKORITA, 5, GRASS_STARTER},
-    [BALL_TOP_FOURTH]       = {SPECIES_TOTODILE, 5, WATER_STARTER},
-    [BALL_MIDDLE_THIRD]     = {SPECIES_CYNDAQUIL, 5, FIRE_STARTER},
+        [BALL_TOP_THIRD]        = {SPECIES_CHIKORITA, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_LEAFAGE, MOVE_QUICK_ATTACK}},
+        [BALL_TOP_FOURTH]       = {SPECIES_TOTODILE, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_LEER, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+        [BALL_MIDDLE_THIRD]     = {SPECIES_CYNDAQUIL, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_LEER, MOVE_EMBER, MOVE_QUICK_ATTACK}},
 
-    [BALL_MIDDLE_SECOND]    = {SPECIES_BULBASAUR, 5, GRASS_STARTER},
-    [BALL_BOTTOM_FIRST]     = {SPECIES_CHARMANDER, 5, FIRE_STARTER},
-    [BALL_BOTTOM_SECOND]    = {SPECIES_SQUIRTLE, 5, WATER_STARTER},
+        [BALL_MIDDLE_SECOND]    = {SPECIES_BULBASAUR, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_GROWL, MOVE_VINE_WHIP, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_FIRST]     = {SPECIES_CHARMANDER, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_SCRATCH, MOVE_GROWL, MOVE_EMBER, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_SECOND]    = {SPECIES_SQUIRTLE, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+    },
+    // PAGE 1: Sinnoh, Unova, Kalos
+    {
+        [BALL_TOP_FIRST]        = {SPECIES_PIPLUP, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_POUND, MOVE_GROWL, MOVE_BUBBLE, MOVE_QUICK_ATTACK,}},
+        [BALL_TOP_SECOND]       = {SPECIES_TURTWIG, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_WITHDRAW, MOVE_LEAFAGE, MOVE_QUICK_ATTACK,}},
+        [BALL_MIDDLE_FIRST]     = {SPECIES_CHIMCHAR, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_SCRATCH, MOVE_LEER, MOVE_EMBER, MOVE_QUICK_ATTACK}},
+
+        [BALL_TOP_THIRD]        = {SPECIES_SNIVY, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_LEER, MOVE_VINE_WHIP, MOVE_QUICK_ATTACK}},
+        [BALL_TOP_FOURTH]       = {SPECIES_OSHAWOTT, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+        [BALL_MIDDLE_THIRD]     = {SPECIES_TEPIG, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_EMBER, MOVE_QUICK_ATTACK}},
+
+        [BALL_MIDDLE_SECOND]    = {SPECIES_CHESPIN, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_VINE_WHIP, MOVE_GROWL, MOVE_GROWTH, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_FIRST]     = {SPECIES_FENNEKIN, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_EMBER, MOVE_TAIL_WHIP, MOVE_HOWL, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_SECOND]    = {SPECIES_FROAKIE, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_GROWL, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+    },
+    // PAGE 2: Alola, Galar, Paldea
+    {
+        [BALL_TOP_FIRST]        = {SPECIES_POPPLIO, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_POUND, MOVE_GROWL, MOVE_WATER_GUN, MOVE_QUICK_ATTACK,}},
+        [BALL_TOP_SECOND]       = {SPECIES_ROWLET, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_LEAFAGE, MOVE_QUICK_ATTACK}},
+        [BALL_MIDDLE_FIRST]     = {SPECIES_LITTEN, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_SCRATCH, MOVE_EMBER, MOVE_GROWL, MOVE_QUICK_ATTACK,}},
+
+        [BALL_TOP_THIRD]        = {SPECIES_GROOKEY, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_SCRATCH, MOVE_GROWL, MOVE_BRANCH_POKE, MOVE_QUICK_ATTACK}},
+        [BALL_TOP_FOURTH]       = {SPECIES_SOBBLE, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_POUND, MOVE_GROWL, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+        [BALL_MIDDLE_THIRD]     = {SPECIES_SCORBUNNY, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_TACKLE, MOVE_GROWL, MOVE_EMBER, MOVE_QUICK_ATTACK}},
+
+        [BALL_MIDDLE_SECOND]    = {SPECIES_SPRIGATITO, 5, GRASS_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_LEAFAGE, MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_FIRST]     = {SPECIES_FUECOCO, 5, FIRE_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_EMBER, MOVE_TACKLE, MOVE_LEER, MOVE_QUICK_ATTACK}},
+        [BALL_BOTTOM_SECOND]    = {SPECIES_QUAXLY, 5, WATER_STARTER, ITEM_NONE, BALL_POKE, NUM_NATURES, 3, 2, {0, 0, 0, 0, 0,}, {31, 31, 31, 31, 31, 31,}, {MOVE_POUND, MOVE_GROWL, MOVE_WATER_GUN, MOVE_QUICK_ATTACK}},
+    }
 };
+
+/**********  If the player wants Pokemon Starters from Sinnoh-Paldea **********/
+// static const struct MonChoiceData sStarterChoices[9] = 
+// {
+//     [BALL_TOP_FIRST]        = {SPECIES_MUDKIP, 5, WATER_STARTER,},
+//     [BALL_TOP_SECOND]       = {SPECIES_TREECKO, 5, GRASS_STARTER},
+//     [BALL_MIDDLE_FIRST]     = {SPECIES_TORCHIC, 5, FIRE_STARTER},
+
+//     [BALL_TOP_THIRD]        = {SPECIES_CHIKORITA, 5, GRASS_STARTER},
+//     [BALL_TOP_FOURTH]       = {SPECIES_TOTODILE, 5, WATER_STARTER},
+//     [BALL_MIDDLE_THIRD]     = {SPECIES_CYNDAQUIL, 5, FIRE_STARTER},
+
+//     [BALL_MIDDLE_SECOND]    = {SPECIES_BULBASAUR, 5, GRASS_STARTER},
+//     [BALL_BOTTOM_FIRST]     = {SPECIES_CHARMANDER, 5, FIRE_STARTER},
+//     [BALL_BOTTOM_SECOND]    = {SPECIES_SQUIRTLE, 5, WATER_STARTER},
+// };
+
+
+// static const struct MonChoiceData sStarterChoices[9] = 
+// {
+//     [BALL_TOP_FIRST]        = {SPECIES_MUDKIP, 5, WATER_STARTER,},
+//     [BALL_TOP_SECOND]       = {SPECIES_TREECKO, 5, GRASS_STARTER},
+//     [BALL_MIDDLE_FIRST]     = {SPECIES_TORCHIC, 5, FIRE_STARTER},
+
+//     [BALL_TOP_THIRD]        = {SPECIES_CHIKORITA, 5, GRASS_STARTER},
+//     [BALL_TOP_FOURTH]       = {SPECIES_TOTODILE, 5, WATER_STARTER},
+//     [BALL_MIDDLE_THIRD]     = {SPECIES_CYNDAQUIL, 5, FIRE_STARTER},
+
+//     [BALL_MIDDLE_SECOND]    = {SPECIES_BULBASAUR, 5, GRASS_STARTER},
+//     [BALL_BOTTOM_FIRST]     = {SPECIES_CHARMANDER, 5, FIRE_STARTER},
+//     [BALL_BOTTOM_SECOND]    = {SPECIES_SQUIRTLE, 5, WATER_STARTER},
+// };
 
 //==========EWRAM==========//
 static EWRAM_DATA struct MenuResources *sBirchCaseDataPtr = NULL;
 //removed from here and made global as already existed in dexnav
-//static EWRAM_DATA u8 *gBg1TilemapBuffer = NULL;
+//static EWRAM_DATA u8 *sBg1TilemapBuffer = NULL;
 static EWRAM_DATA u8 *sBg2TilemapBuffer = NULL;
+static EWRAM_DATA u8 *sBg1TilemapBuffer = NULL;
 
 //==========STATIC=DEFINES==========//
 static void BirchCaseRunSetup(void);
@@ -175,7 +242,6 @@ static void Task_BirchCaseWaitFadeIn(u8 taskId);
 static void Task_BirchCaseMain(u8 taskId);
 static void SampleUi_DrawMonIcon(u16 speciesId);
 static void Task_DelayedSpriteLoad(u8 taskId);
-
 //==========CONST=DATA==========//
 static const struct BgTemplate sMenuBgTemplates[] =
 {
@@ -218,15 +284,15 @@ static const struct WindowTemplate sMenuWindowTemplates[] =
 //
 //  Graphics Pointers to Tilemaps, Tilesets, Spritesheets, Palettes
 //
-static const u32 sCaseTiles[]   = INCBIN_U32("graphics/ui_birch_case/case_tiles.4bpp.lz");
-static const u32 sCaseTilemap[] = INCBIN_U32("graphics/ui_birch_case/case_tiles.bin.lz");
+static const u32 sCaseTiles[]   = INCBIN_U32("graphics/ui_birch_case/case_tiles.4bpp.smol");
+static const u32 sCaseTilemap[] = INCBIN_U32("graphics/ui_birch_case/case_tiles.bin.smolTM");
 static const u16 sCasePalette[] = INCBIN_U16("graphics/ui_birch_case/case_tiles.gbapal");
 
-static const u32 sTextBgTiles[]   = INCBIN_U32("graphics/ui_birch_case/text_bg_tiles.4bpp.lz");
-static const u32 sTextBgTilemap[] = INCBIN_U32("graphics/ui_birch_case/text_bg_tiles.bin.lz");
+static const u32 sTextBgTiles[]   = INCBIN_U32("graphics/ui_birch_case/text_bg_tiles.4bpp.smol");
+static const u32 sTextBgTilemap[] = INCBIN_U32("graphics/ui_birch_case/text_bg_tiles.bin.smolTM");
 static const u16 sTextBgPalette[] = INCBIN_U16("graphics/ui_birch_case/text_bg_tiles.gbapal");
 
-static const u32 sPokeballHand_Gfx[] = INCBIN_U32("graphics/ui_birch_case/pokeball_hand.4bpp.lz");
+static const u32 sPokeballHand_Gfx[] = INCBIN_U32("graphics/ui_birch_case/pokeball_hand.4bpp.smol");
 static const u16 sPokeballHand_Pal[] = INCBIN_U16("graphics/ui_birch_case/pokeball_hand.gbapal");
 
 //
@@ -350,7 +416,7 @@ static void CreateHandSprite()
 
     for(i=0; i<9; i++)
     {
-        if(sStarterChoices[i].species == SPECIES_NONE) // Choose Non Empty Slot To Start In
+        if(sStarterChoices[sBirchCaseDataPtr->currentPage][i].species == SPECIES_NONE) // Choose Non Empty Slot To Start In
             continue;
     
         if(sBirchCaseDataPtr->handPosition <= 3)
@@ -379,7 +445,7 @@ static void CreateHandSprite()
     gSprites[sBirchCaseDataPtr->handSpriteId].callback = CursorCallback;
     StartSpriteAnim(&gSprites[sBirchCaseDataPtr->handSpriteId], 2);
     StartSpriteAnim(&gSprites[sBirchCaseDataPtr->pokeballSpriteIds[sBirchCaseDataPtr->handPosition]], 1);
-    SampleUi_DrawMonIcon(sStarterChoices[sBirchCaseDataPtr->handPosition].species);
+    SampleUi_DrawMonIcon(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species);
     
     return;
 }
@@ -404,7 +470,7 @@ static void CreatePokeballSprites()
     for(i=0; i<9; i++)
     {
         u16 x, y;
-        if(sStarterChoices[i].species == SPECIES_NONE)
+        if(sStarterChoices[sBirchCaseDataPtr->currentPage][i].species == SPECIES_NONE)
             continue;
 
         if(i <= 3)
@@ -477,37 +543,38 @@ static void ChangePositionUpdateSpriteAnims(u16 oldPosition, u8 taskId) // turn 
 //not relevant for starter selection
 static void BirchCase_GiveMon() // Function that calls the GiveMon function pulled from Expansion by Lunos and Ghoulslash
 {
-    u8 *evs = (u8 *) sStarterChoices[sBirchCaseDataPtr->handPosition].evs;
-    u8 *ivs = (u8 *) sStarterChoices[sBirchCaseDataPtr->handPosition].ivs;
-    u16 *moves = (u16 *) sStarterChoices[sBirchCaseDataPtr->handPosition].moves;
+    u8 *evs = (u8 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].evs;
+    u8 *ivs = (u8 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ivs;
+    u16 *moves = (u16 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].moves;
     FlagSet(FLAG_SYS_POKEMON_GET);
-    gSpecialVar_Result = BirchCase_GiveMonParameterized(sStarterChoices[sBirchCaseDataPtr->handPosition].species, sStarterChoices[sBirchCaseDataPtr->handPosition].level, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].item, sStarterChoices[sBirchCaseDataPtr->handPosition].ball, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].nature, sStarterChoices[sBirchCaseDataPtr->handPosition].abilityNum, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].gender, evs, ivs, moves, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].ggMaxFactor, sStarterChoices[sBirchCaseDataPtr->handPosition].teraType,\
-                sStarterChoices[sBirchCaseDataPtr->handPosition].isShinyExpansion);
+    gSpecialVar_Result = BirchCase_GiveMonParameterized(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].level, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].item, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ball, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].nature, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].abilityNum, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].gender, evs, ivs, moves, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ggMaxFactor, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].teraType,\
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].isShinyExpansion);
 }
 
 //specific for first starter pokemon
 //above function is general starter give
 static void BirchCase_GiveStarter() // Function that calls the GiveMon function pulled from Expansion by Lunos and Ghoulslash
 {
-    u8 *evs = (u8 *) sStarterChoices[sBirchCaseDataPtr->handPosition].evs;
-    u8 *ivs = (u8 *) sStarterChoices[sBirchCaseDataPtr->handPosition].ivs;
-    u16 *moves = (u16 *) sStarterChoices[sBirchCaseDataPtr->handPosition].moves;
+    u8 *evs = (u8 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].evs;
+    u8 *ivs = (u8 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ivs;
+    u16 *moves = (u16 *) sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].moves;
     FlagSet(FLAG_SYS_POKEMON_GET);
-    BirchCase_GiveMonParameterized(sStarterChoices[sBirchCaseDataPtr->handPosition].species, sStarterChoices[sBirchCaseDataPtr->handPosition].level, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].item, sStarterChoices[sBirchCaseDataPtr->handPosition].ball, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].nature, sStarterChoices[sBirchCaseDataPtr->handPosition].abilityNum, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].gender, evs, ivs, moves, \
-                sStarterChoices[sBirchCaseDataPtr->handPosition].ggMaxFactor, sStarterChoices[sBirchCaseDataPtr->handPosition].teraType,\
-                sStarterChoices[sBirchCaseDataPtr->handPosition].isShinyExpansion);
+    BirchCase_GiveMonParameterized(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].level, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].item, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ball, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].nature, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].abilityNum, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].gender, evs, ivs, moves, \
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].ggMaxFactor, sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].teraType,\
+                sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].isShinyExpansion);
+            
     
     //store hand position can use that to get starter choice
     //need to also translate into fire water grass value for varstarter mon
     //nvm don't need hand position just need fire water grass value
-    gSpecialVar_Result = sStarterChoices[sBirchCaseDataPtr->handPosition].starterId;
+    gSpecialVar_Result = sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].starterId;
 }
 
 //==========FUNCTIONS==========//
@@ -651,7 +718,7 @@ static bool8 BirchCaseDoGfxSetup(void)
 static void BirchCaseFreeResources(void)
 {
     try_free(sBirchCaseDataPtr);
-    try_free(gBg1TilemapBuffer);
+    try_free(sBg1TilemapBuffer);
     try_free(sBg2TilemapBuffer);
     FreeResourcesAndDestroySprite(&gSprites[sBirchCaseDataPtr->monSpriteId], sBirchCaseDataPtr->monSpriteId);
     DestroyPokeballSprites();
@@ -708,10 +775,10 @@ static void Task_BirchCaseTurnOff_Battle(u8 taskId)
 static bool8 BirchCase_InitBgs(void) // Init the bgs and bg tilemap buffers and turn sprites on, also set the bgs to blend
 {
     ResetAllBgsCoordinates();
-    gBg1TilemapBuffer = Alloc(0x800);
-    if (gBg1TilemapBuffer == NULL)
+    sBg1TilemapBuffer = Alloc(0x800);
+    if (sBg1TilemapBuffer == NULL)
         return FALSE;
-    memset(gBg1TilemapBuffer, 0, 0x800);
+    memset(sBg1TilemapBuffer, 0, 0x800);
 
     sBg2TilemapBuffer = Alloc(0x800);
     if (sBg2TilemapBuffer == NULL)
@@ -721,7 +788,7 @@ static bool8 BirchCase_InitBgs(void) // Init the bgs and bg tilemap buffers and 
     
     ResetBgsAndClearDma3BusyFlags(0);
     InitBgsFromTemplates(0, sMenuBgTemplates, NELEMS(sMenuBgTemplates));
-    SetBgTilemapBuffer(1, gBg1TilemapBuffer);
+    SetBgTilemapBuffer(1, sBg1TilemapBuffer);
     SetBgTilemapBuffer(2, sBg2TilemapBuffer);
     ScheduleBgCopyTilemapToVram(1);
     ScheduleBgCopyTilemapToVram(2);
@@ -747,7 +814,7 @@ static bool8 BirchCaseLoadGraphics(void) // load tilesets, tilemaps, spritesheet
     case 1:
         if (FreeTempTileDataBuffersIfPossible() != TRUE)
         {
-            DecompressDataWithHeaderWram(sCaseTilemap, gBg1TilemapBuffer);
+            DecompressDataWithHeaderWram(sCaseTilemap, sBg1TilemapBuffer);
             DecompressDataWithHeaderWram(sTextBgTilemap, sBg2TilemapBuffer);
             sBirchCaseDataPtr->gfxLoadState++;
         }
@@ -784,7 +851,8 @@ static void BirchCase_InitWindows(void)
 //
 //  Text Printing Function
 //
-static const u8 sText_ChooseMon[] = _("Release a Pokémon!");
+
+static const u8 sText_ChooseMon[] = _("Choose a Pokémon!  {L_BUTTON}{R_BUTTON} Page");
 static const u8 sText_AreYouSure[] = _("Are you sure?    {A_BUTTON} Yes  {B_BUTTON} No");
 static const u8 sText_RecievedMon[] = _("Give your Pokémon a Nickname?   {A_BUTTON} Yes  {B_BUTTON} No");
 static void PrintTextToBottomBar(u8 textId)
@@ -796,7 +864,7 @@ static void PrintTextToBottomBar(u8 textId)
     u8 x = 1 + 4;
     u8 y = 1 + 18;
 
-    u16 species = sStarterChoices[sBirchCaseDataPtr->handPosition].species;
+    u16 species = sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species;
     u16 dexNum = SpeciesToNationalPokedexNum(species);    
 
     FillWindowPixelBuffer(WINDOW_BOTTOM_BAR, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
@@ -818,7 +886,7 @@ static void PrintTextToBottomBar(u8 textId)
     } 
     AddTextPrinterParameterized4(WINDOW_BOTTOM_BAR, FONT_NORMAL, x, y, 0, 0, sMenuWindowFontColors[FONT_WHITE], 0xFF, mainBarAlternatingText);
 
-    if(sStarterChoices[sBirchCaseDataPtr->handPosition].species == SPECIES_NONE)
+    if(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species == SPECIES_NONE)
     {
         PutWindowTilemap(WINDOW_BOTTOM_BAR);
         CopyWindowToVram(WINDOW_BOTTOM_BAR, 3);
@@ -866,8 +934,8 @@ static void Task_DelayedSpriteLoad(u8 taskId) // wait 4 frames after changing th
 {   
     if (gTasks[taskId].data[11] >= 4)
     {
-        if(sStarterChoices[sBirchCaseDataPtr->handPosition].species != SPECIES_NONE)
-            SampleUi_DrawMonIcon(sStarterChoices[sBirchCaseDataPtr->handPosition].species);
+        if(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species != SPECIES_NONE)
+            SampleUi_DrawMonIcon(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species);
         gTasks[taskId].func = Task_BirchCaseMain;
         sBirchCaseDataPtr->movingSelector = FALSE;
         return;
@@ -951,6 +1019,31 @@ static void Task_BirchCaseConfirmSelection(u8 taskId)
 static void Task_BirchCaseMain(u8 taskId)
 {
     u16 oldPosition = sBirchCaseDataPtr->handPosition;
+    if (JOY_NEW(R_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if (sBirchCaseDataPtr->currentPage < 2)
+            sBirchCaseDataPtr->currentPage++;
+        else
+            sBirchCaseDataPtr->currentPage = 0; // Wrap around to the first page
+            
+        ReloadNewPokemon(taskId);
+        PrintTextToBottomBar(CHOOSE_MON);
+        return;
+    }
+
+    if (JOY_NEW(L_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if (sBirchCaseDataPtr->currentPage > 0)
+            sBirchCaseDataPtr->currentPage--;
+        else
+            sBirchCaseDataPtr->currentPage = 2; // Wrap around to the last page
+            
+        ReloadNewPokemon(taskId);
+        PrintTextToBottomBar(CHOOSE_MON);
+        return;
+    }
     if(JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
@@ -1062,7 +1155,7 @@ static void Task_BirchCaseMain(u8 taskId)
     }
     if(JOY_NEW(A_BUTTON))
     {
-        if(sStarterChoices[sBirchCaseDataPtr->handPosition].species != SPECIES_NONE) // If spot empty don't go to next control flow state
+        if(sStarterChoices[sBirchCaseDataPtr->currentPage][sBirchCaseDataPtr->handPosition].species != SPECIES_NONE) // If spot empty don't go to next control flow state
         {
             PlaySE(SE_SELECT);
             PrintTextToBottomBar(CONFIRM_SELECTION);

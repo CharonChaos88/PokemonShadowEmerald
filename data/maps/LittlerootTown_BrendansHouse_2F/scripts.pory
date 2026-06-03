@@ -1,0 +1,127 @@
+raw `
+LittlerootTown_BrendansHouse_2F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, LittlerootTown_BrendansHouse_2F_OnTransition
+	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, LittlerootTown_BrendansHouse_2F_OnWarp
+	.byte 0
+
+LittlerootTown_BrendansHouse_2F_OnTransition:
+	call_if_eq VAR_LITTLEROOT_INTRO_STATE, 4, PlayersHouse_2F_EventScript_BlockStairsUntilClockIsSet
+	call SecretBase_EventScript_SetDecorationFlags
+	setvar VAR_SECRET_BASE_INITIALIZED, 0
+	end
+
+LittlerootTown_BrendansHouse_2F_EventScript_Ret::
+	return
+
+LittlerootTown_BrendansHouse_2F_OnWarp:
+	map_script_2 VAR_SECRET_BASE_INITIALIZED, 0, LittlerootTown_BrendansHouse_2F_EventScript_CheckInitDecor
+	.2byte 0
+
+LittlerootTown_BrendansHouse_2F_EventScript_CheckInitDecor::
+	checkplayergender
+	goto_if_eq VAR_RESULT, MALE, SecretBase_EventScript_InitDecorations
+	end
+
+
+
+LittlerootTown_BrendansHouse_2F_EventScript_PC::
+	lockall
+	checkplayergender
+	goto_if_eq VAR_RESULT, MALE, LittlerootTown_BrendansHouse_2F_EventScript_CheckPlayersPC
+	goto_if_eq VAR_RESULT, FEMALE, LittlerootTown_BrendansHouse_2F_EventScript_CheckRivalsPC
+	end
+
+LittlerootTown_BrendansHouse_2F_EventScript_CheckPlayersPC::
+	setvar VAR_0x8004, PC_LOCATION_BRENDANS_HOUSE
+	special DoPCTurnOnEffect
+	playse SE_PC_ON
+	msgbox gText_PlayerHouseBootPC, MSGBOX_DEFAULT
+	special BedroomPC	
+	releaseall
+	end
+
+LittlerootTown_BrendansHouse_2F_EventScript_TurnOffPlayerPC::
+	setvar VAR_0x8004, PC_LOCATION_BRENDANS_HOUSE
+	playse SE_PC_OFF
+	special DoPCTurnOffEffect
+	releaseall
+	end
+
+LittlerootTown_BrendansHouse_2F_EventScript_CheckRivalsPC::
+	msgbox gText_PokemonTrainerSchoolEmail, MSGBOX_DEFAULT
+	releaseall
+	end
+
+PlayersHouse_2F_EventScript_Notebook::
+	msgbox PlayersHouse_2F_Text_Notebook, MSGBOX_SIGN
+	end
+
+PlayersHouse_2F_EventScript_GameCube::
+	msgbox PlayersHouse_2F_Text_ItsAGameCube, MSGBOX_SIGN
+	end
+
+PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_0:
+	.string "{PLAYER},\n"
+	.string "how do you like your new room?"
+	.string "$"
+
+PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_1:
+	.string "I love my new room, mom! Its pretty\n"
+	.string "cool! despite it being small.\l"
+	.string "I can make this room work for me!$"
+
+PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_2:
+	.string "Good,\n"
+	.string "everything's put away neatly!\l"
+	.string "Meet me in the living room.$"
+
+PlayersHouse_2F_EventScript_MomComesUpstairsFemale_Text_0:
+	.string "I love my new room, mom! Its pretty\n"
+	.string "cute for a small room!\l"
+	.string "Besides I can make it work for me!$"
+
+
+PlayersHouse_2F_Text_Notebook:
+	.string "{PLAYER} flipped open the notebook.\p"
+	.string "ADVENTURE RULE NO. 1\n"
+	.string "Open the MENU with START.\p"
+	.string "ADVENTURE RULE NO. 2\n"
+	.string "Record your progress with SAVE.\p"
+	.string "The remaining pages are blank…$"
+
+Common_Text_LookCloserAtMap:
+	.string "{PLAYER} took a closer look at the\n"
+	.string "{REGION} region map.$"
+
+PlayersHouse_2F_Text_ItsAGameCube:
+	.string "It's a Nintendo GameCube.\p"
+	.string "A Game Boy Advance is connected to\n"
+	.string "serve as the Controller.$"
+`
+text PlayersHouse_2F_Text_ClockIsStopped {
+	"The clock is stopped…\p"
+	"Better set it and start it!$"
+}
+
+script DadsPackage {
+	lock
+	setflag(FLAG_SYS_POKEDEX_GET)
+	playfanfare(MUS_OBTAIN_ITEM)
+	msgbox(format("{PLAYER} obtained Pok\edex."))
+	waitfanfare
+	giveitem(ITEM_SUPER_POTION, 10)
+	giveitem(ITEM_FULL_HEAL, 10)
+	checkplayergender
+	if(var(VAR_RESULT) == MALE) {
+		setflag(FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL)
+		removeobject(LOCALID_DADS_PACKAGE_MALE)
+		release
+		end
+	} else {
+		setflag(FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL)
+		removeobject(LOCALID_DADS_PACKAGE_FEMALE)
+		release
+		end
+	}
+	
+}

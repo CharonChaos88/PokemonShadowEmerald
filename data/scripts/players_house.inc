@@ -54,6 +54,7 @@ LittlerootTown_MaysHouse_2F_EventScript_WallClock::
 
 PlayersHouse_2F_EventScript_WallClock::
 	goto_if_set FLAG_SET_WALL_CLOCK, PlayersHouse_2F_EventScript_CheckWallClock
+	setspeaker SP_NAME_PLAYER 
 	msgbox PlayersHouse_2F_Text_ClockIsStopped, MSGBOX_DEFAULT
 	call PlayersHouse_2F_EventScript_SetWallClock
 	delay 30
@@ -76,7 +77,12 @@ PlayersHouse_2F_EventScript_MomComesUpstairsMale::
 	waitmovement 0
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
 	waitmovement 0
-	msgbox PlayersHouse_2F_Text_HowDoYouLikeYourRoom, MSGBOX_DEFAULT
+	setspeaker SP_NAME_MOM
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_0
+	setspeaker SP_NAME_PLAYER
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_1
+	setspeaker SP_NAME_MOM
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_2
 	closemessage
 	applymovement VAR_0x8008, PlayersHouse_2F_Movement_MomExitsMale
 	waitmovement 0
@@ -89,7 +95,12 @@ PlayersHouse_2F_EventScript_MomComesUpstairsFemale::
 	waitmovement 0
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
 	waitmovement 0
-	msgbox PlayersHouse_2F_Text_HowDoYouLikeYourRoom, MSGBOX_DEFAULT
+	setspeaker SP_NAME_MOM
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_0
+	setspeaker SP_NAME_PLAYER
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsFemale_Text_0
+	setspeaker SP_NAME_MOM
+	msgbox PlayersHouse_2F_EventScript_MomComesUpstairsMale_Text_2
 	closemessage
 	applymovement VAR_0x8008, PlayersHouse_2F_Movement_MomExitsFemale
 	waitmovement 0
@@ -149,6 +160,7 @@ PlayersHouse_1F_EventScript_PetalburgGymReportMale::
 	applymovement LOCALID_PLAYER, PlayersHouse_1F_Movement_PlayerApproachTVForGymMale
 	waitmovement 0
 	playbgm MUS_ENCOUNTER_INTERVIEWER, FALSE
+	setspeaker SP_NAME_MOM
 	msgbox PlayersHouse_1F_Text_MaybeDadWillBeOn, MSGBOX_DEFAULT
 	closemessage
 	applymovement VAR_0x8005, PlayersHouse_1F_Movement_MomMakeRoomToSeeTVMale
@@ -158,6 +170,7 @@ PlayersHouse_1F_EventScript_PetalburgGymReportMale::
 	call PlayersHouse_1F_EventScript_WatchGymBroadcast
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
 	waitmovement 0
+	setspeaker SP_NAME_MOM
 	msgbox PlayersHouse_1F_Text_ItsOverWeMissedHim, MSGBOX_DEFAULT
 	msgbox PlayersHouse_1F_Text_GoIntroduceYourselfNextDoor, MSGBOX_DEFAULT
 	closemessage
@@ -174,6 +187,7 @@ PlayersHouse_1F_EventScript_PetalburgGymReportFemale::
 	applymovement LOCALID_PLAYER, PlayersHouse_1F_Movement_PlayerApproachTVForGymFemale
 	waitmovement 0
 	playbgm MUS_ENCOUNTER_INTERVIEWER, FALSE
+	setspeaker SP_NAME_MOM
 	msgbox PlayersHouse_1F_Text_MaybeDadWillBeOn, MSGBOX_DEFAULT
 	closemessage
 	applymovement VAR_0x8005, PlayersHouse_1F_Movement_MomMakeRoomToSeeTVFemale
@@ -183,6 +197,7 @@ PlayersHouse_1F_EventScript_PetalburgGymReportFemale::
 	call PlayersHouse_1F_EventScript_WatchGymBroadcast
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterRight
 	waitmovement 0
+	setspeaker SP_NAME_MOM
 	msgbox PlayersHouse_1F_Text_ItsOverWeMissedHim, MSGBOX_DEFAULT
 	msgbox PlayersHouse_1F_Text_GoIntroduceYourselfNextDoor, MSGBOX_DEFAULT
 	closemessage
@@ -198,6 +213,7 @@ PlayersHouse_1F_EventScript_MomNoticeGymBroadcast::
 	waitmovement 0
 	applymovement VAR_0x8005, Common_Movement_Delay48
 	waitmovement 0
+	setspeaker SP_NAME_MOM
 	msgbox PlayersHouse_1F_Text_OhComeQuickly, MSGBOX_DEFAULT
 	closemessage
 	return
@@ -205,7 +221,7 @@ PlayersHouse_1F_EventScript_MomNoticeGymBroadcast::
 PlayersHouse_1F_EventScript_WatchGymBroadcast::
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
 	waitmovement 0
-	msgbox PlayersHouse_1F_Text_ReportFromPetalburgGym, MSGBOX_DEFAULT
+	msgbox PlayersHouse_1F_Text_ReportBadEggVirus, MSGBOX_DEFAULT
 	fadedefaultbgm
 	special TurnOffTVScreen
 	setflag FLAG_SYS_TV_HOME

@@ -468,7 +468,7 @@
 #define FLAG_REGISTERED_DRAKE                (TRAINER_REGISTERED_FLAGS_START + REMATCH_DRAKE)
 #define FLAG_REGISTERED_WALLACE              (TRAINER_REGISTERED_FLAGS_START + REMATCH_WALLACE)
 
-#define FLAG_UNUSED_0x1AA                    0x1AA // Unused Flag
+#define FLAG_SUPPRESS_SPEAKER_NAME           0x1AA // Unused Flag
 #define FLAG_UNUSED_0x1AB                    0x1AB // Unused Flag
 
 #define FLAG_DEFEATED_DEOXYS                 0x1AC
@@ -1550,22 +1550,22 @@
 #define FLAG_UNUSED_0x90D                           (SYSTEM_FLAGS + 0xAD) // Unused Flag
 #define FLAG_UNUSED_0x90E                           (SYSTEM_FLAGS + 0xAE) // Unused Flag
 #define FLAG_UNUSED_0x90F                           (SYSTEM_FLAGS + 0xAF) // Unused Flag
-#define FLAG_UNUSED_0x910                           (SYSTEM_FLAGS + 0xB0) // Unused Flag
-#define FLAG_UNUSED_0x911                           (SYSTEM_FLAGS + 0xB1) // Unused Flag
-#define FLAG_UNUSED_0x912                           (SYSTEM_FLAGS + 0xB2) // Unused Flag
-#define FLAG_UNUSED_0x913                           (SYSTEM_FLAGS + 0xB3) // Unused Flag
-#define FLAG_UNUSED_0x914                           (SYSTEM_FLAGS + 0xB4) // Unused Flag
-#define FLAG_UNUSED_0x915                           (SYSTEM_FLAGS + 0xB5) // Unused Flag
-#define FLAG_UNUSED_0x916                           (SYSTEM_FLAGS + 0xB6) // Unused Flag
-#define FLAG_UNUSED_0x917                           (SYSTEM_FLAGS + 0xB7) // Unused Flag
-#define FLAG_UNUSED_0x918                           (SYSTEM_FLAGS + 0xB8) // Unused Flag
-#define FLAG_UNUSED_0x919                           (SYSTEM_FLAGS + 0xB9) // Unused Flag
-#define FLAG_UNUSED_0x91A                           (SYSTEM_FLAGS + 0xBA) // Unused Flag
-#define FLAG_UNUSED_0x91B                           (SYSTEM_FLAGS + 0xBB) // Unused Flag
-#define FLAG_UNUSED_0x91C                           (SYSTEM_FLAGS + 0xBC) // Unused Flag
-#define FLAG_UNUSED_0x91D                           (SYSTEM_FLAGS + 0xBD) // Unused Flag
-#define FLAG_UNUSED_0x91E                           (SYSTEM_FLAGS + 0xBE) // Unused Flag
-#define FLAG_UNUSED_0x91F                           (SYSTEM_FLAGS + 0xBF) // Unused Flag
+#define FLAG_LINOONMERANG_ENABLED                   (SYSTEM_FLAGS + 0xB0) // Linoonmerang Flag
+#define FLAG_PREVENT_OVERWORLD_SPEEDUP              (SYSTEM_FLAGS + 0xB1) // Unused Flag
+#define FLAG_UNUSED_0x912                           (SYSTEM_FLAGS + 0xB2) // Assistant Hide Flag
+#define FLAG_UNUSED_0x913                           (SYSTEM_FLAGS + 0xB3) // Collision Toggle Flag
+#define FLAG_UNUSED_0x914                           (SYSTEM_FLAGS + 0xB4) // Encounter Toggle Flag
+#define FLAG_UNUSED_0x915                           (SYSTEM_FLAGS + 0xB5) // Trainer See Toggle Flag
+#define FLAG_UNUSED_0x916                           (SYSTEM_FLAGS + 0xB6) // Catching Toggle Flag
+#define FLAG_MOVETUTOR_SET                          (SYSTEM_FLAGS + 0xB7) // Unused Flag
+#define FLAG_MEGA_ALAKAZAM_INTRO                    (SYSTEM_FLAGS + 0xB8) // Unused Flag
+#define FLAG_DEFEATED_GROUDON_PRIMAL                (SYSTEM_FLAGS + 0xB9) // Primal Groudon's Defeated Flag
+#define FLAG_HIDE_TERRA_CAVE_GROUDON_PRIMAL         (SYSTEM_FLAGS + 0xBA) // Primal Groudon's Hide Flag
+#define FLAG_ZIGZAGMERANG_ENABLED                   (SYSTEM_FLAGS + 0xBB) // Zigzagmerang Item On Flag
+#define FLAG_DYNAMAX_ENABLED                        (SYSTEM_FLAGS + 0xBC) // Dynamax Enabled Flag
+#define FLAG_UNUSED_0x91D                           (SYSTEM_FLAGS + 0xBD) // Tera No Charge Cost Flag
+#define FLAG_TERA_ORB_CHARGE                        (SYSTEM_FLAGS + 0xBE) // Tera Orb Charge Flag
+#define FLAG_UNUSED_0x91F                           (SYSTEM_FLAGS + 0xBF) // Maxie Lab Flag
 
 // Daily Flags
 // These flags are cleared once per day

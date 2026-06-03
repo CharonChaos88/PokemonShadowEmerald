@@ -1,7 +1,7 @@
 #ifndef GUARD_CONFIG_NAME_BOX_H
 #define GUARD_CONFIG_NAME_BOX_H
 
-#define OW_FLAG_SUPPRESS_NAME_BOX   0  // If this flag is set, any namebox (whether its from a macro or a code) will not show up until this flag is unset.
+#define OW_FLAG_SUPPRESS_NAME_BOX   FLAG_SUPPRESS_SPEAKER_NAME  // If this flag is set, any namebox (whether its from a macro or a code) will not show up until this flag is unset.
 
 // Namebox Speaker configs
 #define OW_NAME_BOX_USE_DYNAMIC_WIDTH TRUE  // When TRUE, the namebox window can use different width depending on the length of the speaker's name.
@@ -11,7 +11,7 @@
 
 // Text colors of Namebox. The numbers corresponds to the palette index.
 // The BG color is not provided as it always needs to be 0.
-#define OW_NAME_BOX_FOREGROUND_COLOR  1
-#define OW_NAME_BOX_SHADOW_COLOR      2
+#define OW_NAME_BOX_FOREGROUND_COLOR  2
+#define OW_NAME_BOX_SHADOW_COLOR      1
 
 #endif // GUARD_CONFIG_NAME_BOX_H

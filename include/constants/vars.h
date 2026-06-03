@@ -266,17 +266,28 @@
 #define VAR_ROXANNE_CALL_STEP_COUNTER                    0x40F4
 #define VAR_SCOTT_BF_CALL_STEP_COUNTER                   0x40F5
 #define VAR_RIVAL_RAYQUAZA_CALL_STEP_COUNTER             0x40F6
-#define VAR_UNUSED_0x40F7                                0x40F7 // Unused Var
-#define VAR_UNUSED_0x40F8                                0x40F8 // Unused Var
-#define VAR_UNUSED_0x40F9                                0x40F9 // Unused Var
-#define VAR_UNUSED_0x40FA                                0x40FA // Unused Var
-#define VAR_UNUSED_0x40FB                                0x40FB // Unused Var
-#define VAR_UNUSED_0x40FC                                0x40FC // Unused Var
-#define VAR_UNUSED_0x40FD                                0x40FD // Unused Var
-#define VAR_UNUSED_0x40FE                                0x40FE // Unused Var
-#define VAR_UNUSED_0x40FF                                0x40FF // Unused Var
+#define VAR_GIMMICK_SLOT_0                               0x40F7 // Gimmick Party slot 1 Var
+#define VAR_GIMMICK_SLOT_1                               0x40F8 // Gimmick Party slot 2 Var
+#define VAR_GIMMICK_SLOT_2                               0x40F9 // Gimmick Party slot 3 Var
+#define VAR_GIMMICK_SLOT_3                               0x40FA // Gimmick Party slot 4 Var
+#define VAR_GIMMICK_SLOT_4                               0x40FB // Gimmick Party slot 5 Var
+#define VAR_GIMMICK_SLOT_5                               0x40FC // Gimmick Party slot 6 Var
+#define VAR_PROFESSOR_RESEARCH                           0x40FD // Research about the Bad Egg Virus
+#define VAR_BEV_EXPLORED                                 0x40FE // Bad Egg Virus Exploration counter (Used for unlocking dangerous strains)
+#define VAR_CUTSCENE                                     0x40FF // cutscene based on the game's progression
+#define VAR_MEGA_ALAKAZAM_INTRO       0x4100
+#define VAR_MEGA_ALAKAZAM_MOVE_TUTOR  0x4101
+#define VAR_MEGA_ALAKAZAM_ITEM_SHOP   0x4102
+#define VAR_MEGA_ALAKAZAM_CRAFT_ITEMS 0x4103
+#define VAR_MEGA_ALAKAZAM_WONDER_TRADE 0x4104
+#define VAR_MEGA_ALAKAZAM_POKEMON_INFUSION 0x4105
+#define VAR_PROFESSOR_ASSISTANT_KEY_ITEMS 0x4106 // Key Items Obtained by the Professor's Assistant.
+#define VAR_INFECTED_SLOT_ID 0x4107
+#define VAR_OVERWORLD_SPEEDUP 0x4108
+#define VAR_JUKEBOX_MAP_OVERRIDE 0x4109
+#define VAR_JUKEBOX_BATTLE_OVERRIDE 0x410A
 
-#define VARS_END                                         0x40FF
+#define VARS_END                                         0x410B
 #define VARS_COUNT                                       (VARS_END - VARS_START + 1)
 
 #define SPECIAL_VARS_START            0x8000
