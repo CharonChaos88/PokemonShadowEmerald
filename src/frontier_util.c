@@ -2783,6 +2783,19 @@ bool8 IsFrontierTrainerFemale(u16 trainerId)
     }
     if (i != ARRAY_COUNT(gTowerFemaleFacilityClasses))
         return TRUE;
+
+    return FALSE;
+}
+
+u16 GetBattlePoints(void)
+{
+    return gSaveBlock2Ptr->frontier.battlePoints;
+}
+
+bool8 IsEnoughBattlePoints(u16 cost)
+{
+    if (GetBattlePoints() >= cost)
+        return TRUE;
     else
         return FALSE;
 }
@@ -3437,3 +3450,18 @@ static void Task_BannedSpeciesWindowInput(u8 taskId)
 #undef tArrowTaskId
 #undef tScrollOffset
 #undef tListPointerElemId
+void SetBattlePoints(u16 pointAmount)
+{
+    gSaveBlock2Ptr->frontier.battlePoints = pointAmount;
+}
+
+bool8 RemoveBattlePoints(u16 toSub)
+{
+    u16 ownedBp = GetBattlePoints();
+    if (ownedBp >= toSub)
+    {
+        SetBattlePoints(ownedBp - toSub);
+        return TRUE;
+    }
+    return FALSE;
+}
