@@ -953,7 +953,7 @@ static void Task_WaitForFadeAndOpenNamingScreen(u8 taskId)
         SetMainCallback2(sBirchCaseDataPtr->savedCallback);
         BirchCaseFreeResources();
         DestroyTask(taskId);
-        VarSet(VAR_0x8004, gPlayerPartyCount - 1);
+        VarSet(VAR_0x8004, gPartiesCount[B_TRAINER_PLAYER] - 1);
         ChangePokemonNickname();
     }
 }

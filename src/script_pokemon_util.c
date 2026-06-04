@@ -713,7 +713,7 @@ u32 BirchCase_GiveMonParameterized(u16 species, u8 level, u16 item, u8 ball, u8 
     {
         sentToPc = MON_GIVEN_TO_PARTY;
         CopyMon(&gParties[B_TRAINER_PLAYER][i], &mon, sizeof(mon));
-        gPlayerPartyCount = i + 1;
+        gPartiesCount[B_TRAINER_PLAYER] = i + 1;
     }
 
     // set pokédex flags

@@ -5708,7 +5708,7 @@ static void Cmd_yesnoboxlearnmove(void)
         {
             FreeAllWindowBuffers();
             if (BW_SUMMARY_SCREEN)
-                ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, gPlayerPartyCount - 1, ReshowBattleScreenAfterMenu, gMoveToLearn);
+                ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, gPartiesCount[B_TRAINER_PLAYER] - 1, ReshowBattleScreenAfterMenu, gMoveToLearn);
             else
                 ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, ReshowBattleScreenAfterMenu, gMoveToLearn);
             gBattleScripting.learnMoveState++;

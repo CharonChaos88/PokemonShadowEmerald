@@ -102,7 +102,7 @@ OBJ_DIR_NAME_TEST := $(BUILD_DIR)/$(BUILD_NAME)-test
 OBJ_DIR_NAME_DEBUG := $(BUILD_DIR)/$(BUILD_NAME)-debug
 OBJ_DIR_NAME_RELEASE := $(BUILD_DIR)/$(BUILD_NAME)-release
 ASSETS_DIR_NAME := $(BUILD_DIR)/assets
-
+$(BUILD_DIR)/src/palette_editor.o:
 ELF_NAME := $(ROM_NAME:.gba=.elf)
 MAP_NAME := $(ROM_NAME:.gba=.map)
 TESTELF = $(ROM_NAME:.gba=-test.elf)

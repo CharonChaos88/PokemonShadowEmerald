@@ -504,7 +504,7 @@ static void UIShowMoveList(u8 taskId)
     gSpecialVar_0x8008 = gTasks[taskId].tPartyIndex;
     gSpecialVar_0x8009 = gTasks[taskId].tMove;
     gSpecialVar_0x800A = gTasks[taskId].tCategory;
-    ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gTasks[taskId].tPartyIndex, gPlayerPartyCount - 1, CB2_InitLearnMoveReturnFromSelectMove, gTasks[taskId].tMove);
+    ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gTasks[taskId].tPartyIndex, gPartiesCount[B_TRAINER_PLAYER] - 1, CB2_InitLearnMoveReturnFromSelectMove, gTasks[taskId].tMove);
     DestroyTask(taskId);
     FreeMoveRelearnerResources();
 }
