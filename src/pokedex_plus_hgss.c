@@ -341,7 +341,7 @@ struct PokemonStats
 {
     enum Species species;
     u8  genderRatio;
-    u8  baseHP;
+    u16  baseHP;
     u8  baseSpeed;
     u8  baseAttack;
     u8  baseSpAttack;
@@ -4704,9 +4704,13 @@ static void LoadTilesetTilemapHGSS(u8 page)
     }
 }
 
-//Physical/Special/Status category
+//Physical/Special/Hybrid/Status category
 static u8 ShowCategoryIcon(enum DamageCategory category)
 {
+    // Fallback for hybrid moves to prevent out-of-bounds animation crashes
+    if (category == DAMAGE_CATEGORY_HYBRID)
+        category = DAMAGE_CATEGORY_SPECIAL;
+
     if (sPokedexView->categoryIconSpriteId == 0xFF)
         sPokedexView->categoryIconSpriteId = CreateSprite(&gSpriteTemplate_CategoryIcons, 139, 90, 0);
 

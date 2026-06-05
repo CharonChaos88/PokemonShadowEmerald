@@ -19,7 +19,7 @@
 #include "strings.h"
 #include "constants/party_menu.h"
 #include "constants/songs.h"
-
+#include "bw_summary_screen.h"
 #define VALID_MON 0
 #define INVALID_MON 1
 
@@ -317,7 +317,7 @@ s32 LearnMove(const struct MoveLearnUI *ui, u8 taskId)
         ui->showMoveList(taskId);
         return WANT_REPLACE_3;
     case WANT_REPLACE_3:
-        if (GetMoveSlotToReplace() == MAX_MON_MOVES)
+        if (GetMoveSlotToReplace_BW() == MAX_MON_MOVES)
             return REFUSE_REPLACE_1;
         else
             return FORGOT_MOVE_1;
@@ -332,12 +332,12 @@ s32 LearnMove(const struct MoveLearnUI *ui, u8 taskId)
         return LEARN_MOVE_END;
     case FORGOT_MOVE_1:
         GetBoxMonNickname(boxmon, gStringVar1);
-        StringCopy(gStringVar2, GetMoveName(GetBoxMonData(boxmon, MON_DATA_MOVE1 + GetMoveSlotToReplace())));
+        StringCopy(gStringVar2, GetMoveName(GetBoxMonData(boxmon, MON_DATA_MOVE1 + GetMoveSlotToReplace_BW())));
         ui->printMessage(gText_12PoofForgotMove);
         return REPLACE_MOVE_1;
     case REPLACE_MOVE_1:
     {
-        u32 slot = GetMoveSlotToReplace();
+        u32 slot = GetMoveSlotToReplace_BW();
         RemoveBoxMonPPBonus(boxmon, slot);
         u32 originalPP = GetBoxMonData(boxmon, MON_DATA_PP1 + slot);
         u32 pp = GetMovePP(move);

@@ -83,7 +83,7 @@ The behaviors that these OWEs have is set up to be customizable for each individ
 
     [SPECIES_MARSHTOMP] =
     {
-        .baseHP        = 70,
+        .baseHP        = 429,
 ```
 
 The behaviors themselves are defined in `src/data/pokemon/wild_encounter_overworld_behavior.h`. These are the customizable parameters:

@@ -2775,7 +2775,7 @@ u8 GetMoveSlotToReplace(void)
     if (BW_SUMMARY_SCREEN)
         return GetMoveSlotToReplace_BW();
     else
-        return sMoveSlotToReplace;
+        return GetMoveSlotToReplace_BW();
 }
 
 static void DrawPagination(void) // Updates the pagination dots at the top of the summary screen

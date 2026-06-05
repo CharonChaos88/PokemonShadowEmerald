@@ -838,7 +838,7 @@ void ZeroEnemyPartyMons(void)
 
 void CreateRandomMon(struct Pokemon *mon, enum Species species, u8 level)
 {
-    CreateRandomMonWithIVs(mon, species, level, USE_RANDOM_IVS);
+    CreateRandomMonWithIVs(mon, species, level, MAX_PER_STAT_IVS);
 }
 
 void CreateRandomMonWithIVs(struct Pokemon *mon, enum Species species, u8 level, u8 fixedIv)
@@ -904,7 +904,7 @@ void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV)
 {
     u32 i, value;
 
-    if (fixedIV < USE_RANDOM_IVS)
+    if (fixedIV == MAX_PER_STAT_IVS)
     {
         for (i = 0; i < NUM_STATS; i++)
             SetBoxMonData(mon, MON_DATA_HP_IV + i, &fixedIV);
@@ -1082,7 +1082,7 @@ u32 GetMonPersonality(enum Species species, u8 gender, u8 nature, u8 unownLetter
 void CreateMaleMon(struct Pokemon *mon, enum Species species, u8 level)
 {
     u32 personality = GetMonPersonality(species, MON_MALE, NATURE_RANDOM, RANDOM_UNOWN_LETTER);
-    CreateMonWithIVs(mon, species, level, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    CreateMonWithIVs(mon, species, level, personality, OTID_STRUCT_PLAYER_ID, MAX_PER_STAT_IVS);
     GiveMonInitialMoveset(mon);
 }
 
@@ -1324,7 +1324,7 @@ void CreateEnemyEventMon(void)
     ZeroEnemyPartyMons();
 
     CreateEventMon(&gParties[B_TRAINER_OPPONENT_A][0], species, level, Random32(), OTID_STRUCT_PLAYER_ID);
-    SetBoxMonIVs(&gParties[B_TRAINER_OPPONENT_A][0].box, USE_RANDOM_IVS);
+    SetBoxMonIVs(&gParties[B_TRAINER_OPPONENT_A][0].box, MAX_PER_STAT_IVS);
     GiveMonInitialMoveset(&gParties[B_TRAINER_OPPONENT_A][0]);
     if (itemId)
     {
@@ -2164,6 +2164,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_HELD_ITEM:
             retVal = GetSubstruct0(boxMon)->heldItem;
             break;
+        case MON_DATA_ALT_PALETTE:
+            retVal = GetSubstruct0(boxMon)->altPalette; // Reads your 4-bit value
+            break;
         case MON_DATA_EXP:
             retVal = GetSubstruct0(boxMon)->experience;
             break;
@@ -2678,6 +2681,9 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         }
         case MON_DATA_HELD_ITEM:
             SET16(GetSubstruct0(boxMon)->heldItem);
+            break;
+        case MON_DATA_ALT_PALETTE:
+            SET8(GetSubstruct0(boxMon)->altPalette); // Writes your 4-bit value
             break;
         case MON_DATA_EXP:
             SET32(GetSubstruct0(boxMon)->experience);

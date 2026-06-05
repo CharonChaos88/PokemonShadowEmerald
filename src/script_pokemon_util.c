@@ -125,7 +125,7 @@ void CreateScriptedWildMon(enum Species species, u8 level, enum Item item)
         GetSynchronizedGender(STATIC_WILDMON_ORIGIN, species),
         GetSynchronizedNature(STATIC_WILDMON_ORIGIN, species),
         RANDOM_UNOWN_LETTER);
-    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][0], species, level, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][0], species, level, personality, OTID_STRUCT_PLAYER_ID, MAX_PER_STAT_IVS);
     GiveMonInitialMoveset(&gParties[B_TRAINER_OPPONENT_A][0]);
     if (item)
     {
@@ -144,7 +144,7 @@ void CreateScriptedDoubleWildMon(enum Species species1, u8 level1, enum Item ite
         GetSynchronizedGender(STATIC_WILDMON_ORIGIN, species1),
         GetSynchronizedNature(STATIC_WILDMON_ORIGIN, species1),
         RANDOM_UNOWN_LETTER);
-    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][0], species1, level1, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][0], species1, level1, personality, OTID_STRUCT_PLAYER_ID, MAX_PER_STAT_IVS);
     GiveMonInitialMoveset(&gParties[B_TRAINER_OPPONENT_A][0]);
     if (item1)
     {
@@ -157,7 +157,7 @@ void CreateScriptedDoubleWildMon(enum Species species1, u8 level1, enum Item ite
         GetSynchronizedGender(STATIC_WILDMON_ORIGIN, species2),
         GetSynchronizedNature(STATIC_WILDMON_ORIGIN, species2),
         RANDOM_UNOWN_LETTER);
-    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][1], species2, level2, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][1], species2, level2, personality, OTID_STRUCT_PLAYER_ID, MAX_PER_STAT_IVS);
     GiveMonInitialMoveset(&gParties[B_TRAINER_OPPONENT_A][1]);
     if (item2)
     {
@@ -531,12 +531,12 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
     enum Stat selectedIvs[NUM_STATS];
     for (i = 0; i < NUM_STATS; i++)
     {
-        ivs[i] = PARSE_FLAG(11 + i, USE_RANDOM_IVS);
-        assertf(ivs[i] <= USE_RANDOM_IVS, "invalid iv value of %d above maximum of %d", ivs[i], MAX_PER_STAT_IVS)
+        ivs[i] = PARSE_FLAG(11 + i, MAX_PER_STAT_IVS);
+        assertf(ivs[i] <= MAX_PER_STAT_IVS, "invalid iv value of %d above maximum of %d", ivs[i], MAX_PER_STAT_IVS)
         {
             ivs[i] = MAX_PER_STAT_IVS;
         }
-        if (ivs[i] == USE_RANDOM_IVS)
+        if (ivs[i] == MAX_PER_STAT_IVS)
         {
             availableIVs[nonFixedIvCount] = i;
             ivs[i] = Random() % (MAX_PER_STAT_IVS + 1);
@@ -629,7 +629,7 @@ u32 BirchCase_GiveMonParameterized(u16 species, u8 level, u16 item, u8 ball, u8 
     else
         personality = GetMonPersonality(species, MON_GENDER_RANDOM, nature, RANDOM_UNOWN_LETTER);
 
-    CreateMonWithIVs(&mon, species, level, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    CreateMonWithIVs(&mon, species, level, personality, OTID_STRUCT_PLAYER_ID, MAX_PER_STAT_IVS);
 
 #ifdef POKEMON_EXPANSION // the Expansion shiny code doesn't work in vanilla
     // shininess

@@ -1775,6 +1775,7 @@ static void MoveSelectionDisplayMoveDescription(enum BattlerId battler)
     enum Move move = moveInfo->moves[gMoveSelectionCursor[battler]];
     u16 pwr = GetMovePower(move);
     u16 acc = GetMoveAccuracy(move);
+    gBattlerAttacker = battler; // <--- ADD THIS LINE!
     enum DamageCategory cat = GetBattleMoveCategory(move);
 
     if (GetActiveGimmick(battler) == GIMMICK_DYNAMAX || IsGimmickSelected(battler, GIMMICK_DYNAMAX))

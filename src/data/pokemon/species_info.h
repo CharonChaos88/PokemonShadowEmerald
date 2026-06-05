@@ -179,7 +179,7 @@ const struct SpeciesInfo gSpeciesInfo[] =
     /*
     [SPECIES_NONE] =
     {
-        .baseHP        = 1,
+        .baseHP        = 429,
         .baseAttack    = 1,
         .baseDefense   = 1,
         .baseSpeed     = 1,
@@ -188,9 +188,9 @@ const struct SpeciesInfo gSpeciesInfo[] =
         .types = MON_TYPES(TYPE_MYSTERY),
         .catchRate = 255,
         .expYield = 67,
-        .evYield_HP = 1,
-        .evYield_Defense = 1,
-        .evYield_SpDefense = 1,
+        
+        
+        
         .genderRatio = PERCENT_FEMALE(50),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,

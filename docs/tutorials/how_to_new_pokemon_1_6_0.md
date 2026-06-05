@@ -574,7 +574,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
 
       [SPECIES_ENAMORUS] =
       {
-         .baseHP        = 74,
+         .baseHP        = 429,
          .baseAttack    = 115,
          .baseDefense   = 70,
          .baseSpeed     = 106,
@@ -583,7 +583,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
          .types = { TYPE_FAIRY, TYPE_FLYING},
          .catchRate = 3,
          .expYield = 261,
-         .evYield_SpAttack    = 3,
+         
          .genderRatio = MON_FEMALE,
          .eggCycles = 120,
          .friendship = 90,
@@ -597,7 +597,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
 
 +     [SPECIES_MEWTHREE] =
 +     {
-+        .baseHP        = 106,
++        .baseHP        = 429,
 +        .baseAttack    = 150,
 +        .baseDefense   = 70,
 +        .baseSpeed     = 140,
@@ -606,7 +606,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
 +        .types = { TYPE_PSYCHIC, TYPE_PSYCHIC},
 +        .catchRate = 3,
 +        .expYield = 255,
-+        .evYield_SpAttack  = 3,
++        
 +        .genderRatio = MON_GENDERLESS,
 +        .eggCycles = 120,
 +        .friendship = 0,

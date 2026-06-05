@@ -42,7 +42,7 @@ The purpose of these arguments is largely self-explanatory but we will briefly d
   `hpEv, atkEv, defEv, speedEv, spAtkEv, spDefEv` will default to `0`.
 
 - **IVs**
-  `hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv` will default to `USE_RANDOM_IVS` which tell the game to roll a random IV value (between `0` and `31`). If the generated species has a `perfectIVCount`, only the random values will be eligible to be perfected.
+  `hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv` will default to `MAX_PER_STAT_IVS` which tell the game to roll a random IV value (between `0` and `31`). If the generated species has a `perfectIVCount`, only the random values will be eligible to be perfected.
 
 - **moves**
   `move1, move2, move3, move4` will default to `MOVE_DEFAULT` which tells the game to fill the slot with the last level up move available.
@@ -186,9 +186,9 @@ Usually, you will want to use `SetBoxMonIVs(mon->box, ivs)` to set the IVs of th
 
 For instance `SetBoxMonIVs(mon->box, 15)` will set all IVs to 15.
 
-You can also use the special argument `USE_RANDOM_IVS`. When used with `USE_RANDOM_IVS`, `SetBoxMonIvs` will not only pick a random value between 0 and 31 for each stat, it will also allocate some perfect iv if the species of the Pokemon has a `perfectIvCount` set in the species data.
+You can also use the special argument `MAX_PER_STAT_IVS`. When used with `MAX_PER_STAT_IVS`, `SetBoxMonIvs` will not only pick a random value between 0 and 31 for each stat, it will also allocate some perfect iv if the species of the Pokemon has a `perfectIvCount` set in the species data.
 
-For example if you are generating a legendary with a `perfectIvCount` of 3, using `SetBoxMonIVs(mon->box, USE_RANDOM_IVS)` will guarantee that at least 3 IVs are set to 31. This is done using the function `SetBoxMonPerfectIVs`, which can also be used elsewhere to assign a number of random perfect IVs.
+For example if you are generating a legendary with a `perfectIvCount` of 3, using `SetBoxMonIVs(mon->box, MAX_PER_STAT_IVS)` will guarantee that at least 3 IVs are set to 31. This is done using the function `SetBoxMonPerfectIVs`, which can also be used elsewhere to assign a number of random perfect IVs.
 
 The other way to assign IV is to use `SetMonData`, for example:
 

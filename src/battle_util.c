@@ -69,7 +69,7 @@ const u8 *AbsorbedByDrainHpAbility(enum BattlerId battlerDef);
 const u8 *AbsorbedByStatIncreaseAbility(struct DamageContext *ctx, enum Stat statId, u32 statAmount);
 const u8 *AbsorbedByFlashFire(enum BattlerId battlerDef);
 static bool32 IsCriticalHit(struct DamageContext *ctx);
-
+bool8 gHybridRevealed[MAX_BATTLERS_COUNT] = {0};
 ARM_FUNC NOINLINE static uq4_12_t PercentToUQ4_12(u32 percent);
 ARM_FUNC NOINLINE static uq4_12_t PercentToUQ4_12_Floored(u32 percent);
 
@@ -1195,6 +1195,10 @@ void ResetSentPokesToOpponentValue(void)
 {
     s32 i;
     u32 bits = 0;
+
+    // ADD THIS LOOP: Wipe the Hybrid memory clean at the start of every battle!
+    for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+        gHybridRevealed[i] = FALSE; 
 
     gSentPokesToOpponent[0] = 0;
     gSentPokesToOpponent[1] = 0;
@@ -8975,18 +8979,28 @@ static enum DamageCategory SwapMoveDamageCategory(enum Move move)
 */
 enum DamageCategory GetBattleMoveCategory(enum Move move)
 {
-    if (gBattleStruct != NULL)
+    if (gMain.inBattle)
     {
-        if (gBattleStruct->swapDamageCategory) // Photon Geyser, Shell Side Arm, Light That Burns the Sky, Tera Blast
+        // Dynamically resolve Hybrid moves during battle based on the current attacker!
+        if (GetMoveCategory(move) == DAMAGE_CATEGORY_HYBRID)
+            return GetCategoryBasedOnStats(gBattlerAttacker);
+
+        if (gBattleStruct->swapDamageCategory) // Photon Geyser, Shell Side Arm, etc.
             return SwapMoveDamageCategory(move);
-        if (IsZMove(move) || IsMaxMove(move)) // TODO: Might be buggy depending on when this is called.
+            
+        if (IsZMove(move) || IsMaxMove(move)) 
             return gBattleStruct->categoryOverride;
+            
         if (IsBattleMoveStatus(move))
             return DAMAGE_CATEGORY_STATUS;
     }
 
     if (B_PHYSICAL_SPECIAL_SPLIT < GEN_4)
         return gTypesInfo[GetBattleMoveType(move)].damageCategory;
+
+    // Out-of-battle fallback so the Summary Screen doesn't glitch!
+    if (GetMoveCategory(move) == DAMAGE_CATEGORY_HYBRID)
+        return DAMAGE_CATEGORY_PHYSICAL;
 
     return GetMoveCategory(move);
 }

@@ -54,6 +54,7 @@
 #include "constants/region_map_sections.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "palette_editor.h"
 #if BW_SUMMARY_SCREEN == TRUE
 enum BWPSSEffect
 {
@@ -2656,33 +2657,64 @@ static void Task_HandleInput(u8 taskId)
             PlaySE(SE_SELECT);
             BeginCloseSummaryScreen(taskId);
         }  
-        else if (JOY_NEW(START_BUTTON)
-                && ShouldShowMoveRelearner()
-                && (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES || sMonSummaryScreen->currPageIndex == PSS_PAGE_CONTEST_MOVES))
+        else if (JOY_NEW(START_BUTTON) 
+                 && !gMain.inBattle 
+                 && !sMonSummaryScreen->lockMovesFlag)
         {
-            sMonSummaryScreen->callback = CB2_InitLearnMove;
-            
-            // NEW FIX: Safely route PC Box selections and calculate the exact Box ID
-            if (sMonSummaryScreen->isBoxMon)
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_INFO || sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS)
             {
-                gSpecialVar_0x8004 = PC_MON_CHOSEN;
+                sMonSummaryScreen->callback = CB2_InitPaletteEditor;
                 
-                // Calculate which box we are looking at by comparing memory addresses
-                struct BoxPokemon *boxBase = (struct BoxPokemon *)sMonSummaryScreen->monList.mons;
-                struct BoxPokemon *firstBox = (struct BoxPokemon *)gPokemonStoragePtr->boxes;
-                
-                gSpecialVar_MonBoxId = (boxBase - firstBox) / IN_BOX_COUNT;
-                gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
-            }
-            else
-            {
-                gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex;
-            }
+                // Route PC Box selections vs Party selections safely
+                if (sMonSummaryScreen->isBoxMon)
+                {
+                    gSpecialVar_0x8005 = TRUE;
+                    struct BoxPokemon *boxBase = (struct BoxPokemon *)sMonSummaryScreen->monList.mons;
+                    struct BoxPokemon *firstBox = (struct BoxPokemon *)gPokemonStoragePtr->boxes;
+                    
+                    gSpecialVar_MonBoxId = (boxBase - firstBox) / IN_BOX_COUNT;
+                    gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
+                    gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex; // Cache cursor position
+                }
+                else
+                {
+                    gSpecialVar_0x8005 = FALSE;
+                    gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex; // Cache cursor position
+                }
 
-            gRelearnMode = sMonSummaryScreen->currPageIndex;
-            StopPokemonAnimations();
-            PlaySE(SE_SELECT);
-            BeginCloseSummaryScreen(taskId);
+                StopPokemonAnimations();
+                PlaySE(SE_SELECT);
+                BeginCloseSummaryScreen(taskId);
+            }
+            else if (P_SUMMARY_SCREEN_MOVE_RELEARNER && (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES || sMonSummaryScreen->currPageIndex == PSS_PAGE_CONTEST_MOVES))
+            {
+                if (ShouldShowMoveRelearner())
+                {
+                    sMonSummaryScreen->callback = CB2_InitLearnMove;
+                    
+                    // Route PC Box selections vs Party selections safely for the Relearner
+                    if (sMonSummaryScreen->isBoxMon)
+                    {
+                        gSpecialVar_0x8005 = TRUE;
+                        struct BoxPokemon *boxBase = (struct BoxPokemon *)sMonSummaryScreen->monList.mons;
+                        struct BoxPokemon *firstBox = (struct BoxPokemon *)gPokemonStoragePtr->boxes;
+                        
+                        gSpecialVar_MonBoxId = (boxBase - firstBox) / IN_BOX_COUNT;
+                        gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
+                        gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex;
+                    }
+                    else
+                    {
+                        gSpecialVar_0x8005 = FALSE;
+                        gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex;
+                    }
+
+                    StopPokemonAnimations();
+                    PlaySE(SE_SELECT);
+                    BeginCloseSummaryScreen(taskId);
+                }
+            }
+        }
         }
         else if (DEBUG_POKEMON_SPRITE_VISUALIZER && JOY_NEW(SELECT_BUTTON) && !gMain.inBattle)
         {
@@ -2716,7 +2748,7 @@ static void Task_HandleInput(u8 taskId)
             }
         }
     }
-}
+
 
 #undef tSkillsState
 
@@ -3480,6 +3512,15 @@ static void Task_HandleReplaceMoveInput(u8 taskId)
                     PlaySE(SE_SELECT);
                     sMoveSlotToReplace = sMonSummaryScreen->firstMoveIndex;
                     gSpecialVar_0x8005 = sMoveSlotToReplace;
+
+                    // --- MISSING EXPANSION BATTLE HOOK ---
+                    if (gMain.inBattle)
+                    {
+                        RemoveMonPPBonus(&gParties[B_TRAINER_PLAYER][sMonSummaryScreen->curMonIndex], sMoveSlotToReplace);
+                        SetMonMoveSlot(&gParties[B_TRAINER_PLAYER][sMonSummaryScreen->curMonIndex], sMonSummaryScreen->newMove, sMoveSlotToReplace);
+                    }
+                    // -------------------------------------
+
                     BeginCloseSummaryScreen(taskId);
                 }
                 else
@@ -5129,12 +5170,28 @@ static void PrintHMMovesCantBeForgotten(void)
 
 static void ShowCategoryIcon(u16 move)
 {
+    u8 category = GetMoveCategory(move);
+
+    // ADD THIS: Dynamically resolve Hybrid moves out of battle based on the viewed Pokemon's raw stats!
+    if (category == DAMAGE_CATEGORY_HYBRID)
+    {
+        if (sMonSummaryScreen->summary.spatk > sMonSummaryScreen->summary.atk)
+            category = DAMAGE_CATEGORY_SPECIAL;
+        else
+            category = DAMAGE_CATEGORY_PHYSICAL;
+    }
+    else
+    {
+        // For all normal moves, let the engine decide as usual
+        category = GetBattleMoveCategory(move);
+    }
+
     if (sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY] == SPRITE_NONE)
         sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY] = CreateSprite(&sSpriteTemplate_CategoryIcons, 223, 96, 0);
     
     gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]].invisible = FALSE;
 
-    StartSpriteAnim(&gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]], GetBattleMoveCategory(move));
+    StartSpriteAnim(&gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]], category);
 }
 
 static void DestroyCategoryIcon(void)

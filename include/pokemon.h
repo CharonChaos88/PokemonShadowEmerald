@@ -125,6 +125,7 @@ enum MonData {
     MON_DATA_GIGANTAMAX_FACTOR,
     MON_DATA_TERA_TYPE,
     MON_DATA_EVOLUTION_TRACKER,
+    MON_DATA_ALT_PALETTE,
 };
 
 struct PokemonSubstruct0
@@ -132,7 +133,8 @@ struct PokemonSubstruct0
     u16 species:11; // 2047 species.
     enum Type teraType:5; // 30 types.
     u16 heldItem:10; // 1023 items.
-    u16 unused_02:6;
+    u16 altPalette:4; // Stores 0-15 safely for custom colors
+    u16 unused_02:2;  // Leaves 2 bits remaining
     u32 experience:21;
     u32 nickname11:8; // 11th character of nickname.
     u32 unused_04:3;
@@ -391,7 +393,7 @@ struct Evolution
 
 struct SpeciesInfo /*0xC4*/
 {
-    u8 baseHP;
+    u16 baseHP;
     u8 baseAttack;
     u8 baseDefense;
     u8 baseSpeed;

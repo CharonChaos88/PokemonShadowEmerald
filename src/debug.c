@@ -4088,7 +4088,7 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
     for (i = 0; i < NUM_STATS; i++)
     {
         iv_val = IVs[i];
-        if (iv_val != USE_RANDOM_IVS && iv_val != 0xFF)
+        if (iv_val != MAX_PER_STAT_IVS && iv_val != 0xFF)
             SetMonData(&mon, MON_DATA_HP_IV + i, &iv_val);
     }
 
@@ -4330,7 +4330,7 @@ static void DebugAction_PCBag_Fill_PCBoxes_Slow(u8 taskId)
                 if (!spaceAvailable)
                     PlayBGM(MUS_RG_MYSTERY_GIFT);
                 CreateBoxMon(&boxMon, species, 100, Random32(), OTID_STRUCT_PLAYER_ID);
-                SetBoxMonIVs(&boxMon, USE_RANDOM_IVS);
+                SetBoxMonIVs(&boxMon, MAX_PER_STAT_IVS);
                 GiveBoxMonInitialMoveset(&boxMon);
                 gPokemonStoragePtr->boxes[boxId][boxPosition] = boxMon;
                 species = (species < NUM_SPECIES - 1) ? species + 1 : 1;

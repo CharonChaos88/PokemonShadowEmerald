@@ -251,6 +251,20 @@ struct NPCFollower
     u8 battlePartner; // If you have more than 255 total battle partners defined, change this to a u16
 };
 
+#define MAX_CUSTOM_PALETTES 15
+
+struct CustomPaletteSave {
+    u32 personality;
+    u8 slotNum;      // <--- ADDED: Tracks if this is Slot 1 or Slot 2
+    u8 padding[3];   // <--- ADDED: Keeps the memory perfectly aligned for the GBA!
+    u16 palette[16];
+};
+
+// (Keep the SaveBlock3 array definition below it exactly the same)
+
+// Update your SaveBlock3 variables to use the new struct
+
+
 #include "constants/items.h"
 #define ITEM_FLAGS_COUNT ((ITEMS_COUNT / 8) + ((ITEMS_COUNT % 8) ? 1 : 0))
 
@@ -272,8 +286,10 @@ struct SaveBlock3
 #if APRICORN_TREE_COUNT > 0
     u8 apricornTrees[NUM_APRICORN_TREE_BYTES];
 #endif
-}; /* max size 1624 bytes */
+    struct CustomPaletteSave customPalettesNormal[2];
+    struct CustomPaletteSave customPalettesShiny[2];
 
+}; /* max size 1624 bytes */
 extern struct SaveBlock3 *gSaveBlock3Ptr;
 
 struct Pokedex

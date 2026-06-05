@@ -5710,14 +5710,14 @@ static void Cmd_yesnoboxlearnmove(void)
             if (BW_SUMMARY_SCREEN)
                 ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, gPartiesCount[B_TRAINER_PLAYER] - 1, ReshowBattleScreenAfterMenu, gMoveToLearn);
             else
-                ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, ReshowBattleScreenAfterMenu, gMoveToLearn);
+                ShowSelectMovePokemonSummaryScreen_BW(gParties[B_TRAINER_PLAYER], gBattleStruct->expGetterMonId, gPartiesCount[B_TRAINER_PLAYER] - 1, ReshowBattleScreenAfterMenu, gMoveToLearn);
             gBattleScripting.learnMoveState++;
         }
         break;
     case 3:
         if (!gPaletteFade.active && gMain.callback2 == BattleMainCB2)
         {
-            u8 movePosition = GetMoveSlotToReplace();
+            u8 movePosition = GetMoveSlotToReplace_BW();
             if (movePosition == MAX_MON_MOVES)
             {
                 gBattleScripting.learnMoveState = 5;

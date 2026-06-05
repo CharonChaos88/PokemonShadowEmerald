@@ -5805,7 +5805,7 @@ static void Task_ReturnToPartyMenuWhileLearningMove(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        if (GetMoveSlotToReplace() != MAX_MON_MOVES)
+        if (GetMoveSlotToReplace_BW() != MAX_MON_MOVES)
             DisplayPartyMenuForgotMoveMessage(taskId);
         else
             StopLearningMovePrompt(taskId);
@@ -5815,7 +5815,7 @@ static void Task_ReturnToPartyMenuWhileLearningMove(u8 taskId)
 static void DisplayPartyMenuForgotMoveMessage(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    enum Move move = GetMonData(mon, MON_DATA_MOVE1 + GetMoveSlotToReplace());
+    enum Move move = GetMonData(mon, MON_DATA_MOVE1 + GetMoveSlotToReplace_BW());
 
     GetMonNickname(mon, gStringVar1);
     StringCopy(gStringVar2, GetMoveName(move));
@@ -5831,9 +5831,9 @@ static void Task_PartyMenuReplaceMove(u8 taskId)
     if (IsPartyMenuTextPrinterActive() != TRUE)
     {
         mon = &gPlayerParty[gPartyMenu.slotId];
-        RemoveMonPPBonus(mon, GetMoveSlotToReplace());
+        RemoveMonPPBonus(mon, GetMoveSlotToReplace_BW());
         move = gPartyMenu.data1;
-        SetMonMoveSlot(mon, move, GetMoveSlotToReplace());
+        SetMonMoveSlot(mon, move, GetMoveSlotToReplace_BW());
         Task_LearnedMove(taskId);
     }
 }

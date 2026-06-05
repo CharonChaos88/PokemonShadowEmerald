@@ -288,7 +288,7 @@ Updates egg moves to the refactored format. Only necessary if new species have b
 ```diff
     [SPECIES_BULBASAUR] =
     {
-        .baseHP        = 45,
+        .baseHP        = 429,
         .baseAttack    = 49,
         .baseDefense   = 49,
         .baseSpeed     = 45,
@@ -297,7 +297,7 @@ Updates egg moves to the refactored format. Only necessary if new species have b
         .types = MON_TYPES(TYPE_GRASS, TYPE_POISON),
         .catchRate = 45,
         .expYield = 64,
-        .evYield_SpAttack = 1,
+        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,

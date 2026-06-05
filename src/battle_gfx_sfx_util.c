@@ -30,7 +30,7 @@
 #include "constants/battle_palace.h"
 #include "constants/battle_move_effects.h"
 #include "constants/event_objects.h" // only for SHADOW_SIZE constants
-
+#include "palette_editor.h"          // Adds your global palette fetcher
 // this file's functions
 static u8 GetBattlePalaceMoveGroup(enum BattlerId battler, enum Move move);
 static u16 GetBattlePalaceTarget(enum BattlerId battler);
@@ -617,72 +617,33 @@ bool8 IsBattleSEPlaying(enum BattlerId battler)
 
 void BattleLoadMonSpriteGfx(struct Pokemon *mon, enum BattlerId battler)
 {
-    u32 personalityValue, isShiny, species, paletteOffset;
+    u32 personalityValue, isShiny, species;
     enum BattlerPosition position;
     const u16 *paletteData;
-    struct Pokemon *illusionMon = GetIllusionMonPtr(battler);
-    if (illusionMon != NULL)
-        mon = illusionMon;
+    u8 altPalette;
 
-    if (GetMonData(mon, MON_DATA_IS_EGG) || GetMonData(mon, MON_DATA_SPECIES) == SPECIES_NONE) // Don't load GFX of egg Pokémon.
-        return;
-
+    species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG);
     isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
-    species = GetMonData(mon, MON_DATA_SPECIES);
     personalityValue = GetMonData(mon, MON_DATA_PERSONALITY);
-
-    if (gBattleSpritesDataPtr->battlerData[battler].transformSpecies != SPECIES_NONE)
-    {
-        species = gBattleSpritesDataPtr->battlerData[battler].transformSpecies;
-        // If battler has Gigantamax factor, try convert gfx to G-Max version
-        if (GetActiveGimmick(battler) == GIMMICK_DYNAMAX && GetMonData(mon, MON_DATA_GIGANTAMAX_FACTOR))
-            gBattleSpritesDataPtr->battlerData[battler].transformSpecies = species = GetGMaxTargetSpecies(species);
-
-        if (gBattleMons[battler].volatiles.transformed)
-        {
-            personalityValue = gTransformedPersonalities[battler];
-            isShiny = gTransformedShininess[battler];
-        }
-    }
+    altPalette = GetMonData(mon, MON_DATA_ALT_PALETTE);
 
     position = GetBattlerPosition(battler);
-    HandleLoadSpecialPokePic(!IsOnPlayerSide(battler),
-                             gMonSpritesGfxPtr->spritesGfx[position],
-                             species, personalityValue);
 
-    paletteOffset = OBJ_PLTT_ID(battler);
+    HandleLoadSpecialPokePic(!IsOnPlayerSide(battler), gMonSpritesGfxPtr->spritesGfx[position], species, personalityValue);
 
-    if (gBattleSpritesDataPtr->battlerData[battler].transformSpecies == SPECIES_NONE)
-        paletteData = GetMonFrontSpritePal(mon);
-    else
-        paletteData = GetMonSpritePalFromSpeciesAndPersonality(species, isShiny, personalityValue);
+    // Fetch our custom RGB palette from the RAM SaveBlock
+    paletteData = GetUnifiedMonPalette(species, isShiny, personalityValue, altPalette);
 
-    LoadPalette(paletteData, paletteOffset, PLTT_SIZE_4BPP);
+    // VANILLA LOGIC: Pokemon sprites ALWAYS use slots 0-3 based on their battler ID!
+    // This perfectly aligns the colors with the sprite without causing silhouettes.
+    LoadPalette(paletteData, OBJ_PLTT_ID(battler), PLTT_SIZE_4BPP);
     LoadPalette(paletteData, BG_PLTT_ID(8) + BG_PLTT_ID(battler), PLTT_SIZE_4BPP);
 
-    // transform's pink color
-    if (gBattleMons[battler].volatiles.transformed)
+    // Handle Transform tinting safely
+    if (gBattleSpritesDataPtr->battlerData[battler].transformSpecies != SPECIES_NONE)
     {
-        BlendPalette(paletteOffset, 16, 6, RGB_WHITE);
-        CpuCopy32(&gPlttBufferFaded[paletteOffset], &gPlttBufferUnfaded[paletteOffset], PLTT_SIZEOF(16));
-    }
-
-    // dynamax tint
-    if (GetActiveGimmick(battler) == GIMMICK_DYNAMAX)
-    {
-        // Calyrex and its forms have a blue dynamax aura instead of red.
-        if (GET_BASE_SPECIES_ID(species) == SPECIES_CALYREX)
-            BlendPalette(paletteOffset, 16, 4, RGB(12, 0, 31));
-        else
-            BlendPalette(paletteOffset, 16, 4, RGB(31, 0, 12));
-        CpuCopy32(gPlttBufferFaded + paletteOffset, gPlttBufferUnfaded + paletteOffset, PLTT_SIZEOF(16));
-    }
-
-    // Terastallization's tint
-    if (GetActiveGimmick(battler) == GIMMICK_TERA)
-    {
-        BlendPalette(paletteOffset, 16, 8, GetTeraTypeRGB(GetBattlerTeraType(battler)));
-        CpuCopy32(gPlttBufferFaded + paletteOffset, gPlttBufferUnfaded + paletteOffset, PLTT_SIZEOF(16));
+        BlendPalette(OBJ_PLTT_ID(battler), 16, 6, RGB_WHITE);
+        BlendPalette(BG_PLTT_ID(8) + BG_PLTT_ID(battler), 16, 6, RGB_WHITE);
     }
 }
 
@@ -962,9 +923,17 @@ void HandleSpeciesGfxDataChange(enum BattlerId battlerAtk, enum BattlerId battle
     src = gMonSpritesGfxPtr->spritesGfx[position];
     dst = (void *)(OBJ_VRAM0 + gSprites[gBattlerSpriteIds[battlerAtk]].oam.tileNum * 32);
     DmaCopy32(3, src, dst, MON_PIC_SIZE);
-    paletteOffset = OBJ_PLTT_ID(battlerAtk);
-    paletteData = GetMonSpritePalFromSpeciesAndPersonality(targetSpecies, isShiny, personalityValue);
+    
+    // --- OVERWRITE LOGIC FOR TRANSFORM / ILLUSION ---
+    u8 altPalette = GetMonData(monAtk, MON_DATA_ALT_PALETTE);
+    paletteData = GetUnifiedMonPalette(targetSpecies, isShiny, personalityValue, altPalette);
+    
+    // Assign paletteOffset here so the compiler doesn't throw the uninitialized error!
+    paletteOffset = OBJ_PLTT_ID(battlerAtk); 
+
     LoadPalette(paletteData, paletteOffset, PLTT_SIZE_4BPP);
+    LoadPalette(paletteData, BG_PLTT_ID(8) + BG_PLTT_ID(battlerAtk), PLTT_SIZE_4BPP);
+    // -------------------------------------------------------
 
     if (changeType == SPECIES_GFX_CHANGE_GHOST_UNVEIL)
     {

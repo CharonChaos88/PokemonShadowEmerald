@@ -236,7 +236,8 @@ enum __attribute__((packed)) DamageCategory
 {
     DAMAGE_CATEGORY_PHYSICAL,
     DAMAGE_CATEGORY_SPECIAL,
-    DAMAGE_CATEGORY_STATUS
+    DAMAGE_CATEGORY_STATUS,
+    DAMAGE_CATEGORY_HYBRID,
 };
 
 // Growth rates

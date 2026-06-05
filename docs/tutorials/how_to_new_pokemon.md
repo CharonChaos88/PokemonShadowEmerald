@@ -86,7 +86,7 @@ Now, to better understand Mewthree, we also need to understand Mew. Let's look a
 ```c
     [SPECIES_MEW] =
     {
-        .baseHP        = 100,
+        .baseHP        = 429,
         .baseAttack    = 100,
         .baseDefense   = 100,
         .baseSpeed     = 100,
@@ -101,7 +101,7 @@ Now, to better understand Mewthree, we also need to understand Mew. Let's look a
     #else
         .expYield = 64,
     #endif
-        .evYield_HP = 3,
+        
         .itemCommon = ITEM_LUM_BERRY,
         .itemRare = ITEM_LUM_BERRY,
         .genderRatio = MON_GENDERLESS,
@@ -194,7 +194,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
 
 +    [SPECIES_MEWTHREE] =
 +    {
-+       .baseHP        = 106,
++       .baseHP        = 429,
 +       .baseAttack    = 150,
 +       .baseDefense   = 70,
 +       .baseSpeed     = 140,
@@ -203,7 +203,7 @@ Edit [src/data/pokemon/species_info.h](https://github.com/rh-hideout/pokeemerald
 +       .types = MON_TYPES(TYPE_PSYCHIC),
 +       .catchRate = 3,
 +       .expYield = 255,
-+       .evYield_SpAttack  = 3,
++       
 +       .genderRatio = MON_GENDERLESS,
 +       .eggCycles = 120,
 +       .friendship = 0,
