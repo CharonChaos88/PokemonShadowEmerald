@@ -1697,6 +1697,19 @@ EventScript_PalletTown_PlayersHouse_2F_TurnOnPC::
 	end
 
 
+EventScript_DoWonderTrade::
+	getpartysize
+	goto_if_eq VAR_RESULT, 0, EventScript_End
+	special ChoosePartyMon
+	goto_if_ge VAR_0x8004, PARTY_SIZE, EventScript_End
+	copyvar VAR_0x8005, VAR_0x8004
+	special CreateWonderTradePokemon
+	special DoInGameTradeScene
+	
+EventScript_End:
+	release
+	end
+
 	.include "data/scripts/pc_transfer.inc"
 	.include "data/scripts/questionnaire.inc"
 	.include "data/scripts/abnormal_weather.inc"
