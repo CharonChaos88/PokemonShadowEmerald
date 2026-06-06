@@ -3492,3 +3492,124 @@ bool8 ScrCmd_getbraillestringwidth(struct ScriptContext * ctx)
     gSpecialVar_0x8004 = GetStringWidth(FONT_BRAILLE, msg, -1);
     return FALSE;
 }
+
+// A globally visible, massive RAM buffer that will not overlap with gStringVar4
+EWRAM_DATA u8 gLargeItemPackBuffer[2048];
+
+// Helper function to build the multi-page item list safely
+void BufferItemPackContents(const u16 *packPtr, u16 size)
+{
+    // Clear our large custom buffer
+    gLargeItemPackBuffer[0] = EOS;
+
+    for (int i = 0; i < size; i++) {
+        u16 itemId = packPtr[i * 2];
+        u16 amount = packPtr[(i * 2) + 1];
+
+        // 1. Buffer item name into gStringVar2 and amount into gStringVar3
+        CopyItemName(itemId, gStringVar2);
+        ConvertIntToDecimalStringN(gStringVar3, amount, STR_CONV_MODE_LEFT_ALIGN, 3);
+
+        // 2. Append the item prefix: "- "
+        static const u8 sText_DashSpace[] = _("- ");
+        StringAppend(gLargeItemPackBuffer, sText_DashSpace);
+
+        // 3. Append the item name
+        StringAppend(gLargeItemPackBuffer, gStringVar2);
+
+        // 4. Append the " x" text and amount
+        static const u8 sText_SpaceX[] = _(" x");
+        StringAppend(gLargeItemPackBuffer, sText_SpaceX);
+        StringAppend(gLargeItemPackBuffer, gStringVar3);
+        
+        // 5. Handle Line Breaks and Page Breaks ('\p')
+        if (i < size - 1) {
+            // Every 3rd item (e.g., index 2, 5, 8, 11...), we inject a page break code
+            if ((i + 1) % 3 == 0) {
+                static const u8 sText_PageBreak[] = _("\p"); 
+                StringAppend(gLargeItemPackBuffer, sText_PageBreak);
+            } else {
+                // Otherwise, standard line change to start the next item on the next row
+                static const u8 sText_Newline[] = _("\n");
+                StringAppend(gLargeItemPackBuffer, sText_Newline);
+            }
+        }
+    }
+}
+
+// EWRAM_DATA securely places this massive array in external RAM, preventing .bss overflow/New Game crashes!
+EWRAM_DATA u8 gLargeItemPackBuffer[2048];
+
+bool8 ScrCmd_giveitempack(struct ScriptContext *ctx)
+{
+    const u8 *startPtr = ctx->scriptPtr; 
+    u16 size = 0;
+    bool8 allItemsFit = TRUE;
+
+    // 1. First Pass: Read dynamically until 0xFFFF is reached
+    gLargeItemPackBuffer[0] = EOS;
+    
+    while (TRUE) {
+        u16 itemId = ScriptReadHalfword(ctx);
+        if (itemId == 0xFFFF) {
+            break; // Reached the end of the item list!
+        }
+        u16 amount = ScriptReadHalfword(ctx);
+        
+        if (!CheckBagHasSpace(itemId, amount)) {
+            allItemsFit = FALSE;
+        }
+
+        // Limit visual text layout to 30 items safely
+        if (size < 30) {
+            CopyItemName(itemId, gStringVar2);
+            ConvertIntToDecimalStringN(gStringVar3, amount, STR_CONV_MODE_LEFT_ALIGN, 3);
+
+            static const u8 sText_DashSpace[] = _("- ");
+            static const u8 sText_SpaceX[] = _(" x");
+            
+            StringAppend(gLargeItemPackBuffer, sText_DashSpace);
+            StringAppend(gLargeItemPackBuffer, gStringVar2);
+            StringAppend(gLargeItemPackBuffer, sText_SpaceX);
+            StringAppend(gLargeItemPackBuffer, gStringVar3);
+            
+            // Peek at the next item to determine if we need a page break
+            u16 nextItemId = ScriptReadHalfword(ctx);
+            ctx->scriptPtr -= 2; // Rewind the peek
+            
+            if (nextItemId != 0xFFFF && size < 29) {
+                if ((size + 1) % 3 == 0) {
+                    static const u8 sText_PageBreak[] = _("\p"); 
+                    StringAppend(gLargeItemPackBuffer, sText_PageBreak);
+                } else {
+                    static const u8 sText_Newline[] = _("\n");
+                    StringAppend(gLargeItemPackBuffer, sText_Newline);
+                }
+            }
+        }
+        
+        if (size == 30) {
+            static const u8 sText_AndMore[] = _("\p...and more items!");
+            StringAppend(gLargeItemPackBuffer, sText_AndMore);
+        }
+        
+        size++;
+    }
+
+    // 2. Second Pass: Rewind instruction pointer and give items if everything fits
+    if (allItemsFit) {
+        ctx->scriptPtr = startPtr; 
+        while (TRUE) {
+            u16 itemId = ScriptReadHalfword(ctx);
+            if (itemId == 0xFFFF) break;
+            u16 amount = ScriptReadHalfword(ctx);
+            AddBagItem(itemId, amount);
+        }
+        VarSet(VAR_RESULT, TRUE);
+    } else {
+        VarSet(VAR_RESULT, FALSE);
+    }
+
+    return FALSE;
+}
+

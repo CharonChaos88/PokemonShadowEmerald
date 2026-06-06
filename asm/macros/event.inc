@@ -3023,3 +3023,13 @@
 	getbraillestringwidth \text
 	call EventScript_BrailleCursorWaitButton
 	.endm
+	
+	@ Lists a variable pack of items. Automatically counts them.
+    @ Format: giveitempack ITEM_1, QTY_1, ITEM_2, QTY_2...
+    .macro giveitempack items:vararg
+    .byte SCR_OP_GIVEITEMPACK
+    .2byte \items
+    .2byte 0xFFFF
+    .endm
+
+
