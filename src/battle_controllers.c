@@ -1981,14 +1981,19 @@ static void SetBattlerMonData(enum BattlerId battler, struct Pokemon *party, u32
 static bool8 ShouldDoSlideInAnim(enum BattlerId battler)
 {
     struct ObjectEvent *followerObj = GetFollowerObject();
-    if (!followerObj || followerObj->invisible)
+    
+    // Check if the player turned the slide-in option off in the menu
+    if (gSaveBlock2Ptr->optionsFollowerSlideInOff)
         return FALSE;
 
+    if (!followerObj || followerObj->invisible)
+        return FALSE;
+    
     if (gBattleTypeFlags & (
         BATTLE_TYPE_LINK | BATTLE_TYPE_DOUBLE | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_FIRST_BATTLE |
         BATTLE_TYPE_SAFARI | BATTLE_TYPE_CATCH_TUTORIAL | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TWO_OPPONENTS |
         BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_RECORDED | BATTLE_TYPE_TRAINER_HILL)
-    )
+    ) 
         return FALSE;
 
     if (GetFirstLiveMon() != GetBattlerMon(battler))

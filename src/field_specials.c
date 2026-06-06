@@ -4580,9 +4580,15 @@ void EnterCode(void)
 
 void GetCodeFeedback(void)
 {
-    static const u8 sText_SampleCode[] = _("SampleCode");
-    if (!StringCompare(gStringVar2, sText_SampleCode))
+    static const u8 sText_Demo2Code[] = _("DEMO 2");
+    static const u8 sText_ShinyStarterCode[] = _("SHINY START");
+    if (!StringCompare(gStringVar2, sText_Demo2Code))
         gSpecialVar_Result = 1;
+        else if (!StringCompare(gStringVar2, sText_ShinyStarterCode))
+        {
+
+        gSpecialVar_Result = 2;
+    }
     else
         gSpecialVar_Result = 0;
 }

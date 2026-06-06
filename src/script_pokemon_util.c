@@ -539,7 +539,9 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
         if (ivs[i] == MAX_PER_STAT_IVS)
         {
             availableIVs[nonFixedIvCount] = i;
-            ivs[i] = Random() % (MAX_PER_STAT_IVS + 1);
+            u8 index = Random() % (nonFixedIvCount - i);
+            selectedIvs[i] = availableIVs[index];
+            ivs[selectedIvs[i]] = MAX_PER_STAT_IVS;
             nonFixedIvCount++;
         }
     }

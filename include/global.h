@@ -629,6 +629,7 @@ struct SaveBlock2
              u16 optionsWildMusic:5; // select one of 17 options (default, random, 17 tracks)
              u16 optionsBikeMusicOff:1; // whether cycling music is disabled
              u16 optionsSurfMusicOff:1; // whether surfing music is disabled
+             u16 optionsFollowerSlideInOff:1;
              u16 regionMapZoom:1; // whether the map is zoomed in
              //u16 padding1:4;
              //u16 padding2;

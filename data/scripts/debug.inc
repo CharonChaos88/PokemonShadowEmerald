@@ -231,8 +231,15 @@ WonderTrade_Text_1:
 	.string "trade.$"
 
 Debug_EventScript_Script_2::
-	release
-	end
+       @ List your items here. The macro will automatically append 0xFFFF at the end.
+       giveitempack ITEM_GREAT_BALL, 10, ITEM_HYPER_POTION, 10, ITEM_FIRE_STONE, 10, ITEM_WATER_STONE, 10, ITEM_THUNDER_STONE, 10, ITEM_LEAF_STONE, 10, ITEM_SUN_STONE, 10, ITEM_MOON_STONE, 10, ITEM_ICE_STONE, 10, ITEM_DUSK_STONE, 10, ITEM_SHINY_STONE, 10, ITEM_DAWN_STONE, 10, ITEM_JOLLY_MINT, 10, ITEM_ADAMANT_MINT, 10, ITEM_BOLD_MINT, 10, ITEM_NAIVE_MINT, 10, ITEM_MODEST_MINT, 10, ITEM_HASTY_MINT, 10, ITEM_RELAXED_MINT, 10, ITEM_LAX_MINT, 10, ITEM_TIMID_MINT, 10, ITEM_GENTLE_MINT, 10, ITEM_NAUGHTY_MINT, 10, ITEM_BRAVE_MINT, 10, ITEM_MILD_MINT, 10, ITEM_CALM_MINT, 10, ITEM_IMPISH_MINT, 10, ITEM_LONELY_MINT, 10, ITEM_RASH_MINT, 10, ITEM_SASSY_MINT, 10, ITEM_SERIOUS_MINT, 10, ITEM_CAREFUL_MINT, 10, ITEM_LINKING_CORD, 10, ITEM_BOTTLE_CAP, 10
+    
+       @ Explicitly handle the message drawing without closing the speaker tags
+       loadword 0, gLargeItemPackBuffer
+       message 0x0
+       waitmessage
+       waitbuttonpress
+       closemessage
 
 Debug_EventScript_Script_3::
 	release

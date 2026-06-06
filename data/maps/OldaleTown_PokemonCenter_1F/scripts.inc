@@ -5752,6 +5752,1695 @@ WonderTradeAgain_1:
 	return
 
 
+MysteryManGreeting::
+# 1925 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1926 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox MysteryManGreeting_Text_1, MSGBOX_YESNO
+# 1927 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq MysteryManGreeting_1
+# 1938 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1939 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox MysteryManGreeting_Text_3
+# 1940 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	release
+	end
+
+MysteryManGreeting_1:
+# 1928 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox MysteryManGreeting_Text_2
+# 1929 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	special EnterCode
+# 1930 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitstate
+# 1931 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	special GetCodeFeedback
+# 1932 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, 0
+# 1933 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_eq VAR_RESULT, 0, IncorrectCode
+# 1934 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_eq VAR_RESULT, 1, Demo2Code
+# 1935 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_eq VAR_RESULT, 2, ShinyStarterWithZigzagoon
+	end
+
+
+IncorrectCode::
+# 1947 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1948 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox IncorrectCode_Text_0
+# 1949 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ComebackWithCode
+	return
+
+
+ComebackWithCode::
+# 1953 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1954 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox MysteryManGreeting_Text_3
+# 1955 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	release
+	end
+
+
+Demo2Code::
+# 1960 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_set FLAG_MYSTERY_GIFT_16, Demo2Code_1
+# 1967 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1968 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox Demo2Code_Text_1
+# 1969 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 1970 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 1973 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto MysteryGift_Code_RawPart
+	return
+
+Demo2Code_1:
+# 1961 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1962 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox Demo2Code_Text_0
+# 1963 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_TOO_BAD
+# 1964 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 1965 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ComebackWithCode
+	return
+
+
+Demo2Code_PostDisplay::
+# 1979 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq Demo2Code_PostDisplay_2
+# 1983 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1984 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1985 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox Demo2Code_PostDisplay_Text_1
+# 1986 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 1987 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setflag FLAG_MYSTERY_GIFT_16
+Demo2Code_PostDisplay_1:
+# 1989 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ComebackWithCode
+	return
+
+Demo2Code_PostDisplay_2:
+# 1980 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 1981 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox Demo2Code_PostDisplay_Text_0
+	goto Demo2Code_PostDisplay_1
+
+
+# 1992 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+
+# 1993 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+MysteryGift_Code_RawPart::
+# 1994 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    @ List your items here. The macro will automatically append 0xFFFF at the end.
+# 1995 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    giveitempack ITEM_GREAT_BALL, 10, ITEM_HYPER_POTION, 10, ITEM_FIRE_STONE, 10, ITEM_WATER_STONE, 10, ITEM_THUNDER_STONE, 10, ITEM_LEAF_STONE, 10, ITEM_SUN_STONE, 10, ITEM_MOON_STONE, 10, ITEM_ICE_STONE, 10, ITEM_DUSK_STONE, 10, ITEM_SHINY_STONE, 10, ITEM_DAWN_STONE, 10, ITEM_JOLLY_MINT, 10, ITEM_ADAMANT_MINT, 10, ITEM_BOLD_MINT, 10, ITEM_NAIVE_MINT, 10, ITEM_MODEST_MINT, 10, ITEM_HASTY_MINT, 10, ITEM_RELAXED_MINT, 10, ITEM_LAX_MINT, 10, ITEM_TIMID_MINT, 10, ITEM_GENTLE_MINT, 10, ITEM_NAUGHTY_MINT, 10, ITEM_BRAVE_MINT, 10, ITEM_MILD_MINT, 10, ITEM_CALM_MINT, 10, ITEM_IMPISH_MINT, 10, ITEM_LONELY_MINT, 10, ITEM_RASH_MINT, 10, ITEM_SASSY_MINT, 10, ITEM_SERIOUS_MINT, 10, ITEM_CAREFUL_MINT, 10, ITEM_LINKING_CORD, 10, ITEM_BOTTLE_CAP, 10
+# 1996 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    
+# 1997 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    @ Explicitly handle the message drawing without closing the speaker tags
+# 1998 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    loadword 0, gLargeItemPackBuffer
+# 1999 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    message 0x0
+# 2000 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    waitmessage
+# 2001 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    waitbuttonpress
+# 2002 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    closemessage
+# 2003 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    
+# 2004 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+    goto Demo2Code_PostDisplay
+
+ShinyStarterWithZigzagoon::
+# 2008 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto_if_set FLAG_MYSTERY_GIFT_17, ShinyStarterWithZigzagoon_1
+# 2015 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 2016 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarterWithZigzagoon_Text_0
+# 2017 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2018 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2019 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarterWithZigzagoon_Text_1
+# 2020 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_ZIGZAGOON, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, MAX_PER_STAT_IVS, MAX_PER_STAT_IVS, MAX_PER_STAT_IVS, MAX_PER_STAT_IVS, MAX_PER_STAT_IVS, MAX_PER_STAT_IVS, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+# 2021 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ShinyStarterMenu
+	return
+
+ShinyStarterWithZigzagoon_1:
+# 2009 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setspeaker MysteryManGreeting_Text_0
+# 2010 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox Demo2Code_Text_0
+# 2011 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_TOO_BAD
+# 2012 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2013 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ComebackWithCode
+	return
+
+
+ShinyStarterMenu::
+# 2027 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	lock
+# 2028 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	faceplayer
+# 2029 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setflag FLAG_SUPPRESS_SPEAKER_NAME
+# 2030 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarterMenu_Text_0
+# 2031 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2032 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2033 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	goto ShinyStarters
+	return
+
+
+ShinyStarters::
+# 2037 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_0, SPECIES_BULBASAUR
+# 2038 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_1, SPECIES_CHARMANDER
+# 2039 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_2, SPECIES_SQUIRTLE
+# 2040 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_3, SPECIES_CHIKORITA
+# 2041 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_4, SPECIES_CYNDAQUIL
+# 2042 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_5, SPECIES_TOTODILE
+# 2043 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_6, SPECIES_TREECKO
+# 2044 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_7, SPECIES_TORCHIC
+# 2045 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_8, SPECIES_MUDKIP
+# 2046 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_9, SPECIES_TURTWIG
+# 2047 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_10, SPECIES_CHIMCHAR
+# 2048 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_11, SPECIES_PIPLUP
+# 2049 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_12, SPECIES_SNIVY
+# 2050 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_13, SPECIES_TEPIG
+# 2051 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_14, SPECIES_OSHAWOTT
+# 2052 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_15, SPECIES_CHESPIN
+# 2053 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_16, SPECIES_FENNEKIN
+# 2054 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_17, SPECIES_FROAKIE
+# 2055 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_18, SPECIES_ROWLET
+# 2056 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_19, SPECIES_LITTEN
+# 2057 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_20, SPECIES_POPPLIO
+# 2058 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_21, SPECIES_GROOKEY
+# 2059 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_22, SPECIES_SCORBUNNY
+# 2060 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_23, SPECIES_SOBBLE
+# 2061 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_24, SPECIES_SPRIGATITO
+# 2062 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_25, SPECIES_FUECOCO
+# 2063 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultipush ShinyStarters_Text_26, SPECIES_QUAXLY
+# 2064 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	dynmultistack 0, 0, TRUE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE
+# 2066 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_BULBASAUR
+	goto_if_eq ShinyStarters_2
+ShinyStarters_1:
+# 2071 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_5
+# 2076 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_6
+ShinyStarters_4:
+# 2078 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_10
+ShinyStarters_9:
+# 2086 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_CHARMANDER
+	goto_if_eq ShinyStarters_13
+ShinyStarters_12:
+# 2091 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_16
+# 2096 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_17
+ShinyStarters_15:
+# 2098 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_21
+ShinyStarters_20:
+# 2106 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_SQUIRTLE
+	goto_if_eq ShinyStarters_24
+ShinyStarters_23:
+# 2111 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_27
+# 2116 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_28
+ShinyStarters_26:
+# 2118 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_32
+ShinyStarters_31:
+# 2126 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_CHIKORITA
+	goto_if_eq ShinyStarters_35
+ShinyStarters_34:
+# 2130 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_38
+# 2135 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_39
+ShinyStarters_37:
+# 2137 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_43
+ShinyStarters_42:
+# 2145 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_CYNDAQUIL
+	goto_if_eq ShinyStarters_46
+ShinyStarters_45:
+# 2149 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_49
+# 2154 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_50
+ShinyStarters_48:
+# 2156 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_54
+ShinyStarters_53:
+# 2164 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_TOTODILE
+	goto_if_eq ShinyStarters_57
+ShinyStarters_56:
+# 2169 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_60
+# 2174 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_61
+ShinyStarters_59:
+# 2176 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_65
+ShinyStarters_64:
+# 2185 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_TREECKO
+	goto_if_eq ShinyStarters_68
+ShinyStarters_67:
+# 2189 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_71
+# 2194 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_72
+ShinyStarters_70:
+# 2196 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_76
+ShinyStarters_75:
+# 2204 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_TORCHIC
+	goto_if_eq ShinyStarters_79
+ShinyStarters_78:
+# 2209 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_82
+# 2214 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_83
+ShinyStarters_81:
+# 2216 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_87
+ShinyStarters_86:
+# 2224 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_MUDKIP
+	goto_if_eq ShinyStarters_90
+ShinyStarters_89:
+# 2229 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_93
+# 2234 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_94
+ShinyStarters_92:
+# 2236 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_98
+ShinyStarters_97:
+# 2244 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_TURTWIG
+	goto_if_eq ShinyStarters_101
+ShinyStarters_100:
+# 2249 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_104
+# 2253 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_105
+ShinyStarters_103:
+# 2255 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_109
+ShinyStarters_108:
+# 2263 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_CHIMCHAR
+	goto_if_eq ShinyStarters_112
+ShinyStarters_111:
+# 2269 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_115
+# 2274 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_116
+ShinyStarters_114:
+# 2276 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_120
+ShinyStarters_119:
+# 2284 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_PIPLUP
+	goto_if_eq ShinyStarters_123
+ShinyStarters_122:
+# 2290 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_126
+# 2295 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_127
+ShinyStarters_125:
+# 2297 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_131
+ShinyStarters_130:
+# 2305 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_SNIVY
+	goto_if_eq ShinyStarters_134
+ShinyStarters_133:
+# 2310 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_137
+# 2315 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_138
+ShinyStarters_136:
+# 2317 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_142
+ShinyStarters_141:
+# 2325 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_TEPIG
+	goto_if_eq ShinyStarters_145
+ShinyStarters_144:
+# 2330 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_148
+# 2335 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_149
+ShinyStarters_147:
+# 2337 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_153
+ShinyStarters_152:
+# 2345 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_OSHAWOTT
+	goto_if_eq ShinyStarters_156
+ShinyStarters_155:
+# 2351 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_159
+# 2356 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_160
+ShinyStarters_158:
+# 2358 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_164
+ShinyStarters_163:
+# 2366 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_CHESPIN
+	goto_if_eq ShinyStarters_167
+ShinyStarters_166:
+# 2371 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_170
+# 2376 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_171
+ShinyStarters_169:
+# 2378 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_175
+ShinyStarters_174:
+# 2386 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_FENNEKIN
+	goto_if_eq ShinyStarters_178
+ShinyStarters_177:
+# 2391 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_181
+# 2396 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_182
+ShinyStarters_180:
+# 2398 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_186
+ShinyStarters_185:
+# 2406 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_FROAKIE
+	goto_if_eq ShinyStarters_189
+ShinyStarters_188:
+# 2411 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_192
+# 2416 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_193
+ShinyStarters_191:
+# 2418 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_197
+ShinyStarters_196:
+# 2426 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_ROWLET
+	goto_if_eq ShinyStarters_200
+ShinyStarters_199:
+# 2431 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_203
+# 2436 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_204
+ShinyStarters_202:
+# 2438 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_208
+ShinyStarters_207:
+# 2446 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_LITTEN
+	goto_if_eq ShinyStarters_211
+ShinyStarters_210:
+# 2451 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_214
+# 2456 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_215
+ShinyStarters_213:
+# 2458 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_219
+ShinyStarters_218:
+# 2466 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_POPPLIO
+	goto_if_eq ShinyStarters_222
+ShinyStarters_221:
+# 2471 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_225
+# 2476 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_226
+ShinyStarters_224:
+# 2478 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_230
+ShinyStarters_229:
+# 2486 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_GROOKEY
+	goto_if_eq ShinyStarters_233
+ShinyStarters_232:
+# 2491 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_236
+# 2496 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_237
+ShinyStarters_235:
+# 2498 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_241
+ShinyStarters_240:
+# 2506 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_SCORBUNNY
+	goto_if_eq ShinyStarters_244
+ShinyStarters_243:
+# 2511 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_247
+# 2516 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_248
+ShinyStarters_246:
+# 2518 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_252
+ShinyStarters_251:
+# 2526 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_SOBBLE
+	goto_if_eq ShinyStarters_255
+ShinyStarters_254:
+# 2531 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_258
+# 2536 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_259
+ShinyStarters_257:
+# 2538 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_263
+ShinyStarters_262:
+# 2546 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_SPRIGATITO
+	goto_if_eq ShinyStarters_266
+ShinyStarters_265:
+# 2551 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_269
+# 2556 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_270
+ShinyStarters_268:
+# 2558 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_274
+ShinyStarters_273:
+# 2566 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_FUECOCO
+	goto_if_eq ShinyStarters_277
+ShinyStarters_276:
+# 2571 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_280
+# 2574 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_281
+ShinyStarters_279:
+# 2576 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_285
+ShinyStarters_284:
+# 2584 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, SPECIES_QUAXLY
+	goto_if_eq ShinyStarters_288
+ShinyStarters_287:
+# 2589 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq ShinyStarters_291
+# 2594 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq ShinyStarters_292
+ShinyStarters_290:
+# 2596 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, MON_GIVEN_TO_PARTY
+	goto_if_eq ShinyStarters_295
+	return
+
+ShinyStarters_2:
+# 2067 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_BULBASAUR, 10, 3
+# 2068 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_BULBASAUR, CRY_MODE_NORMAL
+# 2069 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_27, MSGBOX_YESNO
+# 2070 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_1
+
+ShinyStarters_5:
+# 2072 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2073 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_6:
+# 2077 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_BULBASAUR, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_4
+
+ShinyStarters_10:
+# 2079 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2080 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_28
+# 2081 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2082 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2083 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_9
+
+ShinyStarters_13:
+# 2087 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_CHARMANDER, CRY_MODE_NORMAL
+# 2088 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_CHARMANDER, 10, 3
+# 2089 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_29, MSGBOX_YESNO
+# 2090 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_12
+
+ShinyStarters_16:
+# 2092 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2093 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_17:
+# 2097 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_CHARMANDER, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_15
+
+ShinyStarters_21:
+# 2099 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2100 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_30
+# 2101 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2102 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2103 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_20
+
+ShinyStarters_24:
+# 2107 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_SQUIRTLE, CRY_MODE_NORMAL
+# 2108 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_SQUIRTLE, 10, 3
+# 2109 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_31, MSGBOX_YESNO
+# 2110 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_23
+
+ShinyStarters_27:
+# 2112 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2113 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_28:
+# 2117 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_SQUIRTLE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_26
+
+ShinyStarters_32:
+# 2119 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2120 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_32
+# 2121 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2122 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2123 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_31
+
+ShinyStarters_35:
+# 2127 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_CHIKORITA, CRY_MODE_NORMAL
+# 2128 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_CHIKORITA, 10, 3
+# 2129 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_33, MSGBOX_YESNO
+	goto ShinyStarters_34
+
+ShinyStarters_38:
+# 2131 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2132 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_39:
+# 2136 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_CHIKORITA, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_37
+
+ShinyStarters_43:
+# 2138 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2139 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_34
+# 2140 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2141 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2142 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_42
+
+ShinyStarters_46:
+# 2146 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_CYNDAQUIL, CRY_MODE_NORMAL
+# 2147 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_CYNDAQUIL, 10, 3
+# 2148 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_35, MSGBOX_YESNO
+	goto ShinyStarters_45
+
+ShinyStarters_49:
+# 2150 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2151 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_50:
+# 2155 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_CYNDAQUIL, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_48
+
+ShinyStarters_54:
+# 2157 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2158 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_36
+# 2159 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2160 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2161 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_53
+
+ShinyStarters_57:
+# 2165 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_TOTODILE, CRY_MODE_NORMAL
+# 2166 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_TOTODILE, 10, 3
+# 2167 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_37, MSGBOX_YESNO
+# 2168 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_56
+
+ShinyStarters_60:
+# 2170 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2171 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_61:
+# 2175 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_TOTODILE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_59
+
+ShinyStarters_65:
+# 2177 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2178 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_38
+# 2179 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2180 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2182 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_64
+
+ShinyStarters_68:
+# 2186 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_TREECKO, 10, 3
+# 2187 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_TREECKO, CRY_MODE_NORMAL
+# 2188 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_39, MSGBOX_YESNO
+	goto ShinyStarters_67
+
+ShinyStarters_71:
+# 2190 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2191 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_72:
+# 2195 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_TREECKO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_70
+
+ShinyStarters_76:
+# 2197 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2198 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_40
+# 2199 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2200 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2201 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_75
+
+ShinyStarters_79:
+# 2205 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_TORCHIC, CRY_MODE_NORMAL
+# 2206 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_TORCHIC, 10, 3
+# 2207 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_41, MSGBOX_YESNO
+# 2208 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_78
+
+ShinyStarters_82:
+# 2210 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2211 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_83:
+# 2215 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_TORCHIC, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_81
+
+ShinyStarters_87:
+# 2217 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2218 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_42
+# 2219 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2220 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2221 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_86
+
+ShinyStarters_90:
+# 2225 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_MUDKIP, CRY_MODE_NORMAL
+# 2226 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_MUDKIP, 10, 3
+# 2227 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_43, MSGBOX_YESNO
+# 2228 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_89
+
+ShinyStarters_93:
+# 2230 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2231 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_94:
+# 2235 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_MUDKIP, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_92
+
+ShinyStarters_98:
+# 2237 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2238 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_44
+# 2239 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2240 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2241 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_97
+
+ShinyStarters_101:
+# 2245 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_TURTWIG, CRY_MODE_NORMAL
+# 2246 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_TURTWIG, 10, 3
+# 2247 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_45, MSGBOX_YESNO
+# 2248 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_100
+
+ShinyStarters_104:
+# 2250 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2251 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_105:
+# 2254 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_TURTWIG, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_103
+
+ShinyStarters_109:
+# 2256 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2257 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_46
+# 2258 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2259 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2260 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_108
+
+ShinyStarters_112:
+# 2264 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_CHIMCHAR, CRY_MODE_NORMAL
+# 2265 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_CHIMCHAR, 10, 3
+# 2266 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_47, MSGBOX_YESNO
+# 2267 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2268 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_111
+
+ShinyStarters_115:
+# 2270 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2271 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_116:
+# 2275 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 0, SPECIES_CHIMCHAR, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_114
+
+ShinyStarters_120:
+# 2277 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2278 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_48
+# 2279 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2280 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2281 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_119
+
+ShinyStarters_123:
+# 2285 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_PIPLUP, CRY_MODE_NORMAL
+# 2286 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_PIPLUP, 10, 3
+# 2287 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_49, MSGBOX_YESNO
+# 2288 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2289 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_122
+
+ShinyStarters_126:
+# 2291 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2292 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_127:
+# 2296 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_PIPLUP, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_125
+
+ShinyStarters_131:
+# 2298 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2299 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_50
+# 2300 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2301 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2302 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_130
+
+ShinyStarters_134:
+# 2306 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_SNIVY, CRY_MODE_NORMAL
+# 2307 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_SNIVY, 10, 3
+# 2308 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_51, MSGBOX_YESNO
+# 2309 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_133
+
+ShinyStarters_137:
+# 2311 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2312 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_138:
+# 2316 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_SNIVY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_136
+
+ShinyStarters_142:
+# 2318 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2319 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_52
+# 2320 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2321 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2322 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_141
+
+ShinyStarters_145:
+# 2326 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_TEPIG, CRY_MODE_NORMAL
+# 2327 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_TEPIG, 10, 3
+# 2328 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_53, MSGBOX_YESNO
+# 2329 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_144
+
+ShinyStarters_148:
+# 2331 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2332 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_149:
+# 2336 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_TEPIG, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_147
+
+ShinyStarters_153:
+# 2338 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2339 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_54
+# 2340 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2341 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2342 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_152
+
+ShinyStarters_156:
+# 2346 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_OSHAWOTT, CRY_MODE_NORMAL
+# 2347 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_OSHAWOTT, 10, 3
+# 2348 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_55, MSGBOX_YESNO
+# 2349 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2350 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_155
+
+ShinyStarters_159:
+# 2352 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2353 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_160:
+# 2357 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_OSHAWOTT, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_158
+
+ShinyStarters_164:
+# 2359 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2360 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_56
+# 2361 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2362 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2363 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_163
+
+ShinyStarters_167:
+# 2367 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_CHESPIN, CRY_MODE_NORMAL
+# 2368 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_CHESPIN, 10, 3
+# 2369 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_57, MSGBOX_YESNO
+# 2370 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_166
+
+ShinyStarters_170:
+# 2372 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2373 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_171:
+# 2377 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_CHESPIN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_169
+
+ShinyStarters_175:
+# 2379 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2380 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_58
+# 2381 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2382 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2383 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_174
+
+ShinyStarters_178:
+# 2387 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_FENNEKIN, CRY_MODE_NORMAL
+# 2388 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_FENNEKIN, 10, 3
+# 2389 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_59, MSGBOX_YESNO
+# 2390 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_177
+
+ShinyStarters_181:
+# 2392 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2393 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_182:
+# 2397 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_FENNEKIN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_180
+
+ShinyStarters_186:
+# 2399 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2400 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_60
+# 2401 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2402 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2403 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_185
+
+ShinyStarters_189:
+# 2407 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_FROAKIE, CRY_MODE_NORMAL
+# 2408 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_FROAKIE, 10, 3
+# 2409 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_61, MSGBOX_YESNO
+# 2410 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_188
+
+ShinyStarters_192:
+# 2412 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2413 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_193:
+# 2417 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_FROAKIE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_191
+
+ShinyStarters_197:
+# 2419 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2420 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_62
+# 2421 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2422 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2423 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_196
+
+ShinyStarters_200:
+# 2427 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_ROWLET, CRY_MODE_NORMAL
+# 2428 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_ROWLET, 10, 3
+# 2429 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_63, MSGBOX_YESNO
+# 2430 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_199
+
+ShinyStarters_203:
+# 2432 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2433 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_204:
+# 2437 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_ROWLET, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_202
+
+ShinyStarters_208:
+# 2439 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2440 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_64
+# 2441 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2442 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2443 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_207
+
+ShinyStarters_211:
+# 2447 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_LITTEN, CRY_MODE_NORMAL
+# 2448 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_LITTEN, 10, 3
+# 2449 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_65, MSGBOX_YESNO
+# 2450 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_210
+
+ShinyStarters_214:
+# 2452 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2453 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_215:
+# 2457 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_LITTEN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_213
+
+ShinyStarters_219:
+# 2459 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2460 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_66
+# 2461 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2462 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2463 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_218
+
+ShinyStarters_222:
+# 2467 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_POPPLIO, CRY_MODE_NORMAL
+# 2468 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_POPPLIO, 10, 3
+# 2469 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_67, MSGBOX_YESNO
+# 2470 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_221
+
+ShinyStarters_225:
+# 2472 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2473 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_226:
+# 2477 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_POPPLIO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_224
+
+ShinyStarters_230:
+# 2479 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2480 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_68
+# 2481 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2482 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2483 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_229
+
+ShinyStarters_233:
+# 2487 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_GROOKEY, CRY_MODE_NORMAL
+# 2488 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_GROOKEY, 10, 3
+# 2489 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_69, MSGBOX_YESNO
+# 2490 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_232
+
+ShinyStarters_236:
+# 2492 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2493 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_237:
+# 2497 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_GROOKEY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_235
+
+ShinyStarters_241:
+# 2499 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2500 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_70
+# 2501 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2502 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2503 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_240
+
+ShinyStarters_244:
+# 2507 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_SCORBUNNY, CRY_MODE_NORMAL
+# 2508 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_SCORBUNNY, 10, 3
+# 2509 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_71, MSGBOX_YESNO
+# 2510 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_243
+
+ShinyStarters_247:
+# 2512 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2513 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_248:
+# 2517 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_SCORBUNNY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_246
+
+ShinyStarters_252:
+# 2519 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2520 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_72
+# 2521 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2522 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2523 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_251
+
+ShinyStarters_255:
+# 2527 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_SOBBLE, CRY_MODE_NORMAL
+# 2528 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_SOBBLE, 10, 3
+# 2529 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_73, MSGBOX_YESNO
+# 2530 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_254
+
+ShinyStarters_258:
+# 2532 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2533 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_259:
+# 2537 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_SOBBLE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_257
+
+ShinyStarters_263:
+# 2539 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2540 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_74
+# 2541 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2542 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2543 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_262
+
+ShinyStarters_266:
+# 2547 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_SPRIGATITO, CRY_MODE_NORMAL
+# 2548 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_SPRIGATITO, 10, 3
+# 2549 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_75, MSGBOX_YESNO
+# 2550 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_265
+
+ShinyStarters_269:
+# 2552 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2553 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_270:
+# 2557 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_SPRIGATITO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_268
+
+ShinyStarters_274:
+# 2559 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2560 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_76
+# 2561 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2562 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2563 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_273
+
+ShinyStarters_277:
+# 2567 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_FUECOCO, CRY_MODE_NORMAL
+# 2568 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_FUECOCO, 10, 3
+# 2569 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_77, MSGBOX_YESNO
+# 2570 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_276
+
+ShinyStarters_280:
+# 2572 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2573 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	goto ShinyStarters_279
+
+ShinyStarters_281:
+# 2575 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_FUECOCO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_279
+
+ShinyStarters_285:
+# 2577 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2578 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_78
+# 2579 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2580 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2581 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	goto ShinyStarters_284
+
+ShinyStarters_288:
+# 2585 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playmoncry SPECIES_QUAXLY, CRY_MODE_NORMAL
+# 2586 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	showmonpic SPECIES_QUAXLY, 10, 3
+# 2587 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_79, MSGBOX_YESNO
+# 2588 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+	goto ShinyStarters_287
+
+ShinyStarters_291:
+# 2590 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2591 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call ShinyStarterMenu
+	return
+
+ShinyStarters_292:
+# 2595 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	createmon 0, 6, SPECIES_QUAXLY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10
+	goto ShinyStarters_290
+
+ShinyStarters_295:
+# 2597 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	playfanfare MUS_EVOLVED
+# 2598 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox ShinyStarters_Text_80
+# 2599 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitfanfare
+# 2600 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2601 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call NicknamePartyMon2
+	return
+
+
+NicknameBoxMon2::
+# 2607 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox NicknameBoxMon2_Text_0, MSGBOX_YESNO
+# 2608 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2609 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2610 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq NicknameBoxMon2_2
+NicknameBoxMon2_1:
+# 2615 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox NicknameBoxMon2_Text_1
+	return
+
+NicknameBoxMon2_2:
+# 2611 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call Common_EventScript_NameReceivedBoxMon
+# 2612 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	closemessage
+# 2613 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	release
+	goto NicknameBoxMon2_1
+
+
+NicknamePartyMon2::
+# 2619 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	msgbox NicknamePartyMon2_Text_0, MSGBOX_YESNO
+# 2620 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	waitmessage
+# 2621 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq NicknamePartyMon2_1
+# 2628 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	compare VAR_RESULT, NO
+	goto_if_eq NicknamePartyMon2_2
+	return
+
+NicknamePartyMon2_1:
+# 2622 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call Common_EventScript_GetGiftMonPartySlot
+# 2623 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call Common_EventScript_NameReceivedPartyMon
+# 2624 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setflag FLAG_SYS_POKEMON_GET
+# 2625 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2626 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	release
+	end
+
+NicknamePartyMon2_2:
+# 2629 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	call Common_EventScript_GetGiftMonPartySlot
+# 2630 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	setflag FLAG_SYS_POKEMON_GET
+# 2631 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	hidemonpic
+# 2632 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	release
+	end
+
+
 TeraTypeChangerMenu::
 # 2639 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	lock
@@ -7674,6 +9363,396 @@ Wonder_Trade_Text_1:
 WonderTradeAgain_Text_0:
 # 1809 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	.string "Want to Wonder Trade again?$"
+
+MysteryManGreeting_Text_0:
+# 1925 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Mystery Man$"
+
+MysteryManGreeting_Text_1:
+# 1926 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Hello, would you like to use the Mystery\n"
+	.string "Gift?$"
+
+MysteryManGreeting_Text_2:
+# 1928 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Enter a code.$"
+
+MysteryManGreeting_Text_3:
+# 1939 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Please come back when you discover a\n"
+	.string "code.$"
+
+IncorrectCode_Text_0:
+# 1948 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Sorry, that code is incorrect.$"
+
+Demo2Code_Text_0:
+# 1962 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "I am sorry but you have already\n"
+	.string "redeemed this code.$"
+
+Demo2Code_Text_1:
+# 1968 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Thank you for entering in the Demo 2\n"
+	.string "code. Here's your item pack.$"
+
+Demo2Code_PostDisplay_Text_0:
+# 1981 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Oh no! You don't have enough room in\n"
+	.string "your Bag for all of these items.$"
+
+Demo2Code_PostDisplay_Text_1:
+# 1985 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received the item pack!$"
+
+ShinyStarterWithZigzagoon_Text_0:
+# 2016 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Thank you for entering in the Shiny\n"
+	.string "Starter code.$"
+
+ShinyStarterWithZigzagoon_Text_1:
+# 2019 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Here is your Shiny Zigzagoon.$"
+
+ShinyStarterMenu_Text_0:
+# 2030 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Choose your shiny starter.$"
+
+ShinyStarters_Text_0:
+# 2037 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Bulbasaur$"
+
+ShinyStarters_Text_1:
+# 2038 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Charmander$"
+
+ShinyStarters_Text_2:
+# 2039 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Squirtle$"
+
+ShinyStarters_Text_3:
+# 2040 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Chikorita$"
+
+ShinyStarters_Text_4:
+# 2041 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Cyndaquil$"
+
+ShinyStarters_Text_5:
+# 2042 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Totodile$"
+
+ShinyStarters_Text_6:
+# 2043 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Treecko$"
+
+ShinyStarters_Text_7:
+# 2044 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Torchic$"
+
+ShinyStarters_Text_8:
+# 2045 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Mudkip$"
+
+ShinyStarters_Text_9:
+# 2046 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Turtwig$"
+
+ShinyStarters_Text_10:
+# 2047 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Chimchar$"
+
+ShinyStarters_Text_11:
+# 2048 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Piplup$"
+
+ShinyStarters_Text_12:
+# 2049 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Snivy$"
+
+ShinyStarters_Text_13:
+# 2050 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Tepig$"
+
+ShinyStarters_Text_14:
+# 2051 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Oshawott$"
+
+ShinyStarters_Text_15:
+# 2052 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Chespin$"
+
+ShinyStarters_Text_16:
+# 2053 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Fennekin$"
+
+ShinyStarters_Text_17:
+# 2054 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Froakie$"
+
+ShinyStarters_Text_18:
+# 2055 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Rowlet$"
+
+ShinyStarters_Text_19:
+# 2056 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Litten$"
+
+ShinyStarters_Text_20:
+# 2057 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Popplio$"
+
+ShinyStarters_Text_21:
+# 2058 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Grookey$"
+
+ShinyStarters_Text_22:
+# 2059 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Scorbunny$"
+
+ShinyStarters_Text_23:
+# 2060 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Sobble$"
+
+ShinyStarters_Text_24:
+# 2061 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Sprigatito$"
+
+ShinyStarters_Text_25:
+# 2062 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Fuecoco$"
+
+ShinyStarters_Text_26:
+# 2063 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Quaxly$"
+
+ShinyStarters_Text_27:
+# 2069 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Bulbasaur?$"
+
+ShinyStarters_Text_28:
+# 2080 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Bulbasaur!$"
+
+ShinyStarters_Text_29:
+# 2089 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Charmander?$"
+
+ShinyStarters_Text_30:
+# 2100 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Charmander!$"
+
+ShinyStarters_Text_31:
+# 2109 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Squirtle?$"
+
+ShinyStarters_Text_32:
+# 2120 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Squirtle!$"
+
+ShinyStarters_Text_33:
+# 2129 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Chikorita?$"
+
+ShinyStarters_Text_34:
+# 2139 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Chikorita!$"
+
+ShinyStarters_Text_35:
+# 2148 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Cyndaquil?$"
+
+ShinyStarters_Text_36:
+# 2158 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Cyndaquil!$"
+
+ShinyStarters_Text_37:
+# 2167 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Totodile?$"
+
+ShinyStarters_Text_38:
+# 2178 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Totodile!$"
+
+ShinyStarters_Text_39:
+# 2188 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Treecko?$"
+
+ShinyStarters_Text_40:
+# 2198 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Treecko!$"
+
+ShinyStarters_Text_41:
+# 2207 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Torchic?$"
+
+ShinyStarters_Text_42:
+# 2218 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Torchic!$"
+
+ShinyStarters_Text_43:
+# 2227 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Mudkip?$"
+
+ShinyStarters_Text_44:
+# 2238 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Mudkip!$"
+
+ShinyStarters_Text_45:
+# 2247 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Turtwig?$"
+
+ShinyStarters_Text_46:
+# 2257 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Turtwig!$"
+
+ShinyStarters_Text_47:
+# 2266 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Chimchar?$"
+
+ShinyStarters_Text_48:
+# 2278 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Chimchar!$"
+
+ShinyStarters_Text_49:
+# 2287 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Piplup?$"
+
+ShinyStarters_Text_50:
+# 2299 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Piplup!$"
+
+ShinyStarters_Text_51:
+# 2308 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Snivy?$"
+
+ShinyStarters_Text_52:
+# 2319 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Snivy!$"
+
+ShinyStarters_Text_53:
+# 2328 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Tepig?$"
+
+ShinyStarters_Text_54:
+# 2339 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Tepig!$"
+
+ShinyStarters_Text_55:
+# 2348 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Oshawott?$"
+
+ShinyStarters_Text_56:
+# 2360 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Oshawott!$"
+
+ShinyStarters_Text_57:
+# 2369 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Chespin?$"
+
+ShinyStarters_Text_58:
+# 2380 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Chespin!$"
+
+ShinyStarters_Text_59:
+# 2389 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Fennekin?$"
+
+ShinyStarters_Text_60:
+# 2400 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Fennekin!$"
+
+ShinyStarters_Text_61:
+# 2409 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Froakie?$"
+
+ShinyStarters_Text_62:
+# 2420 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Froakie!$"
+
+ShinyStarters_Text_63:
+# 2429 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Rowlet?$"
+
+ShinyStarters_Text_64:
+# 2440 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Rowlet!$"
+
+ShinyStarters_Text_65:
+# 2449 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Litten?$"
+
+ShinyStarters_Text_66:
+# 2460 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Litten!$"
+
+ShinyStarters_Text_67:
+# 2469 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Popplio?$"
+
+ShinyStarters_Text_68:
+# 2480 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Popplio!$"
+
+ShinyStarters_Text_69:
+# 2489 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Grookey?$"
+
+ShinyStarters_Text_70:
+# 2500 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Grookey!$"
+
+ShinyStarters_Text_71:
+# 2509 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Scorbunny?$"
+
+ShinyStarters_Text_72:
+# 2520 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Scorbunny!$"
+
+ShinyStarters_Text_73:
+# 2529 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Sobble?$"
+
+ShinyStarters_Text_74:
+# 2540 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Sobble!$"
+
+ShinyStarters_Text_75:
+# 2549 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Sprigatito?$"
+
+ShinyStarters_Text_76:
+# 2560 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Sprigatito!$"
+
+ShinyStarters_Text_77:
+# 2569 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Fuecoco?$"
+
+ShinyStarters_Text_78:
+# 2578 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Fuecoco!$"
+
+ShinyStarters_Text_79:
+# 2587 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Are you sure you want Quaxly?$"
+
+ShinyStarters_Text_80:
+# 2598 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "{PLAYER} received Quaxly!$"
+
+NicknameBoxMon2_Text_0:
+# 2607 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Would you like to give your starter a\nNickname?$"
+
+NicknameBoxMon2_Text_1:
+# 2615 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Transferred to PC$"
+
+NicknamePartyMon2_Text_0:
+# 2619 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
+	.string "Would you like to give your starter\na nickname?$"
 
 TeraTypeChangerMenu_Text_0:
 # 2644 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
