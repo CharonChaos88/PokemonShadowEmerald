@@ -42,7 +42,7 @@ static u32 ChooseBoxMon_CanMonDeleteMove(struct BoxPokemon *boxmon);
 static u32 ChooseBoxMon_CanMonLearnSpecialVarMove(struct BoxPokemon *boxmon);
 static u32 ChooseBoxMon_CanRelearnMoves(struct BoxPokemon *boxmon);
 static u32 ChooseBoxMon_CanEvolve(struct BoxPokemon *boxmon);
-
+static u32 IsInvalidForWonderTrade(struct BoxPokemon *boxmon);
 static const struct PcMonSelection sPcMonSelectionTypes[] =
 {
     [SELECT_PC_MON_NORMAL] = {ChoosePartyMon, ChooseBoxMon_NoFilter, NULL, FALSE},
@@ -52,6 +52,7 @@ static const struct PcMonSelection sPcMonSelectionTypes[] =
     [SELECT_PC_MON_MOVE_DELETER] = {ChoosePartyMon, ChooseBoxMon_CanMonDeleteMove, NULL, FALSE},
     [SELECT_PC_MON_MOVE_RELEARNER] = {ChooseMonForMoveRelearner, ChooseBoxMon_CanRelearnMoves, NULL, FALSE},
     [SELECT_PC_MON_EVOLUTION] = {ChoosePartyMon, ChooseBoxMon_CanEvolve, NULL, FALSE},
+    [SELECT_PC_MON_WONDER_TRADE] = {ChoosePartyMon, IsInvalidForWonderTrade, NULL, TRUE},
 };
 
 static u32 ChooseBoxMon_NoFilter(struct BoxPokemon *boxmon)
@@ -63,6 +64,21 @@ static u32 ChooseBoxMon_IsNotEgg(struct BoxPokemon *boxmon)
 {
     if (GetBoxMonData(boxmon, MON_DATA_IS_EGG))
         return INVALID_MON;
+    return VALID_MON;
+}
+
+static u32 IsInvalidForWonderTrade(struct BoxPokemon *boxmon)
+{
+    u16 species = GetBoxMonData(boxmon, MON_DATA_SPECIES);
+    
+    // Reject empty slots and Eggs
+    if (species == SPECIES_NONE || species == SPECIES_EGG)
+        return INVALID_MON;
+        
+    // Reject hidden Eggs and Bad Eggs
+    if (GetBoxMonData(boxmon, MON_DATA_IS_EGG) || GetBoxMonData(boxmon, MON_DATA_SANITY_IS_BAD_EGG))
+        return INVALID_MON;
+        
     return VALID_MON;
 }
 

@@ -201,8 +201,34 @@ Debug_EventScript_Text_DefensiveIVs:
 	.string "HP IVs: {STR_VAR_1}, DEF IVs: {STR_VAR_2}, SPDEF IVs: {STR_VAR_3}$"
 
 Debug_EventScript_Script_1::
-	release
-	end
+	getpartysize
+	goto_if_eq VAR_RESULT, 0, EventScript_End
+	chooseboxmon SELECT_PC_MON_WONDER_TRADE
+	waitstate
+	goto_if_eq VAR_0x8004, 255, EventScript_End
+	lockall
+	delay 20
+	msgbox WonderTrade_Text_0
+	waitmessage
+	copyvar VAR_0x8005, VAR_0x8004
+	special CreateWonderTradePokemon
+	playse SE_PC_LOGIN
+	waitse
+	playse SE_DING_DONG
+	msgbox WonderTrade_Text_1
+	waitbuttonpress
+	closemessage
+	special DoInGameTradeScene
+	return
+
+WonderTrade_Text_0:
+	.string "Searching for a Wonder Trade partner...\n"
+	.string "Press the {A_BUTTON} to continue.$"
+
+WonderTrade_Text_1:
+	.string "Success! A trade partner was found.\n"
+	.string "Trading with {STR_VAR_1}! Press {A_BUTTON} to\l"
+	.string "trade.$"
 
 Debug_EventScript_Script_2::
 	release

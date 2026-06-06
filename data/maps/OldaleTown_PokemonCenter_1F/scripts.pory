@@ -1,0 +1,2761 @@
+raw`OldaleTown_PokemonCenter_1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, OldaleTown_PokemonCenter_1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+OldaleTown_PokemonCenter_1F_OnTransition:
+	setrespawn HEAL_LOCATION_OLDALE_TOWN
+	call Common_EventScript_UpdateBrineyLocation
+	end
+
+OldaleTown_PokemonCenter_1F_EventScript_Nurse::
+	setvar VAR_0x800B, LOCALID_OLDALE_NURSE
+	call Common_EventScript_PkmnCenterNurse
+	waitmessage
+	waitbuttonpress
+	release
+	end
+
+OldaleTown_PokemonCenter_1F_EventScript_Gentleman::
+	msgbox OldaleTown_PokemonCenter_1F_Text_TrainersCanUsePC, MSGBOX_NPC
+	end
+
+OldaleTown_PokemonCenter_1F_EventScript_Boy::
+	msgbox OldaleTown_PokemonCenter_1F_Text_PokemonCentersAreGreat, MSGBOX_NPC
+	end
+
+OldaleTown_PokemonCenter_1F_EventScript_Girl::
+	lock
+	faceplayer
+	goto_if_set FLAG_SYS_POKEDEX_GET, OldaleTown_PokemonCenter_1F_EventScript_WirelessClubAvailable
+	msgbox OldaleTown_PokemonCenter_1F_Text_WirelessClubNotAvailable, MSGBOX_DEFAULT
+	release
+	end
+
+OldaleTown_PokemonCenter_1F_EventScript_WirelessClubAvailable::
+	msgbox OldaleTown_PokemonCenter_1F_Text_TradedInWirelessClub, MSGBOX_DEFAULT
+	release
+	end
+
+OldaleTown_PokemonCenter_1F_Text_TrainersCanUsePC:
+	.string "That PC in the corner there is\n"
+	.string "for any POKéMON TRAINER to use.\p"
+	.string "Naturally, that means you're welcome\n"
+	.string "to use it, too.$"
+
+OldaleTown_PokemonCenter_1F_Text_PokemonCentersAreGreat:
+	.string "POKéMON CENTERS are great!\p"
+	.string "You can use their services as much\n"
+	.string "as you like, and it's all for free.\l"
+	.string "You never have to worry!$"
+
+OldaleTown_PokemonCenter_1F_Text_WirelessClubNotAvailable:
+	.string "The POKéMON WIRELESS CLUB on\n"
+	.string "the second floor was built recently.\p"
+	.string "But they say they're still making\n"
+	.string "adjustments.$"
+
+OldaleTown_PokemonCenter_1F_Text_TradedInWirelessClub:
+	.string "The POKéMON WIRELESS CLUB on\n"
+	.string "the second floor was built recently.\p"
+	.string "I traded POKéMON right away.$"
+
+`
+
+script MegaAlakazamIntro {
+    setspeaker(SP_NAME_UNKNOWN)
+    msgbox("Greetings, trainer.")
+    goto(PlayerTalkingToMegaAlakazam)
+}
+
+script PlayerTalkingToMegaAlakazam {
+    applymovement(OBJ_EVENT_ID_PLAYER, Common_Movement_ExclamationMark)
+    playse(SE_PIN)
+    waitse
+    waitmovement
+    delay(48)
+    setspeaker("{PLAYER}")
+    msgbox("Are you talking to me?")
+    goto(MegaAlakazamTalkingtoPlayer1)
+}
+
+
+script MegaAlakazamTalkingtoPlayer1 {
+    setspeaker(SP_NAME_UNKNOWN)
+    msgbox("Yes, I'm a talking Mega Alakazam.")
+    msgbox("Welcome to the Pokémon Compendium!\nI will be able to aid you.\nFor a price...")
+	msgbox("You can call me Wisdom.")
+	setspeaker(SP_NAME_WISDOM)
+	msgbox(format("I'm a member of the famous Team Blaziken."))
+	setspeaker("{PLAYER}")
+	msgbox(format("How are you still talking to me?"))
+	setspeaker(SP_NAME_WISDOM)
+	msgbox(format("{PLAYER}, I can talk to humans."))
+	msgbox(format("Here at the Pokémon Compendium you can unlock features that will help you in your journey."))
+	setvar(VAR_MEGA_ALAKAZAM_INTRO, 1)
+	setvar(VAR_MEGA_ALAKAZAM_MOVE_TUTOR, 1)
+	setvar(VAR_MEGA_ALAKAZAM_ITEM_SHOP, 1)
+	setvar(VAR_MEGA_ALAKAZAM_CRAFT_ITEMS, 1)
+	setvar(VAR_MEGA_ALAKAZAM_WONDER_TRADE, 1)
+	setvar(VAR_MEGA_ALAKAZAM_POKEMON_INFUSION, 1)
+	setflag(FLAG_MEGA_ALAKAZAM_INTRO)
+	if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == TRUE) {
+	goto(PokemonCompendium)
+    release
+    end
+}
+
+}
+script PokemonCompendium {
+	 
+	setspeaker(SP_NAME_WISDOM)
+	msgbox(format("Welcome to the Pokémon Compendium. What services would you like to use?"))
+
+// Regular static use
+dynmultichoice(
+  17,
+  0,
+  FALSE,
+  10,
+  0,
+  DYN_MULTICHOICE_CB_NONE,
+  "Move Tutor",
+  "Item Shop",
+  "Wonder Trade",
+  "Perform Ritual",
+  "Change Tera Type",
+  "Leave"
+)
+
+// Result check
+switch (var(VAR_RESULT)) {
+  case 0:
+    goto(MoveTutorMenu)
+  case 1:
+    goto(ItemShopMenu)
+  case 2:
+    goto(Wonder_Trade)
+  case 3:
+	goto(WisdomExitScript)
+  case 4:
+	goto(TeraTypeChangerMenu)
+  case 5:
+	goto(WisdomExitScript)
+	}
+ goto_if_eq(VAR_RESULT, 127, WisdomExitScript)
+}
+script MoveTutorMenu {
+	if(var(VAR_MEGA_ALAKAZAM_MOVE_TUTOR) == 1) {
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(format("Since this is your first time using my\nmove tutor system let me explain.\p"
+		"I can teach your Pokémon moves.\nYou can unlock moves by obtaining gym badges.\p"
+		"The more gym badges you obtain increases the list of moves you can access."))
+		setvar(VAR_MEGA_ALAKAZAM_MOVE_TUTOR, 2)
+		goto(MoveTutorMenuBadgeList)
+	} else {
+		goto(MoveTutorMenuBadgeList)
+	}
+	
+}
+
+script IntroCheck {
+
+if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == FALSE) {
+	goto(MegaAlakazamIntro)
+} else { 
+	if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == TRUE) {
+		goto(PokemonCompendium)
+	}
+	
+}
+
+}
+
+script OtherServices {
+	msgbox("Would you like to use another service?", MSGBOX_YESNO)
+	if(var(VAR_RESULT) == YES) {
+		clearflag(FLAG_MOVETUTOR_SET)
+		goto(PokemonCompendium2)
+	} else {
+		goto(WisdomExitScript)
+		clearflag(FLAG_MOVETUTOR_SET)
+	}
+}
+
+script MoveTutorQuestion {
+	msgbox("Do you want to teach a Pokémon\nthe move {STR_VAR_1}?", MSGBOX_YESNO)
+	if(var(VAR_RESULT) == YES){
+	special(ChooseMonForMoveTutor) 
+	goto_if_eq(VAR_RESULT, 0, MoveTutorMenuBadgeList)
+  goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+	return
+	goto_if_set(FLAG_MOVETUTOR_SET, MoveTutorMenuBadgeList)
+	} elif(var(VAR_RESULT) == NO) {
+		goto(MoveTutorMenuBadgeList)
+		clearflag(FLAG_MOVETUTOR_SET)
+	}
+}
+script WisdomExitScript {
+	setspeaker(SP_NAME_WISDOM)
+	msgbox(format("If you wish to use my services again return to any Poke Center."))
+	clearflag(FLAG_MOVETUTOR_SET)
+	release
+	end
+}
+
+script PokemonCompendium2 {
+	 
+	setspeaker(SP_NAME_WISDOM)
+
+// Regular static use
+dynmultichoice(
+  17,
+  0,
+  FALSE,
+  10,
+  0,
+  DYN_MULTICHOICE_CB_NONE,
+  "Move Tutor",
+  "Item Shop",
+  "Wonder Trade",
+  "Perform Ritual",
+  "Change Tera Type",
+  "Leave"
+)
+
+// Result check
+switch (var(VAR_RESULT)) {
+  case 0:
+    goto(MoveTutorMenu)
+  case 1:
+    goto(ItemShopMenu)
+  case 2:
+    goto(Wonder_Trade)
+  case 3:
+	goto(WisdomExitScript)
+  case 4:
+    goto(TeraTypeChangerMenu)
+  case 5:
+	goto(WisdomExitScript)
+	}
+   goto_if_eq(VAR_RESULT, 127, WisdomExitScript)
+}
+
+script PokemonCompendium3 {
+// Regular static use
+dynmultichoice(
+  17,
+  0,
+  FALSE,
+  10,
+  0,
+  DYN_MULTICHOICE_CB_NONE,
+  "Move Tutor",
+  "Item Shop",
+  "Wonder Trade",
+  "Perform Ritual",
+  "Change Tera Type",
+  "Leave"
+)
+
+// Result check
+switch (var(VAR_RESULT)) {
+  case 0:
+    goto(MoveTutorMenu)
+  case 1:
+    goto(ItemShopMenu)
+  case 2:
+    goto(Wonder_Trade)
+  case 3:
+	goto(WisdomExitScript)
+  case 4:
+	goto(TeraTypeChangerMenu)
+  case 5:
+	goto(WisdomExitScript)
+	}
+  goto_if_eq(VAR_RESULT, 127, WisdomExitScript)
+}
+
+script ItemShopMenu {
+	if(var(VAR_MEGA_ALAKAZAM_ITEM_SHOP) == 1) {
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(FirstTimeItemShop, MSGBOX_DEFAULT)
+		setvar(VAR_MEGA_ALAKAZAM_ITEM_SHOP, 2)
+		goto(ItemShopMenuList)
+	} else {
+		goto(ItemShopMenuList)
+	}
+}
+
+script ItemShopMenuList {
+	dynmultichoice(
+  17,
+  0,
+  FALSE,
+  4,
+  0,
+  DYN_MULTICHOICE_CB_NONE,
+  "No Badges",
+  "Stone Badge",
+  "Knuckle Badge",
+  "Dynamo Badge",
+  "Heat Badge",
+  "Balance Badge",
+  "Feather Badge",
+  "Mind Badge",
+  "Rain Badge",
+  "Evolution Stones",
+  "Go Back"
+)
+
+switch (var(VAR_RESULT)) {
+  case 0:
+    goto(NoBadgeItemShop)
+  case 1:
+    goto(StoneBadgeItemShopMenu)
+  case 2:
+    goto(KnuckleBadgeItemShopMenu)
+  case 3:
+    goto(DynamoBadgeItemShopMenu)
+  case 4:
+    goto(HeatBadgeItemShopMenu)
+  case 5:
+    goto(BalanceBadgeItemShopMenu)
+  case 6:
+    goto(FeatherBadgeItemShopMenu)
+  case 7:
+    goto(MindBadgeItemShopMenu)
+  case 8:
+    goto(RainBadgeItemShopMenu)
+  case 9:
+    goto(EvolutionStoneShopMenu)
+  case 10:
+    goto(PokemonCompendium2)
+	}
+  goto_if_eq(VAR_RESULT, 127, PokemonCompendium2)
+}
+
+// ITEM SHOP LIST
+
+script NoBadgeItemShop {
+    lock
+    message("Welcome to the no badge shop.")
+    pokemart(NoBadgeShop)
+    goto(ItemShopMenuList)
+}
+
+mart NoBadgeShop {
+    ITEM_POKE_BALL
+    ITEM_POTION
+    ITEM_AWAKENING
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_BURN_HEAL
+    ITEM_ICE_HEAL
+    ITEM_REPEL
+}
+
+script StoneBadgeItemShopMenu {
+	lock
+	if(flag(FLAG_BADGE01_GET) == FALSE)
+	{
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(format("Unfortunately, it seems you don't have the Stone Badge."))
+		goto(ItemShopMenuList)
+	} else {
+		goto(StoneBadgeItemShop)
+	}
+}
+
+script StoneBadgeItemShop {
+  lock
+	message("Welcome to the Stone badge shop.")
+	waitmessage
+	pokemart(StoneBadgeShop)
+	goto(ItemShopMenuList)
+	return
+}
+
+mart StoneBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_SUPER_POTION
+	ITEM_AWAKENING
+	ITEM_ANTIDOTE
+	ITEM_PARALYZE_HEAL
+	ITEM_BURN_HEAL
+	ITEM_ICE_HEAL
+	ITEM_REPEL
+	ITEM_ETHER
+}
+
+script KnuckleBadgeItemShopMenu {
+	lock
+	if(flag(FLAG_BADGE02_GET) == FALSE)
+	{
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(format("Unfortunately, it seems you don't have the Knuckle Badge."))
+		goto(ItemShopMenuList)
+	} else {
+		goto(KnuckleBadgeItemShop)
+	}
+}
+
+script KnuckleBadgeItemShop {
+  lock
+	message("Welcome to the Knuckle badge shop.")
+	waitmessage
+	pokemart(KnuckleBadgeShop)
+	goto(ItemShopMenuList)
+	return
+}
+
+mart KnuckleBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_HYPER_POTION
+	ITEM_FULL_HEAL
+	ITEM_SUPER_REPEL
+	ITEM_ELIXIR
+}
+
+script DynamoBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE03_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Dynamo Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(DynamoBadgeItemShop)
+    }
+}
+
+script DynamoBadgeItemShop {
+    lock
+    message("Welcome to the Dynamo badge shop.")
+    waitmessage
+    pokemart(DynamoBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart DynamoBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_ULTRA_BALL
+    ITEM_SUPER_POTION
+    ITEM_HYPER_POTION
+    ITEM_FULL_HEAL
+    ITEM_SUPER_REPEL
+    ITEM_ELIXIR
+    ITEM_MAX_ETHER
+}
+
+script HeatBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE04_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Heat Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(HeatBadgeItemShop)
+    }
+}
+
+script HeatBadgeItemShop {
+    lock
+    message("Welcome to the Heat badge shop.")
+    waitmessage
+    pokemart(HeatBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart HeatBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_ULTRA_BALL
+    ITEM_NET_BALL
+    ITEM_LUXURY_BALL
+    ITEM_HYPER_POTION
+    ITEM_MAX_POTION
+    ITEM_FULL_HEAL
+    ITEM_REVIVE
+    ITEM_SUPER_REPEL
+    ITEM_ELIXIR
+    ITEM_MAX_ETHER
+}
+
+script BalanceBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE05_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Balance Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(BalanceBadgeItemShop)
+    }
+}
+
+script BalanceBadgeItemShop {
+    lock
+    message("Welcome to the Balance badge shop.")
+    waitmessage
+    pokemart(BalanceBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart BalanceBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_ULTRA_BALL
+    ITEM_NET_BALL
+    ITEM_LUXURY_BALL
+    ITEM_HYPER_POTION
+    ITEM_MAX_POTION
+    ITEM_FULL_RESTORE
+    ITEM_FULL_HEAL
+    ITEM_REVIVE
+    ITEM_MAX_REPEL
+    ITEM_DIRE_HIT
+    ITEM_GUARD_SPEC
+    ITEM_FLUFFY_TAIL
+}
+
+script FeatherBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE06_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Feather Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(FeatherBadgeItemShop)
+    }
+}
+
+script FeatherBadgeItemShop {
+    lock
+    message("Welcome to the Feather badge shop.")
+    waitmessage
+    pokemart(FeatherBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart FeatherBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_ULTRA_BALL
+    ITEM_NET_BALL
+    ITEM_LUXURY_BALL
+    ITEM_QUICK_BALL
+    ITEM_TIMER_BALL
+    ITEM_DIVE_BALL
+    ITEM_DUSK_BALL
+    ITEM_MAX_POTION
+    ITEM_FULL_RESTORE
+    ITEM_FULL_HEAL
+    ITEM_REVIVE
+    ITEM_MAX_REPEL
+
+}
+
+script MindBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE07_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Mind Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(MindBadgeItemShop)
+    }
+}
+
+script MindBadgeItemShop {
+    lock
+    message("Welcome to the Mind badge shop.")
+    waitmessage
+    pokemart(MindBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart MindBadgeShop {
+	ITEM_POKE_BALL
+	ITEM_GREAT_BALL
+	ITEM_HEAL_BALL
+	ITEM_REPEAT_BALL
+	ITEM_NEST_BALL
+    ITEM_ULTRA_BALL
+    ITEM_NET_BALL
+    ITEM_LUXURY_BALL
+    ITEM_QUICK_BALL
+    ITEM_TIMER_BALL
+    ITEM_DIVE_BALL
+    ITEM_DUSK_BALL
+    ITEM_MAX_POTION
+    ITEM_FULL_RESTORE
+    ITEM_FULL_HEAL
+    ITEM_REVIVE
+    ITEM_MAX_REPEL
+}
+
+script RainBadgeItemShopMenu {
+    lock
+    if(flag(FLAG_BADGE08_GET) == FALSE)
+    {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Rain Badge."))
+        goto(ItemShopMenuList)
+    } else {
+        goto(RainBadgeItemShop)
+    }
+}
+
+script RainBadgeItemShop {
+    lock
+    message("Welcome to the Rain badge shop.")
+    waitmessage
+    pokemart(RainBadgeShop)
+    goto(ItemShopMenuList)
+    return
+}
+
+mart RainBadgeShop {
+    ITEM_ULTRA_BALL
+    ITEM_DUSK_BALL
+    ITEM_QUICK_BALL
+    ITEM_FULL_RESTORE
+    ITEM_MAX_REVIVE
+    ITEM_MAX_REPEL
+    ITEM_RARE_CANDY
+    ITEM_PP_UP
+}
+
+script EvolutionStoneShopMenu {
+    lock 
+    faceplayer
+    
+    // --- DYNAMIC MULTICHOICE MENU FOR ALL EVOLUTION STONES ---
+    dynmultipush("Fire Stone", ITEM_FIRE_STONE)
+    dynmultipush("Water Stone", ITEM_WATER_STONE)
+    dynmultipush("Thunder Stone", ITEM_THUNDER_STONE)
+    dynmultipush("Leaf Stone", ITEM_LEAF_STONE)
+    dynmultipush("Ice Stone", ITEM_ICE_STONE)
+    dynmultipush("Moon Stone", ITEM_MOON_STONE)
+    dynmultipush("Sun Stone", ITEM_SUN_STONE)
+    dynmultipush("Shiny Stone", ITEM_SHINY_STONE)
+    dynmultipush("Dusk Stone", ITEM_DUSK_STONE)
+    dynmultipush("Dawn Stone", ITEM_DAWN_STONE)
+
+    // --- DYNAMIC MULTICHOICE STACK ---
+    dynmultistack(11, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_SHOW_ITEM)
+
+    // Handle exiting the menu safely if they press B
+    if (var(VAR_RESULT) == MULTI_B_PRESSED) {
+        goto(PokemonCompendium2)
+    }
+
+    // --- SET VAR/BUFFER NAME FOR ALL STONES ---
+    if(var(VAR_RESULT) == ITEM_FIRE_STONE)       { setvar(VAR_0x8005, ITEM_FIRE_STONE)       bufferitemname(STR_VAR_1, ITEM_FIRE_STONE) }
+    elif(var(VAR_RESULT) == ITEM_WATER_STONE)    { setvar(VAR_0x8005, ITEM_WATER_STONE)      bufferitemname(STR_VAR_1, ITEM_WATER_STONE) }
+    elif(var(VAR_RESULT) == ITEM_THUNDER_STONE)  { setvar(VAR_0x8005, ITEM_THUNDER_STONE)    bufferitemname(STR_VAR_1, ITEM_THUNDER_STONE) }
+    elif(var(VAR_RESULT) == ITEM_LEAF_STONE)     { setvar(VAR_0x8005, ITEM_LEAF_STONE)       bufferitemname(STR_VAR_1, ITEM_LEAF_STONE) }
+    elif(var(VAR_RESULT) == ITEM_ICE_STONE)      { setvar(VAR_0x8005, ITEM_ICE_STONE)        bufferitemname(STR_VAR_1, ITEM_ICE_STONE) }
+    elif(var(VAR_RESULT) == ITEM_MOON_STONE)     { setvar(VAR_0x8005, ITEM_MOON_STONE)       bufferitemname(STR_VAR_1, ITEM_MOON_STONE) }
+    elif(var(VAR_RESULT) == ITEM_SUN_STONE)      { setvar(VAR_0x8005, ITEM_SUN_STONE)        bufferitemname(STR_VAR_1, ITEM_SUN_STONE) }
+    elif(var(VAR_RESULT) == ITEM_SHINY_STONE)    { setvar(VAR_0x8005, ITEM_SHINY_STONE)      bufferitemname(STR_VAR_1, ITEM_SHINY_STONE) }
+    elif(var(VAR_RESULT) == ITEM_DUSK_STONE)     { setvar(VAR_0x8005, ITEM_DUSK_STONE)       bufferitemname(STR_VAR_1, ITEM_DUSK_STONE) }
+    elif(var(VAR_RESULT) == ITEM_DAWN_STONE)     { setvar(VAR_0x8005, ITEM_DAWN_STONE)       bufferitemname(STR_VAR_1, ITEM_DAWN_STONE) }
+
+    // --- STONE LOGIC CHECKS ---
+    
+    // 1. FIRE STONE
+    if(var(VAR_0x8005) == ITEM_FIRE_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Fire Stone? It will cost a Red Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_RED_SHARD, 1) == FALSE) {
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Red Shard."))  
+                goto(EvolutionStoneShopMenu)
+            }
+            msgbox(format("Thank you! Take this Fire Stone."))
+            giveitem(ITEM_FIRE_STONE)
+            removeitem(ITEM_RED_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    } 
+    // 2. WATER STONE
+    elif (var(VAR_0x8005) == ITEM_WATER_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Water Stone? It will cost a Blue Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_BLUE_SHARD, 1) == FALSE) {
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Blue Shard."))  
+                goto(EvolutionStoneShopMenu)
+            }
+            msgbox(format("Thank you! Take this Water Stone."))
+            giveitem(ITEM_WATER_STONE)
+            removeitem(ITEM_BLUE_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    } 
+    // 3. THUNDER STONE
+    elif (var(VAR_0x8005) == ITEM_THUNDER_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Thunder Stone?\nIt will cost a Yellow Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_YELLOW_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Yellow Shard."))    
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Thunder Stone."))
+            giveitem(ITEM_THUNDER_STONE)
+            removeitem(ITEM_YELLOW_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    } 
+    // 4. LEAF STONE
+    elif (var(VAR_0x8005) == ITEM_LEAF_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Leaf Stone?\nIt will cost a Green Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_GREEN_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Green Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Leaf Stone."))
+            giveitem(ITEM_LEAF_STONE)
+            removeitem(ITEM_GREEN_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 5. ICE STONE (Costs Blue Shard)
+    elif (var(VAR_0x8005) == ITEM_ICE_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want an Ice Stone?\nIt will cost a Blue Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_BLUE_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Blue Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Ice Stone."))
+            giveitem(ITEM_ICE_STONE)
+            removeitem(ITEM_BLUE_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 6. MOON STONE (Costs Blue Shard)
+    elif (var(VAR_0x8005) == ITEM_MOON_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Moon Stone?\nIt will cost a Blue Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_BLUE_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Blue Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Moon Stone."))
+            giveitem(ITEM_MOON_STONE)
+            removeitem(ITEM_BLUE_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 7. SUN STONE (Costs Red Shard)
+    elif (var(VAR_0x8005) == ITEM_SUN_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Sun Stone?\nIt will cost a Red Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_RED_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Red Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Sun Stone."))
+            giveitem(ITEM_SUN_STONE)
+            removeitem(ITEM_RED_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 8. SHINY STONE (Costs Yellow Shard)
+    elif (var(VAR_0x8005) == ITEM_SHINY_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Shiny Stone?\nIt will cost a Yellow Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_YELLOW_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Yellow Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Shiny Stone."))
+            giveitem(ITEM_SHINY_STONE)
+            removeitem(ITEM_YELLOW_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 9. DUSK STONE (Costs Green Shard)
+    elif (var(VAR_0x8005) == ITEM_DUSK_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Dusk Stone?\nIt will cost a Green Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_GREEN_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Green Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Dusk Stone."))
+            giveitem(ITEM_DUSK_STONE)
+            removeitem(ITEM_GREEN_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    // 10. DAWN STONE (Costs Yellow Shard)
+    elif (var(VAR_0x8005) == ITEM_DAWN_STONE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Are you sure you want a Dawn Stone?\nIt will cost a Yellow Shard."), MSGBOX_YESNO)
+        if(var(VAR_RESULT) == YES) {
+            if(checkitem(ITEM_YELLOW_SHARD, 1) == FALSE) {  
+                setspeaker(SP_NAME_WISDOM)
+                msgbox(format("You don't have a Yellow Shard.")) 
+                goto(EvolutionStoneShopMenu)    
+            }
+            msgbox(format("Thank you! Take this Dawn Stone."))
+            giveitem(ITEM_DAWN_STONE)
+            removeitem(ITEM_YELLOW_SHARD, 1)
+            goto(StoneVerifyMenu)
+        } else {
+            goto(EvolutionStoneShopMenu)
+        }
+    }
+    release
+    end
+}
+
+script StoneVerifyMenu {
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Would you like to get another evolution stone?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == YES) {
+        goto(EvolutionStoneShopMenu)
+    } else {
+        goto(PokemonCompendium2)
+    } 
+}
+
+script MoveTutorMenuBadgeList {
+dynmultichoice(
+  17,
+  0,
+  FALSE,
+  4,
+  0,
+  DYN_MULTICHOICE_CB_NONE,
+  "No Badges",
+  "Stone Badge",
+  "Knuckle Badge",
+  "Dynamo Badge",
+  "Heat Badge",
+  "Balance Badge",
+  "Feather Badge",
+  "Mind Badge",
+  "Rain Badge",
+  "Go Back"
+)
+
+switch (var(VAR_RESULT)) {
+  case 0:
+    goto(NoBadgesMoveTutor)
+  case 1:
+    goto(StoneBadgeMoveTutor)
+  case 2:
+    goto(KnuckleBadgeMoveTutor)
+  case 3:
+    goto(DynamoBadgeMoveTutor)
+  case 4:
+    goto(HeatBadgeMoveTutor)
+  case 5:
+    goto(BalanceBadgeMoveTutor)
+  case 6:
+    goto(FeatherBadgeMoveTutor)
+  case 7:
+    goto(MindBadgeMoveTutor)
+  case 8:
+    goto(RainBadgeMoveTutor)
+  case 9:
+    goto(PokemonCompendium3)
+	}
+  goto_if_eq(VAR_RESULT, 127, PokemonCompendium2)
+}
+
+
+script NoBadgesMoveTutor {
+    lock 
+    faceplayer
+    setspeaker(SP_NAME_WISDOM)
+    
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES --- 
+        // Buff Moves
+        dynmultipush("Swords Dance", MOVE_SWORDS_DANCE)
+        dynmultipush("Nasty Plot", MOVE_NASTY_PLOT)
+        dynmultipush("Rock Polish", MOVE_ROCK_POLISH)
+        dynmultipush("Dragon Dance", MOVE_DRAGON_DANCE)
+        dynmultipush("Acupressure", MOVE_ACUPRESSURE)
+        dynmultipush("Coaching", MOVE_COACHING)
+        dynmultipush("Gear Up", MOVE_GEAR_UP)
+        dynmultipush("Decorate", MOVE_DECORATE)  
+        dynmultipush("Rototiller", MOVE_ROTOTILLER)
+        dynmultipush("Spicy Extract", MOVE_SPICY_EXTRACT)
+        dynmultipush("Swagger", MOVE_SWAGGER)
+        dynmultipush("Flower Shield", MOVE_FLOWER_SHIELD)
+        dynmultipush("Magnetic Flux", MOVE_MAGNETIC_FLUX)
+        dynmultipush("Flatter", MOVE_FLATTER)
+        dynmultipush("Aromatic Mist", MOVE_AROMATIC_MIST)
+        dynmultipush("Coil", MOVE_COIL)
+        dynmultipush("Meditate", MOVE_MEDITATE)
+        dynmultipush("Belly Drum", MOVE_BELLY_DRUM)
+        dynmultipush("No Retreat", MOVE_NO_RETREAT)
+        dynmultipush("Clangorous Soul", MOVE_CLANGOROUS_SOUL)
+        dynmultipush("Fillet Away", MOVE_FILLET_AWAY)
+        dynmultipush("Growth", MOVE_GROWTH)
+        dynmultipush("Hone Claws", MOVE_HONE_CLAWS)
+        dynmultipush("Howl", MOVE_HOWL)
+        dynmultipush("Sharpen", MOVE_SHARPEN)
+        dynmultipush("Shell Smash", MOVE_SHELL_SMASH)
+        dynmultipush("Shift Gear", MOVE_SHIFT_GEAR)
+        dynmultipush("Tidy Up", MOVE_TIDY_UP)
+        dynmultipush("Victory Dance", MOVE_VICTORY_DANCE)
+        dynmultipush("Acid Armor", MOVE_ACID_ARMOR)
+        dynmultipush("Barrier", MOVE_BARRIER)
+        dynmultipush("Bulk Up", MOVE_BULK_UP)
+        dynmultipush("Cosmic Power", MOVE_COSMIC_POWER)
+        dynmultipush("Cotton Guard", MOVE_COTTON_GUARD)
+        dynmultipush("Defend Order", MOVE_DEFEND_ORDER)
+        dynmultipush("Defense Curl", MOVE_DEFENSE_CURL)
+        dynmultipush("Harden", MOVE_HARDEN)
+        dynmultipush("Iron Defense", MOVE_IRON_DEFENSE)
+        dynmultipush("Shelter", MOVE_SHELTER)
+        dynmultipush("Stockpile", MOVE_STOCKPILE)
+        dynmultipush("Withdraw", MOVE_WITHDRAW)
+        dynmultipush("Stuff Cheeks", MOVE_STUFF_CHEEKS)
+        dynmultipush("Amnesia", MOVE_AMNESIA)
+        dynmultipush("Calm Mind", MOVE_CALM_MIND)
+        dynmultipush("Geomancy", MOVE_GEOMANCY)
+        dynmultipush("Quiver Dance", MOVE_QUIVER_DANCE)
+        dynmultipush("Tail Glow", MOVE_TAIL_GLOW)
+        dynmultipush("Take Heart", MOVE_TAKE_HEART)
+        dynmultipush("Work Up", MOVE_WORK_UP)
+        dynmultipush("Charge", MOVE_CHARGE)
+        dynmultipush("Double Team", MOVE_DOUBLE_TEAM)
+        dynmultipush("Minimize", MOVE_MINIMIZE)
+        dynmultipush("Agility", MOVE_AGILITY)
+        dynmultipush("Autotomize", MOVE_AUTOTOMIZE)
+        dynmultipush("Flash", MOVE_FLASH)
+        dynmultipush("Kinesis", MOVE_KINESIS)
+        dynmultipush("Sand Attack", MOVE_SAND_ATTACK)
+        dynmultipush("Smokescreen", MOVE_SMOKESCREEN)
+        dynmultipush("Growl", MOVE_GROWL)
+        dynmultipush("Charm", MOVE_CHARM)
+        dynmultipush("Baby-Doll Eyes", MOVE_BABY_DOLL_EYES)
+        dynmultipush("Feather Dance", MOVE_FEATHER_DANCE)
+        dynmultipush("Memento", MOVE_MEMENTO)
+        dynmultipush("Noble Roar", MOVE_NOBLE_ROAR)
+        dynmultipush("Strength Sap", MOVE_STRENGTH_SAP)
+        dynmultipush("Tearful Look", MOVE_TEARFUL_LOOK)
+        dynmultipush("Tickle", MOVE_TICKLE)
+        dynmultipush("Venom Drench", MOVE_VENOM_DRENCH)
+        dynmultipush("Leer", MOVE_LEER)
+        dynmultipush("Octolock", MOVE_OCTOLOCK)
+        dynmultipush("Screech", MOVE_SCREECH)
+        dynmultipush("Tail Whip", MOVE_TAIL_WHIP)
+        dynmultipush("Sweet Scent", MOVE_SWEET_SCENT)
+        dynmultipush("Captivate", MOVE_CAPTIVATE)
+        dynmultipush("Confide", MOVE_CONFIDE)
+        dynmultipush("Eerie Impulse", MOVE_EERIE_IMPULSE)
+        dynmultipush("Parting Shot", MOVE_PARTING_SHOT)
+        dynmultipush("Fake Tears", MOVE_FAKE_TEARS)
+        dynmultipush("Metal Sound", MOVE_METAL_SOUND)
+        dynmultipush("Cotton Spore", MOVE_COTTON_SPORE)
+        dynmultipush("Scary Face", MOVE_SCARY_FACE)
+        dynmultipush("Sticky Web", MOVE_STICKY_WEB)
+        dynmultipush("Stealth Rock", MOVE_STEALTH_ROCK)
+        dynmultipush("Spikes", MOVE_SPIKES)
+        dynmultipush("Toxic Spikes", MOVE_TOXIC_SPIKES)
+        dynmultipush("Substitute", MOVE_SUBSTITUTE)
+        dynmultipush("Endure", MOVE_ENDURE)
+        dynmultipush("Follow Me", MOVE_FOLLOW_ME)
+        dynmultipush("Safeguard", MOVE_SAFEGUARD)
+        dynmultipush("Defog", MOVE_DEFOG)
+        dynmultipush("King's Shield", MOVE_KINGS_SHIELD)
+        dynmultipush("Protect", MOVE_PROTECT)
+        dynmultipush("Detect", MOVE_DETECT)
+        dynmultipush("Baneful Bunker", MOVE_BANEFUL_BUNKER)
+        dynmultipush("Burning Bulwark", MOVE_BURNING_BULWARK)
+        dynmultipush("Obstruct", MOVE_OBSTRUCT)
+        dynmultipush("Crafty Shield", MOVE_CRAFTY_SHIELD)
+        dynmultipush("Mat Block", MOVE_MAT_BLOCK)
+        dynmultipush("Silk Trap", MOVE_SILK_TRAP)
+        dynmultipush("Quick Guard", MOVE_QUICK_GUARD)
+        dynmultipush("Wide Guard", MOVE_WIDE_GUARD)
+        dynmultipush("Spiky Shield", MOVE_SPIKY_SHIELD)
+        dynmultipush("Thunder Wave", MOVE_THUNDER_WAVE)
+        dynmultipush("Glare", MOVE_GLARE)
+        dynmultipush("Stun Spore", MOVE_STUN_SPORE)
+        dynmultipush("Will-O-Wisp", MOVE_WILL_O_WISP)
+        dynmultipush("Poison Gas", MOVE_POISON_GAS)
+        dynmultipush("Toxic", MOVE_TOXIC)
+        dynmultipush("Toxic Thread", MOVE_TOXIC_THREAD)
+        dynmultipush("Hypnosis", MOVE_HYPNOSIS)
+        dynmultipush("Grass Whistle", MOVE_GRASS_WHISTLE)
+        dynmultipush("Lovely Kiss", MOVE_LOVELY_KISS)
+        dynmultipush("Sing", MOVE_SING)
+        dynmultipush("Sleep Powder", MOVE_SLEEP_POWDER)
+        dynmultipush("Spore", MOVE_SPORE)
+        dynmultipush("Teeter Dance", MOVE_TEETER_DANCE)
+        dynmultipush("Confuse Ray", MOVE_CONFUSE_RAY)
+        dynmultipush("Supersonic", MOVE_SUPERSONIC)
+        dynmultipush("Attract", MOVE_ATTRACT)
+        dynmultipush("Metronome", MOVE_METRONOME)
+        dynmultipush("Trick Room", MOVE_TRICK_ROOM)
+        dynmultipush("Tailwind", MOVE_TAILWIND)
+        dynmultipush("Recycle", MOVE_RECYCLE)
+        dynmultipush("Heal Bell", MOVE_HEAL_BELL)
+        dynmultipush("Light Screen", MOVE_LIGHT_SCREEN)
+        dynmultipush("Reflect", MOVE_REFLECT)
+        dynmultipush("Heal Bell", MOVE_HEAL_BELL)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        // Buff Moves
+        if (var(VAR_RESULT) == MOVE_SWORDS_DANCE) { setvar(VAR_0x8005, MOVE_SWORDS_DANCE) buffermovename(STR_VAR_1, MOVE_SWORDS_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_NASTY_PLOT) { setvar(VAR_0x8005, MOVE_NASTY_PLOT)   buffermovename(STR_VAR_1, MOVE_NASTY_PLOT) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_POLISH) { setvar(VAR_0x8005, MOVE_ROCK_POLISH) buffermovename(STR_VAR_1, MOVE_ROCK_POLISH) }
+        elif (var(VAR_RESULT) == MOVE_DRAGON_DANCE) { setvar(VAR_0x8005, MOVE_DRAGON_DANCE) buffermovename(STR_VAR_1, MOVE_DRAGON_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_ACUPRESSURE) { setvar(VAR_0x8005, MOVE_ACUPRESSURE) buffermovename(STR_VAR_1, MOVE_ACUPRESSURE) }
+        elif (var(VAR_RESULT) == MOVE_COACHING) { setvar(VAR_0x8005, MOVE_COACHING) buffermovename(STR_VAR_1, MOVE_COACHING) }
+        elif (var(VAR_RESULT) == MOVE_GEAR_UP) { setvar(VAR_0x8005, MOVE_GEAR_UP) buffermovename(STR_VAR_1, MOVE_GEAR_UP) }
+        elif (var(VAR_RESULT) == MOVE_DECORATE) { setvar(VAR_0x8005, MOVE_DECORATE) buffermovename(STR_VAR_1, MOVE_DECORATE) }
+        elif (var(VAR_RESULT) == MOVE_ROTOTILLER) { setvar(VAR_0x8005, MOVE_ROTOTILLER) buffermovename(STR_VAR_1, MOVE_ROTOTILLER) }
+        elif (var(VAR_RESULT) == MOVE_SPICY_EXTRACT) { setvar(VAR_0x8005, MOVE_SPICY_EXTRACT) buffermovename(STR_VAR_1, MOVE_SPICY_EXTRACT) }
+        elif (var(VAR_RESULT) == MOVE_SWAGGER) { setvar(VAR_0x8005, MOVE_SWAGGER) buffermovename(STR_VAR_1, MOVE_SWAGGER) }
+        elif (var(VAR_RESULT) == MOVE_FLOWER_SHIELD) { setvar(VAR_0x8005, MOVE_FLOWER_SHIELD) buffermovename(STR_VAR_1, MOVE_FLOWER_SHIELD) }
+        elif (var(VAR_RESULT) == MOVE_MAGNETIC_FLUX) { setvar(VAR_0x8005, MOVE_MAGNETIC_FLUX) buffermovename(STR_VAR_1, MOVE_MAGNETIC_FLUX) }
+        elif (var(VAR_RESULT) == MOVE_FLATTER) { setvar(VAR_0x8005, MOVE_FLATTER) buffermovename(STR_VAR_1, MOVE_FLATTER) }
+        elif (var(VAR_RESULT) == MOVE_AROMATIC_MIST) { setvar(VAR_0x8005, MOVE_AROMATIC_MIST) buffermovename(STR_VAR_1, MOVE_AROMATIC_MIST) }
+        elif (var(VAR_RESULT) == MOVE_COIL) { setvar(VAR_0x8005, MOVE_COIL) buffermovename(STR_VAR_1, MOVE_COIL) }
+        elif (var(VAR_RESULT) == MOVE_MEDITATE) { setvar(VAR_0x8005, MOVE_MEDITATE) buffermovename(STR_VAR_1, MOVE_MEDITATE) }
+        elif (var(VAR_RESULT) == MOVE_BELLY_DRUM) { setvar(VAR_0x8005, MOVE_BELLY_DRUM) buffermovename(STR_VAR_1, MOVE_BELLY_DRUM) }
+        elif (var(VAR_RESULT) == MOVE_NO_RETREAT) { setvar(VAR_0x8005, MOVE_NO_RETREAT) buffermovename(STR_VAR_1, MOVE_NO_RETREAT) }
+        elif (var(VAR_RESULT) == MOVE_CLANGOROUS_SOUL) { setvar(VAR_0x8005, MOVE_CLANGOROUS_SOUL) buffermovename(STR_VAR_1, MOVE_CLANGOROUS_SOUL) }
+        elif (var(VAR_RESULT) == MOVE_FILLET_AWAY) { setvar(VAR_0x8005, MOVE_FILLET_AWAY) buffermovename(STR_VAR_1, MOVE_FILLET_AWAY) }
+        elif (var(VAR_RESULT) == MOVE_GROWTH) { setvar(VAR_0x8005, MOVE_GROWTH) buffermovename(STR_VAR_1, MOVE_GROWTH) }
+        elif (var(VAR_RESULT) == MOVE_HONE_CLAWS) { setvar(VAR_0x8005, MOVE_HONE_CLAWS) buffermovename(STR_VAR_1, MOVE_HONE_CLAWS) }
+        elif (var(VAR_RESULT) == MOVE_HOWL) { setvar(VAR_0x8005, MOVE_HOWL) buffermovename(STR_VAR_1, MOVE_HOWL) }
+        elif (var(VAR_RESULT) == MOVE_SHARPEN) { setvar(VAR_0x8005, MOVE_SHARPEN) buffermovename(STR_VAR_1, MOVE_SHARPEN) }
+        elif (var(VAR_RESULT) == MOVE_SHELL_SMASH) { setvar(VAR_0x8005, MOVE_SHELL_SMASH) buffermovename(STR_VAR_1, MOVE_SHELL_SMASH) }
+        elif (var(VAR_RESULT) == MOVE_SHIFT_GEAR) { setvar(VAR_0x8005, MOVE_SHIFT_GEAR) buffermovename(STR_VAR_1, MOVE_SHIFT_GEAR) }
+        elif (var(VAR_RESULT) == MOVE_TIDY_UP) { setvar(VAR_0x8005, MOVE_TIDY_UP) buffermovename(STR_VAR_1, MOVE_TIDY_UP) }
+        elif (var(VAR_RESULT) == MOVE_VICTORY_DANCE) { setvar(VAR_0x8005, MOVE_VICTORY_DANCE) buffermovename(STR_VAR_1, MOVE_VICTORY_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_ACID_ARMOR) { setvar(VAR_0x8005, MOVE_ACID_ARMOR) buffermovename(STR_VAR_1, MOVE_ACID_ARMOR) }
+        elif (var(VAR_RESULT) == MOVE_BARRIER) { setvar(VAR_0x8005, MOVE_BARRIER) buffermovename(STR_VAR_1, MOVE_BARRIER) }
+        elif (var(VAR_RESULT) == MOVE_BULK_UP) { setvar(VAR_0x8005, MOVE_BULK_UP) buffermovename(STR_VAR_1, MOVE_BULK_UP) }
+        elif (var(VAR_RESULT) == MOVE_COSMIC_POWER) { setvar(VAR_0x8005, MOVE_COSMIC_POWER) buffermovename(STR_VAR_1, MOVE_COSMIC_POWER) }
+        elif (var(VAR_RESULT) == MOVE_COTTON_GUARD) { setvar(VAR_0x8005, MOVE_COTTON_GUARD) buffermovename(STR_VAR_1, MOVE_COTTON_GUARD) }
+        elif (var(VAR_RESULT) == MOVE_DEFEND_ORDER) { setvar(VAR_0x8005, MOVE_DEFEND_ORDER) buffermovename(STR_VAR_1, MOVE_DEFEND_ORDER) }
+        elif (var(VAR_RESULT) == MOVE_DEFENSE_CURL) { setvar(VAR_0x8005, MOVE_DEFENSE_CURL) buffermovename(STR_VAR_1, MOVE_DEFENSE_CURL) }
+        elif (var(VAR_RESULT) == MOVE_HARDEN) { setvar(VAR_0x8005, MOVE_HARDEN) buffermovename(STR_VAR_1, MOVE_HARDEN) }
+        elif (var(VAR_RESULT) == MOVE_IRON_DEFENSE) { setvar(VAR_0x8005, MOVE_IRON_DEFENSE) buffermovename(STR_VAR_1, MOVE_IRON_DEFENSE) }
+        elif (var(VAR_RESULT) == MOVE_SHELTER) { setvar(VAR_0x8005, MOVE_SHELTER) buffermovename(STR_VAR_1, MOVE_SHELTER) }
+        elif (var(VAR_RESULT) == MOVE_STOCKPILE) { setvar(VAR_0x8005, MOVE_STOCKPILE) buffermovename(STR_VAR_1, MOVE_STOCKPILE) }
+        elif (var(VAR_RESULT) == MOVE_WITHDRAW) { setvar(VAR_0x8005, MOVE_WITHDRAW) buffermovename(STR_VAR_1, MOVE_WITHDRAW) }
+        elif (var(VAR_RESULT) == MOVE_STUFF_CHEEKS) { setvar(VAR_0x8005, MOVE_STUFF_CHEEKS) buffermovename(STR_VAR_1, MOVE_STUFF_CHEEKS) }
+        elif (var(VAR_RESULT) == MOVE_AMNESIA) { setvar(VAR_0x8005, MOVE_AMNESIA) buffermovename(STR_VAR_1, MOVE_AMNESIA) }
+        elif (var(VAR_RESULT) == MOVE_CALM_MIND) { setvar(VAR_0x8005, MOVE_CALM_MIND) buffermovename(STR_VAR_1, MOVE_CALM_MIND) }
+        elif (var(VAR_RESULT) == MOVE_GEOMANCY) { setvar(VAR_0x8005, MOVE_GEOMANCY) buffermovename(STR_VAR_1, MOVE_GEOMANCY) }
+        elif (var(VAR_RESULT) == MOVE_QUIVER_DANCE) { setvar(VAR_0x8005, MOVE_QUIVER_DANCE) buffermovename(STR_VAR_1, MOVE_QUIVER_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_TAIL_GLOW) { setvar(VAR_0x8005, MOVE_TAIL_GLOW) buffermovename(STR_VAR_1, MOVE_TAIL_GLOW) }
+        elif (var(VAR_RESULT) == MOVE_TAKE_HEART) { setvar(VAR_0x8005, MOVE_TAKE_HEART) buffermovename(STR_VAR_1, MOVE_TAKE_HEART) }
+        elif (var(VAR_RESULT) == MOVE_WORK_UP) { setvar(VAR_0x8005, MOVE_WORK_UP) buffermovename(STR_VAR_1, MOVE_WORK_UP) }
+        elif (var(VAR_RESULT) == MOVE_CHARGE) { setvar(VAR_0x8005, MOVE_CHARGE) buffermovename(STR_VAR_1, MOVE_CHARGE) }
+        elif (var(VAR_RESULT) == MOVE_DOUBLE_TEAM) { setvar(VAR_0x8005, MOVE_DOUBLE_TEAM) buffermovename(STR_VAR_1, MOVE_DOUBLE_TEAM) }
+        elif (var(VAR_RESULT) == MOVE_MINIMIZE) { setvar(VAR_0x8005, MOVE_MINIMIZE) buffermovename(STR_VAR_1, MOVE_MINIMIZE) }
+        elif (var(VAR_RESULT) == MOVE_AGILITY) { setvar(VAR_0x8005, MOVE_AGILITY) buffermovename(STR_VAR_1, MOVE_AGILITY) }
+        elif (var(VAR_RESULT) == MOVE_AUTOTOMIZE) { setvar(VAR_0x8005, MOVE_AUTOTOMIZE) buffermovename(STR_VAR_1, MOVE_AUTOTOMIZE) }
+        elif (var(VAR_RESULT) == MOVE_FLASH) { setvar(VAR_0x8005, MOVE_FLASH) buffermovename(STR_VAR_1, MOVE_FLASH) }
+        elif (var(VAR_RESULT) == MOVE_KINESIS) { setvar(VAR_0x8005, MOVE_KINESIS) buffermovename(STR_VAR_1, MOVE_KINESIS) }
+        elif (var(VAR_RESULT) == MOVE_SAND_ATTACK) { setvar(VAR_0x8005, MOVE_SAND_ATTACK) buffermovename(STR_VAR_1, MOVE_SAND_ATTACK) }
+        elif (var(VAR_RESULT) == MOVE_SMOKESCREEN) { setvar(VAR_0x8005, MOVE_SMOKESCREEN) buffermovename(STR_VAR_1, MOVE_SMOKESCREEN) }
+        elif (var(VAR_RESULT) == MOVE_GROWL) { setvar(VAR_0x8005, MOVE_GROWL) buffermovename(STR_VAR_1, MOVE_GROWL) }
+        elif (var(VAR_RESULT) == MOVE_CHARM) { setvar(VAR_0x8005, MOVE_CHARM) buffermovename(STR_VAR_1, MOVE_CHARM) }
+        elif (var(VAR_RESULT) == MOVE_BABY_DOLL_EYES) { setvar(VAR_0x8005, MOVE_BABY_DOLL_EYES) buffermovename(STR_VAR_1, MOVE_BABY_DOLL_EYES) }
+        elif (var(VAR_RESULT) == MOVE_FEATHER_DANCE) { setvar(VAR_0x8005, MOVE_FEATHER_DANCE) buffermovename(STR_VAR_1, MOVE_FEATHER_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_MEMENTO) { setvar(VAR_0x8005, MOVE_MEMENTO) buffermovename(STR_VAR_1, MOVE_MEMENTO) }
+        elif (var(VAR_RESULT) == MOVE_NOBLE_ROAR) { setvar(VAR_0x8005, MOVE_NOBLE_ROAR) buffermovename(STR_VAR_1, MOVE_NOBLE_ROAR) }
+        elif (var(VAR_RESULT) == MOVE_STRENGTH_SAP) { setvar(VAR_0x8005, MOVE_STRENGTH_SAP) buffermovename(STR_VAR_1, MOVE_STRENGTH_SAP) }
+        elif (var(VAR_RESULT) == MOVE_TEARFUL_LOOK) { setvar(VAR_0x8005, MOVE_TEARFUL_LOOK) buffermovename(STR_VAR_1, MOVE_TEARFUL_LOOK) }
+        elif (var(VAR_RESULT) == MOVE_TICKLE) { setvar(VAR_0x8005, MOVE_TICKLE) buffermovename(STR_VAR_1, MOVE_TICKLE) }
+        elif (var(VAR_RESULT) == MOVE_VENOM_DRENCH) { setvar(VAR_0x8005, MOVE_VENOM_DRENCH) buffermovename(STR_VAR_1, MOVE_VENOM_DRENCH) }
+        elif (var(VAR_RESULT) == MOVE_LEER) { setvar(VAR_0x8005, MOVE_LEER) buffermovename(STR_VAR_1, MOVE_LEER) }
+        elif (var(VAR_RESULT) == MOVE_OCTOLOCK) { setvar(VAR_0x8005, MOVE_OCTOLOCK) buffermovename(STR_VAR_1, MOVE_OCTOLOCK) }
+        elif (var(VAR_RESULT) == MOVE_SCREECH) { setvar(VAR_0x8005, MOVE_SCREECH) buffermovename(STR_VAR_1, MOVE_SCREECH) }
+        elif (var(VAR_RESULT) == MOVE_TAIL_WHIP) { setvar(VAR_0x8005, MOVE_TAIL_WHIP) buffermovename(STR_VAR_1, MOVE_TAIL_WHIP) }
+        elif (var(VAR_RESULT) == MOVE_SWEET_SCENT) { setvar(VAR_0x8005, MOVE_SWEET_SCENT) buffermovename(STR_VAR_1, MOVE_SWEET_SCENT) }
+        elif (var(VAR_RESULT) == MOVE_CAPTIVATE) { setvar(VAR_0x8005, MOVE_CAPTIVATE) buffermovename(STR_VAR_1, MOVE_CAPTIVATE) }
+        elif (var(VAR_RESULT) == MOVE_CONFIDE) { setvar(VAR_0x8005, MOVE_CONFIDE) buffermovename(STR_VAR_1, MOVE_CONFIDE) }
+        elif (var(VAR_RESULT) == MOVE_EERIE_IMPULSE) { setvar(VAR_0x8005, MOVE_EERIE_IMPULSE) buffermovename(STR_VAR_1, MOVE_EERIE_IMPULSE) }
+        elif (var(VAR_RESULT) == MOVE_PARTING_SHOT) { setvar(VAR_0x8005, MOVE_PARTING_SHOT) buffermovename(STR_VAR_1, MOVE_PARTING_SHOT) }
+        elif (var(VAR_RESULT) == MOVE_FAKE_TEARS) { setvar(VAR_0x8005, MOVE_FAKE_TEARS) buffermovename(STR_VAR_1, MOVE_FAKE_TEARS) }
+        elif (var(VAR_RESULT) == MOVE_METAL_SOUND) { setvar(VAR_0x8005, MOVE_METAL_SOUND) buffermovename(STR_VAR_1, MOVE_METAL_SOUND) }
+        elif (var(VAR_RESULT) == MOVE_COTTON_SPORE) { setvar(VAR_0x8005, MOVE_COTTON_SPORE) buffermovename(STR_VAR_1, MOVE_COTTON_SPORE) }
+        elif (var(VAR_RESULT) == MOVE_SCARY_FACE) { setvar(VAR_0x8005, MOVE_SCARY_FACE) buffermovename(STR_VAR_1, MOVE_SCARY_FACE) }
+        elif (var(VAR_RESULT) == MOVE_STICKY_WEB) { setvar(VAR_0x8005, MOVE_STICKY_WEB) buffermovename(STR_VAR_1, MOVE_STICKY_WEB) }
+        elif (var(VAR_RESULT) == MOVE_STEALTH_ROCK) { setvar(VAR_0x8005, MOVE_STEALTH_ROCK) buffermovename(STR_VAR_1, MOVE_STEALTH_ROCK) }
+        elif (var(VAR_RESULT) == MOVE_SPIKES) { setvar(VAR_0x8005, MOVE_SPIKES) buffermovename(STR_VAR_1, MOVE_SPIKES) }
+        elif (var(VAR_RESULT) == MOVE_TOXIC_SPIKES) { setvar(VAR_0x8005, MOVE_TOXIC_SPIKES) buffermovename(STR_VAR_1, MOVE_TOXIC_SPIKES) }
+        elif (var(VAR_RESULT) == MOVE_SUBSTITUTE) { setvar(VAR_0x8005, MOVE_SUBSTITUTE) buffermovename(STR_VAR_1, MOVE_SUBSTITUTE) }
+        elif (var(VAR_RESULT) == MOVE_ENDURE) { setvar(VAR_0x8005, MOVE_ENDURE) buffermovename(STR_VAR_1, MOVE_ENDURE) }
+        elif (var(VAR_RESULT) == MOVE_FOLLOW_ME) { setvar(VAR_0x8005, MOVE_FOLLOW_ME) buffermovename(STR_VAR_1, MOVE_FOLLOW_ME) }
+        elif (var(VAR_RESULT) == MOVE_SAFEGUARD) { setvar(VAR_0x8005, MOVE_SAFEGUARD) buffermovename(STR_VAR_1, MOVE_SAFEGUARD) }
+        elif (var(VAR_RESULT) == MOVE_DEFOG) { setvar(VAR_0x8005, MOVE_DEFOG) buffermovename(STR_VAR_1, MOVE_DEFOG) }
+        elif (var(VAR_RESULT) == MOVE_KINGS_SHIELD) { setvar(VAR_0x8005, MOVE_KINGS_SHIELD) buffermovename(STR_VAR_1, MOVE_KINGS_SHIELD) }
+        elif (var(VAR_RESULT) == MOVE_PROTECT) { setvar(VAR_0x8005, MOVE_PROTECT) buffermovename(STR_VAR_1, MOVE_PROTECT) }
+        elif (var(VAR_RESULT) == MOVE_DETECT) { setvar(VAR_0x8005, MOVE_DETECT) buffermovename(STR_VAR_1, MOVE_DETECT) }
+        elif (var(VAR_RESULT) == MOVE_BANEFUL_BUNKER) { setvar(VAR_0x8005, MOVE_BANEFUL_BUNKER) buffermovename(STR_VAR_1, MOVE_BANEFUL_BUNKER) }
+        elif (var(VAR_RESULT) == MOVE_BURNING_BULWARK) { setvar(VAR_0x8005, MOVE_BURNING_BULWARK) buffermovename(STR_VAR_1, MOVE_BURNING_BULWARK) }
+        elif (var(VAR_RESULT) == MOVE_OBSTRUCT) { setvar(VAR_0x8005, MOVE_OBSTRUCT) buffermovename(STR_VAR_1, MOVE_OBSTRUCT) }
+        elif (var(VAR_RESULT) == MOVE_CRAFTY_SHIELD) { setvar(VAR_0x8005, MOVE_CRAFTY_SHIELD) buffermovename(STR_VAR_1, MOVE_CRAFTY_SHIELD) }
+        elif (var(VAR_RESULT) == MOVE_MAT_BLOCK) { setvar(VAR_0x8005, MOVE_MAT_BLOCK) buffermovename(STR_VAR_1, MOVE_MAT_BLOCK) }
+        elif (var(VAR_RESULT) == MOVE_SILK_TRAP) { setvar(VAR_0x8005, MOVE_SILK_TRAP) buffermovename(STR_VAR_1, MOVE_SILK_TRAP) }
+        elif (var(VAR_RESULT) == MOVE_QUICK_GUARD) { setvar(VAR_0x8005, MOVE_QUICK_GUARD) buffermovename(STR_VAR_1, MOVE_QUICK_GUARD) }
+        elif (var(VAR_RESULT) == MOVE_WIDE_GUARD) { setvar(VAR_0x8005, MOVE_WIDE_GUARD) buffermovename(STR_VAR_1, MOVE_WIDE_GUARD) }
+        elif (var(VAR_RESULT) == MOVE_SPIKY_SHIELD) { setvar(VAR_0x8005, MOVE_SPIKY_SHIELD) buffermovename(STR_VAR_1, MOVE_SPIKY_SHIELD) }
+        elif (var(VAR_RESULT) == MOVE_THUNDER_WAVE) { setvar(VAR_0x8005, MOVE_THUNDER_WAVE) buffermovename(STR_VAR_1, MOVE_THUNDER_WAVE) }
+        elif (var(VAR_RESULT) == MOVE_GLARE) { setvar(VAR_0x8005, MOVE_GLARE) buffermovename(STR_VAR_1, MOVE_GLARE) }
+        elif (var(VAR_RESULT) == MOVE_STUN_SPORE) { setvar(VAR_0x8005, MOVE_STUN_SPORE) buffermovename(STR_VAR_1, MOVE_STUN_SPORE) }
+        elif (var(VAR_RESULT) == MOVE_WILL_O_WISP) { setvar(VAR_0x8005, MOVE_WILL_O_WISP) buffermovename(STR_VAR_1, MOVE_WILL_O_WISP) }
+        elif (var(VAR_RESULT) == MOVE_POISON_GAS) { setvar(VAR_0x8005, MOVE_POISON_GAS) buffermovename(STR_VAR_1, MOVE_POISON_GAS) }
+        elif (var(VAR_RESULT) == MOVE_TOXIC) { setvar(VAR_0x8005, MOVE_TOXIC) buffermovename(STR_VAR_1, MOVE_TOXIC) }
+        elif (var(VAR_RESULT) == MOVE_TOXIC_THREAD) { setvar(VAR_0x8005, MOVE_TOXIC_THREAD) buffermovename(STR_VAR_1, MOVE_TOXIC_THREAD) }
+        elif (var(VAR_RESULT) == MOVE_HYPNOSIS) { setvar(VAR_0x8005, MOVE_HYPNOSIS) buffermovename(STR_VAR_1, MOVE_HYPNOSIS) }
+        elif (var(VAR_RESULT) == MOVE_GRASS_WHISTLE) { setvar(VAR_0x8005, MOVE_GRASS_WHISTLE) buffermovename(STR_VAR_1, MOVE_GRASS_WHISTLE) }
+        elif (var(VAR_RESULT) == MOVE_LOVELY_KISS) { setvar(VAR_0x8005, MOVE_LOVELY_KISS) buffermovename(STR_VAR_1, MOVE_LOVELY_KISS) }
+        elif (var(VAR_RESULT) == MOVE_SING) { setvar(VAR_0x8005, MOVE_SING) buffermovename(STR_VAR_1, MOVE_SING) }
+        elif (var(VAR_RESULT) == MOVE_SLEEP_POWDER) { setvar(VAR_0x8005, MOVE_SLEEP_POWDER) buffermovename(STR_VAR_1, MOVE_SLEEP_POWDER) }
+        elif (var(VAR_RESULT) == MOVE_SPORE) { setvar(VAR_0x8005, MOVE_SPORE) buffermovename(STR_VAR_1, MOVE_SPORE) }
+        elif (var(VAR_RESULT) == MOVE_TEETER_DANCE) { setvar(VAR_0x8005, MOVE_TEETER_DANCE) buffermovename(STR_VAR_1, MOVE_TEETER_DANCE) }
+        elif (var(VAR_RESULT) == MOVE_CONFUSE_RAY) { setvar(VAR_0x8005, MOVE_CONFUSE_RAY) buffermovename(STR_VAR_1, MOVE_CONFUSE_RAY) }
+        elif (var(VAR_RESULT) == MOVE_SUPERSONIC) { setvar(VAR_0x8005, MOVE_SUPERSONIC) buffermovename(STR_VAR_1, MOVE_SUPERSONIC) }
+        elif (var(VAR_RESULT) == MOVE_ATTRACT) { setvar(VAR_0x8005, MOVE_ATTRACT) buffermovename(STR_VAR_1, MOVE_ATTRACT) }
+        elif (var(VAR_RESULT) == MOVE_METRONOME) { setvar(VAR_0x8005, MOVE_METRONOME) buffermovename(STR_VAR_1, MOVE_METRONOME) }
+        elif (var(VAR_RESULT) == MOVE_TRICK_ROOM) { setvar(VAR_0x8005, MOVE_TRICK_ROOM) buffermovename(STR_VAR_1, MOVE_TRICK_ROOM) }
+        elif (var(VAR_RESULT) == MOVE_TAILWIND) { setvar(VAR_0x8005, MOVE_TAILWIND) buffermovename(STR_VAR_1, MOVE_TAILWIND) }
+        elif (var(VAR_RESULT) == MOVE_RECYCLE) { setvar(VAR_0x8005, MOVE_RECYCLE) buffermovename(STR_VAR_1, MOVE_RECYCLE) }
+        elif (var(VAR_RESULT) == MOVE_LIGHT_SCREEN) { setvar(VAR_0x8005, MOVE_LIGHT_SCREEN) buffermovename(STR_VAR_1, MOVE_LIGHT_SCREEN) }
+        elif (var(VAR_RESULT) == MOVE_REFLECT) { setvar(VAR_0x8005, MOVE_REFLECT) buffermovename(STR_VAR_1, MOVE_REFLECT) }
+        elif (var(VAR_RESULT) == MOVE_HEAL_BELL) { setvar(VAR_0x8005, MOVE_HEAL_BELL) buffermovename(STR_VAR_1, MOVE_HEAL_BELL) }
+
+        
+
+
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+}
+
+script StoneBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE01_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Knuckle Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES --- 
+        // Early-Game Physical Coverage & Utility (BP 40 - 60)
+        dynmultipush("Mach Punch", MOVE_MACH_PUNCH)
+        dynmultipush("Bullet Punch", MOVE_BULLET_PUNCH)
+        dynmultipush("Ice Shard", MOVE_ICE_SHARD)
+        dynmultipush("Shadow Sneak", MOVE_SHADOW_SNEAK)
+        dynmultipush("Rock Smash", MOVE_ROCK_SMASH)
+        dynmultipush("Cut", MOVE_CUT)
+        dynmultipush("False Swipe", MOVE_FALSE_SWIPE)
+        dynmultipush("Tackle", MOVE_TACKLE)
+        dynmultipush("Pound", MOVE_POUND)
+        dynmultipush("Scratch", MOVE_SCRATCH)
+        dynmultipush("Double Slap", MOVE_DOUBLE_SLAP)
+        dynmultipush("Comet Punch", MOVE_COMET_PUNCH)
+        dynmultipush("Fury Cutter", MOVE_FURY_CUTTER)
+        dynmultipush("Rollout", MOVE_ROLLOUT)
+        dynmultipush("Echoed Voice", MOVE_ECHOED_VOICE)
+        dynmultipush("Ember", MOVE_EMBER)
+        dynmultipush("Water Gun", MOVE_WATER_GUN)
+        dynmultipush("Thundershock", MOVE_THUNDERSHOCK)
+        dynmultipush("Gust", MOVE_GUST)
+        dynmultipush("Confusion", MOVE_CONFUSION)
+        dynmultipush("Mega Drain", MOVE_MEGA_DRAIN)
+        dynmultipush("Smog", MOVE_SMOG)
+		
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_MACH_PUNCH)     { setvar(VAR_0x8005, MOVE_MACH_PUNCH)   buffermovename(STR_VAR_1, MOVE_MACH_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_BULLET_PUNCH) { setvar(VAR_0x8005, MOVE_BULLET_PUNCH) buffermovename(STR_VAR_1, MOVE_BULLET_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_ICE_SHARD)    { setvar(VAR_0x8005, MOVE_ICE_SHARD)    buffermovename(STR_VAR_1, MOVE_ICE_SHARD) }
+        elif (var(VAR_RESULT) == MOVE_SHADOW_SNEAK) { setvar(VAR_0x8005, MOVE_SHADOW_SNEAK) buffermovename(STR_VAR_1, MOVE_SHADOW_SNEAK) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_SMASH)   { setvar(VAR_0x8005, MOVE_ROCK_SMASH)   buffermovename(STR_VAR_1, MOVE_ROCK_SMASH) }
+        elif (var(VAR_RESULT) == MOVE_CUT)          { setvar(VAR_0x8005, MOVE_CUT)          buffermovename(STR_VAR_1, MOVE_CUT) }
+        elif (var(VAR_RESULT) == MOVE_FALSE_SWIPE) { setvar(VAR_0x8005, MOVE_FALSE_SWIPE) buffermovename(STR_VAR_1, MOVE_FALSE_SWIPE) }
+        elif (var(VAR_RESULT) == MOVE_TACKLE)       { setvar(VAR_0x8005, MOVE_TACKLE)       buffermovename(STR_VAR_1, MOVE_TACKLE) }
+        elif (var(VAR_RESULT) == MOVE_POUND)        { setvar(VAR_0x8005, MOVE_POUND)        buffermovename(STR_VAR_1, MOVE_POUND) }
+        elif (var(VAR_RESULT) == MOVE_SCRATCH)      { setvar(VAR_0x8005, MOVE_SCRATCH)      buffermovename(STR_VAR_1, MOVE_SCRATCH) }
+        elif (var(VAR_RESULT) == MOVE_DOUBLE_SLAP)  { setvar(VAR_0x8005, MOVE_DOUBLE_SLAP)  buffermovename(STR_VAR_1, MOVE_DOUBLE_SLAP) }
+        elif (var(VAR_RESULT) == MOVE_COMET_PUNCH)  { setvar(VAR_0x8005, MOVE_COMET_PUNCH)  buffermovename(STR_VAR_1, MOVE_COMET_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_FURY_CUTTER)  { setvar(VAR_0x8005, MOVE_FURY_CUTTER)  buffermovename(STR_VAR_1, MOVE_FURY_CUTTER) }
+        elif (var(VAR_RESULT) == MOVE_ROLLOUT)      { setvar(VAR_0x8005, MOVE_ROLLOUT)      buffermovename(STR_VAR_1, MOVE_ROLLOUT) }
+        elif (var(VAR_RESULT) == MOVE_ECHOED_VOICE) { setvar(VAR_0x8005, MOVE_ECHOED_VOICE) buffermovename(STR_VAR_1, MOVE_ECHOED_VOICE) }
+        elif (var(VAR_RESULT) == MOVE_EMBER)        { setvar(VAR_0x8005, MOVE_EMBER)        buffermovename(STR_VAR_1, MOVE_EMBER) }
+        elif (var(VAR_RESULT) == MOVE_WATER_GUN)    { setvar(VAR_0x8005, MOVE_WATER_GUN)    buffermovename(STR_VAR_1, MOVE_WATER_GUN) }
+        elif (var(VAR_RESULT) == MOVE_THUNDERSHOCK) { setvar(VAR_0x8005, MOVE_THUNDERSHOCK) buffermovename(STR_VAR_1, MOVE_THUNDERSHOCK) }
+        elif (var(VAR_RESULT) == MOVE_GUST)         { setvar(VAR_0x8005, MOVE_GUST)         buffermovename(STR_VAR_1, MOVE_GUST) }
+        elif (var(VAR_RESULT) == MOVE_CONFUSION)    { setvar(VAR_0x8005, MOVE_CONFUSION)    buffermovename(STR_VAR_1, MOVE_CONFUSION) }
+        elif (var(VAR_RESULT) == MOVE_MEGA_DRAIN)   { setvar(VAR_0x8005, MOVE_MEGA_DRAIN)   buffermovename(STR_VAR_1, MOVE_MEGA_DRAIN) }
+        elif (var(VAR_RESULT) == MOVE_SMOG)         { setvar(VAR_0x8005, MOVE_SMOG)         buffermovename(STR_VAR_1, MOVE_SMOG) }
+        elif (var(VAR_RESULT) == MOVE_FAIRY_WIND)   { setvar(VAR_0x8005, MOVE_FAIRY_WIND)   buffermovename(STR_VAR_1, MOVE_FAIRY_WIND) }
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+script KnuckleBadgeMoveTutor {
+	lock 
+    faceplayer
+	if(flag(FLAG_BADGE02_GET) == FALSE) {
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(format("Unfortunately, it seems you don't have the Knuckle Badge."))
+		goto(MoveTutorMenu)
+	} else {
+    // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+    dynmultipush("Fake Out", MOVE_FAKE_OUT)
+    dynmultipush("Echoed Voice", MOVE_ECHOED_VOICE)
+    dynmultipush("Flame Charge", MOVE_FLAME_CHARGE)
+    dynmultipush("Incinerate", MOVE_INCINERATE)
+    dynmultipush("Aqua Jet", MOVE_AQUA_JET)
+    dynmultipush("Chilling Water", MOVE_CHILLING_WATER)
+    dynmultipush("Spark", MOVE_SPARK)
+    dynmultipush("Charge Beam", MOVE_CHARGE_BEAM)
+    dynmultipush("Razor Leaf", MOVE_RAZOR_LEAF)
+    dynmultipush("Magical Leaf", MOVE_MAGICAL_LEAF)
+    dynmultipush("Avalanche", MOVE_AVALANCHE)
+    dynmultipush("Icy Wind", MOVE_ICY_WIND)
+    dynmultipush("Karate Chop", MOVE_KARATE_CHOP)
+    dynmultipush("Vacuum Wave", MOVE_VACUUM_WAVE)
+    dynmultipush("Poison Fang", MOVE_POISON_FANG)
+    dynmultipush("Smog", MOVE_SMOG)
+    dynmultipush("Sand Tomb", MOVE_SAND_TOMB)
+    dynmultipush("Mud-Slap", MOVE_MUD_SLAP)
+    dynmultipush("Dual Wingbeat", MOVE_DUAL_WINGBEAT)
+    dynmultipush("Air Cutter", MOVE_AIR_CUTTER)
+    dynmultipush("Psycho Cut", MOVE_PSYCHO_CUT)
+    dynmultipush("Confusion", MOVE_CONFUSION)
+    dynmultipush("Pounce", MOVE_POUNCE)
+    dynmultipush("Struggle Bug", MOVE_STRUGGLE_BUG)
+    dynmultipush("Smack Down", MOVE_SMACK_DOWN)
+    dynmultipush("Ancient Power", MOVE_ANCIENT_POWER)
+    dynmultipush("Lick", MOVE_LICK)
+    dynmultipush("Night Shade", MOVE_NIGHT_SHADE)
+    dynmultipush("Dual Chop", MOVE_DUAL_CHOP)
+    dynmultipush("Twister", MOVE_TWISTER)
+    dynmultipush("Payback", MOVE_PAYBACK)
+    dynmultipush("Snarl", MOVE_SNARL)
+    dynmultipush("Bullet Punch", MOVE_BULLET_PUNCH)
+    dynmultipush("Mirror Shot", MOVE_MIRROR_SHOT)
+    dynmultipush("Disarming Voice", MOVE_DISARMING_VOICE)
+    dynmultipush("Fairy Wind", MOVE_FAIRY_WIND)
+    // Add more if your engine supports additional moves
+
+    // --- DYNAMIC MULTICHOICE STACK ---
+    dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+    // --- SET VAR/BUFFER NAME FOR MOVES ---
+    // (the following if-elif block checks which berry was chosen and sets variables accordingly)
+    if(var(VAR_RESULT) == MOVE_FAKE_OUT)     	  { setvar(VAR_0x8005, MOVE_FAKE_OUT)         buffermovename(STR_VAR_1, MOVE_FAKE_OUT) }
+    elif(var(VAR_RESULT) == MOVE_ECHOED_VOICE)    { setvar(VAR_0x8005, MOVE_ECHOED_VOICE)     buffermovename(STR_VAR_1, MOVE_ECHOED_VOICE) }
+    elif(var(VAR_RESULT) == MOVE_FLAME_CHARGE)    { setvar(VAR_0x8005, MOVE_FLAME_CHARGE)     buffermovename(STR_VAR_1, MOVE_FLAME_CHARGE) }
+    elif(var(VAR_RESULT) == MOVE_INCINERATE)      { setvar(VAR_0x8005, MOVE_INCINERATE)       buffermovename(STR_VAR_1, MOVE_INCINERATE) }
+    elif(var(VAR_RESULT) == MOVE_AQUA_JET)        { setvar(VAR_0x8005, MOVE_AQUA_JET)         buffermovename(STR_VAR_1, MOVE_AQUA_JET) }
+    elif(var(VAR_RESULT) == MOVE_CHILLING_WATER)  { setvar(VAR_0x8005, MOVE_CHILLING_WATER)   buffermovename(STR_VAR_1, MOVE_CHILLING_WATER) }
+    elif(var(VAR_RESULT) == MOVE_SPARK)     	  { setvar(VAR_0x8005, MOVE_SPARK)            buffermovename(STR_VAR_1, MOVE_SPARK) }
+    elif(var(VAR_RESULT) == MOVE_CHARGE_BEAM)     { setvar(VAR_0x8005, MOVE_CHARGE_BEAM)  	  buffermovename(STR_VAR_1, MOVE_CHARGE_BEAM) }
+    elif(var(VAR_RESULT) == MOVE_RAZOR_LEAF)      { setvar(VAR_0x8005, MOVE_RAZOR_LEAF)       buffermovename(STR_VAR_1, MOVE_RAZOR_LEAF) }
+    elif(var(VAR_RESULT) == MOVE_MAGICAL_LEAF)    { setvar(VAR_0x8005, MOVE_MAGICAL_LEAF)     buffermovename(STR_VAR_1, MOVE_MAGICAL_LEAF) }
+    elif(var(VAR_RESULT) == MOVE_AVALANCHE)       { setvar(VAR_0x8005, MOVE_AVALANCHE)        buffermovename(STR_VAR_1, MOVE_AVALANCHE) }
+    elif(var(VAR_RESULT) == MOVE_ICY_WIND)        { setvar(VAR_0x8005, MOVE_ICY_WIND)         buffermovename(STR_VAR_1, MOVE_ICY_WIND) }
+    elif(var(VAR_RESULT) == MOVE_KARATE_CHOP)     { setvar(VAR_0x8005, MOVE_KARATE_CHOP)      buffermovename(STR_VAR_1, MOVE_KARATE_CHOP) }
+    elif(var(VAR_RESULT) == MOVE_VACUUM_WAVE)     { setvar(VAR_0x8005, MOVE_VACUUM_WAVE)      buffermovename(STR_VAR_1, MOVE_VACUUM_WAVE) }
+    elif(var(VAR_RESULT) == MOVE_POISON_FANG)     { setvar(VAR_0x8005, MOVE_POISON_FANG)      buffermovename(STR_VAR_1, MOVE_POISON_FANG) }
+    elif(var(VAR_RESULT) == MOVE_SMOG)     		  { setvar(VAR_0x8005, MOVE_SMOG)             buffermovename(STR_VAR_1, MOVE_SMOG) }
+    elif(var(VAR_RESULT) == MOVE_SAND_TOMB)       { setvar(VAR_0x8005, MOVE_SAND_TOMB)        buffermovename(STR_VAR_1, MOVE_SAND_TOMB) }
+    elif(var(VAR_RESULT) == MOVE_MUD_SLAP) 		  { setvar(VAR_0x8005, MOVE_MUD_SLAP)   	  buffermovename(STR_VAR_1, MOVE_MUD_SLAP) }
+    elif(var(VAR_RESULT) == MOVE_SPARK)     	  { setvar(VAR_0x8005, MOVE_SPARK)            buffermovename(STR_VAR_1, MOVE_SPARK) }
+    elif(var(VAR_RESULT) == MOVE_DUAL_WINGBEAT)   { setvar(VAR_0x8005, MOVE_DUAL_WINGBEAT)    buffermovename(STR_VAR_1, MOVE_DUAL_WINGBEAT) }
+    elif(var(VAR_RESULT) == MOVE_AIR_CUTTER)      { setvar(VAR_0x8005, MOVE_AIR_CUTTER)       buffermovename(STR_VAR_1, MOVE_AIR_CUTTER) }
+    elif(var(VAR_RESULT) == MOVE_MAGICAL_LEAF)    { setvar(VAR_0x8005, MOVE_MAGICAL_LEAF)     buffermovename(STR_VAR_1, MOVE_MAGICAL_LEAF) }
+    elif(var(VAR_RESULT) == MOVE_PSYCHO_CUT)      { setvar(VAR_0x8005, MOVE_PSYCHO_CUT)       buffermovename(STR_VAR_1, MOVE_PSYCHO_CUT) }
+    elif(var(VAR_RESULT) == MOVE_CONFUSION)       { setvar(VAR_0x8005, MOVE_CONFUSION)        buffermovename(STR_VAR_1, MOVE_CONFUSION) }
+    elif(var(VAR_RESULT) == MOVE_KARATE_CHOP)     { setvar(VAR_0x8005, MOVE_KARATE_CHOP)      buffermovename(STR_VAR_1, MOVE_KARATE_CHOP) }
+    elif(var(VAR_RESULT) == MOVE_POUNCE)          { setvar(VAR_0x8005, MOVE_POUNCE)           buffermovename(STR_VAR_1, MOVE_POUNCE) }
+    elif(var(VAR_RESULT) == MOVE_STRUGGLE_BUG)    { setvar(VAR_0x8005, MOVE_STRUGGLE_BUG)     buffermovename(STR_VAR_1, MOVE_STRUGGLE_BUG) }
+    elif(var(VAR_RESULT) == MOVE_SMACK_DOWN)      { setvar(VAR_0x8005, MOVE_SMACK_DOWN)       buffermovename(STR_VAR_1, MOVE_SMACK_DOWN) }
+    elif(var(VAR_RESULT) == MOVE_ANCIENT_POWER)   { setvar(VAR_0x8005, MOVE_ANCIENT_POWER)    buffermovename(STR_VAR_1, MOVE_ANCIENT_POWER) }
+    elif(var(VAR_RESULT) == MOVE_LICK)       	  { setvar(VAR_0x8005, MOVE_LICK)             buffermovename(STR_VAR_1, MOVE_LICK) }
+    elif(var(VAR_RESULT) == MOVE_NIGHT_SHADE)     { setvar(VAR_0x8005, MOVE_NIGHT_SHADE)      buffermovename(STR_VAR_1, MOVE_NIGHT_SHADE) }
+    elif(var(VAR_RESULT) == MOVE_DUAL_CHOP)       { setvar(VAR_0x8005, MOVE_DUAL_CHOP)        buffermovename(STR_VAR_1, MOVE_DUAL_CHOP) }
+    elif(var(VAR_RESULT) == MOVE_TWISTER)    	  { setvar(VAR_0x8005, MOVE_TWISTER)      	  buffermovename(STR_VAR_1, MOVE_TWISTER) }
+    elif(var(VAR_RESULT) == MOVE_PAYBACK)         { setvar(VAR_0x8005, MOVE_PAYBACK)          buffermovename(STR_VAR_1, MOVE_PAYBACK) }
+    elif(var(VAR_RESULT) == MOVE_SNARL)    		  { setvar(VAR_0x8005, MOVE_SNARL)            buffermovename(STR_VAR_1, MOVE_SNARL) }
+    elif(var(VAR_RESULT) == MOVE_BULLET_PUNCH)    { setvar(VAR_0x8005, MOVE_BULLET_PUNCH)     buffermovename(STR_VAR_1, MOVE_BULLET_PUNCH) }
+    elif(var(VAR_RESULT) == MOVE_MIRROR_SHOT)     { setvar(VAR_0x8005, MOVE_MIRROR_SHOT)      buffermovename(STR_VAR_1, MOVE_MIRROR_SHOT) }
+    elif(var(VAR_RESULT) == MOVE_DISARMING_VOICE) { setvar(VAR_0x8005, MOVE_DISARMING_VOICE)  buffermovename(STR_VAR_1, MOVE_DISARMING_VOICE) }
+    elif(var(VAR_RESULT) == MOVE_FAIRY_WIND)      { setvar(VAR_0x8005, MOVE_FAIRY_WIND)       buffermovename(STR_VAR_1, MOVE_FAIRY_WIND) }		
+	
+  goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+  goto(MoveTutorQuestion)
+	}	
+}
+
+script DynamoBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE03_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Dynamo Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Physical Mid-Game Progression Attacks
+        dynmultipush("Flame Wheel", MOVE_FLAME_WHEEL)
+        dynmultipush("Water Pulse", MOVE_WATER_PULSE)
+        dynmultipush("Bite", MOVE_BITE)
+        dynmultipush("Spark", MOVE_SPARK)
+        dynmultipush("Force Palm", MOVE_FORCE_PALM)
+        dynmultipush("Aerial Ace", MOVE_AERIAL_ACE)
+        dynmultipush("Shadow Claw", MOVE_SHADOW_CLAW)
+        dynmultipush("Bulldoze", MOVE_BULLDOZE)
+        dynmultipush("Rock Tomb", MOVE_ROCK_TOMB)
+        dynmultipush("Bug Bite", MOVE_BUG_BITE)
+        dynmultipush("Pluck", MOVE_PLUCK)
+        dynmultipush("Smart Strike", MOVE_SMART_STRIKE)
+        dynmultipush("Metal Claw", MOVE_METAL_CLAW)
+        dynmultipush("Stomp", MOVE_STOMP)
+        dynmultipush("Covet", MOVE_COVET)
+        dynmultipush("Shock Wave", MOVE_SHOCK_WAVE)
+        dynmultipush("Swift", MOVE_SWIFT)
+        dynmultipush("Icy Wind", MOVE_ICY_WIND)
+        dynmultipush("Mud-Shot", MOVE_MUD_SHOT)
+        dynmultipush("Mega Drain", MOVE_MEGA_DRAIN)
+        dynmultipush("Acid Spray", MOVE_ACID_SPRAY)
+        dynmultipush("Snarl", MOVE_SNARL)
+        dynmultipush("Psybeam", MOVE_PSYBEAM)
+        dynmultipush("Disarming Voice", MOVE_DISARMING_VOICE)
+        dynmultipush("Ominous Wind", MOVE_OMINOUS_WIND)
+        dynmultipush("Ancient Power", MOVE_ANCIENT_POWER)
+        dynmultipush("Silver Wind", MOVE_SILVER_WIND)
+        dynmultipush("Clear Smog", MOVE_CLEAR_SMOG)
+        dynmultipush("Hex", MOVE_HEX)
+        dynmultipush("Bullet Seed", MOVE_BULLET_SEED)
+        dynmultipush("Icicle Spear", MOVE_ICICLE_SPEAR)
+        dynmultipush("Rock Blast", MOVE_ROCK_BLAST)
+        dynmultipush("Arm Thrust", MOVE_ARM_THRUST)
+        dynmultipush("Fury Swipes", MOVE_FURY_SWIPES)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_FLAME_WHEEL) { setvar(VAR_0x8005, MOVE_FLAME_WHEEL) buffermovename(STR_VAR_1, MOVE_FLAME_WHEEL) }
+        elif (var(VAR_RESULT) == MOVE_WATER_PULSE) { setvar(VAR_0x8005, MOVE_WATER_PULSE) buffermovename(STR_VAR_1, MOVE_WATER_PULSE) }
+        elif (var(VAR_RESULT) == MOVE_BITE) { setvar(VAR_0x8005, MOVE_BITE) buffermovename(STR_VAR_1, MOVE_BITE) }
+        elif (var(VAR_RESULT) == MOVE_SPARK) { setvar(VAR_0x8005, MOVE_SPARK) buffermovename(STR_VAR_1, MOVE_SPARK) }
+        elif (var(VAR_RESULT) == MOVE_FORCE_PALM) { setvar(VAR_0x8005, MOVE_FORCE_PALM) buffermovename(STR_VAR_1, MOVE_FORCE_PALM) }
+        elif (var(VAR_RESULT) == MOVE_AERIAL_ACE) { setvar(VAR_0x8005, MOVE_AERIAL_ACE) buffermovename(STR_VAR_1, MOVE_AERIAL_ACE) }
+        elif (var(VAR_RESULT) == MOVE_SHADOW_CLAW) { setvar(VAR_0x8005, MOVE_SHADOW_CLAW) buffermovename(STR_VAR_1, MOVE_SHADOW_CLAW) }
+        elif (var(VAR_RESULT) == MOVE_BULLDOZE) { setvar(VAR_0x8005, MOVE_BULLDOZE) buffermovename(STR_VAR_1, MOVE_BULLDOZE) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_TOMB) { setvar(VAR_0x8005, MOVE_ROCK_TOMB) buffermovename(STR_VAR_1, MOVE_ROCK_TOMB) }
+        elif (var(VAR_RESULT) == MOVE_BUG_BITE) { setvar(VAR_0x8005, MOVE_BUG_BITE) buffermovename(STR_VAR_1, MOVE_BUG_BITE) }
+        elif (var(VAR_RESULT) == MOVE_PLUCK) { setvar(VAR_0x8005, MOVE_PLUCK) buffermovename(STR_VAR_1, MOVE_PLUCK) }
+        elif (var(VAR_RESULT) == MOVE_SMART_STRIKE) { setvar(VAR_0x8005, MOVE_SMART_STRIKE) buffermovename(STR_VAR_1, MOVE_SMART_STRIKE) }
+        elif (var(VAR_RESULT) == MOVE_METAL_CLAW) { setvar(VAR_0x8005, MOVE_METAL_CLAW) buffermovename(STR_VAR_1, MOVE_METAL_CLAW) }
+        elif (var(VAR_RESULT) == MOVE_STOMP) { setvar(VAR_0x8005, MOVE_STOMP) buffermovename(STR_VAR_1, MOVE_STOMP) }
+        elif (var(VAR_RESULT) == MOVE_COVET) { setvar(VAR_0x8005, MOVE_COVET) buffermovename(STR_VAR_1, MOVE_COVET) }
+        elif (var(VAR_RESULT) == MOVE_SHOCK_WAVE) { setvar(VAR_0x8005, MOVE_SHOCK_WAVE) buffermovename(STR_VAR_1, MOVE_SHOCK_WAVE) }
+        elif (var(VAR_RESULT) == MOVE_SWIFT) { setvar(VAR_0x8005, MOVE_SWIFT) buffermovename(STR_VAR_1, MOVE_SWIFT) }
+        elif (var(VAR_RESULT) == MOVE_ICY_WIND) { setvar(VAR_0x8005, MOVE_ICY_WIND) buffermovename(STR_VAR_1, MOVE_ICY_WIND) }
+        elif (var(VAR_RESULT) == MOVE_MUD_SHOT) { setvar(VAR_0x8005, MOVE_MUD_SHOT) buffermovename(STR_VAR_1, MOVE_MUD_SHOT) }
+        elif (var(VAR_RESULT) == MOVE_MEGA_DRAIN) { setvar(VAR_0x8005, MOVE_MEGA_DRAIN) buffermovename(STR_VAR_1, MOVE_MEGA_DRAIN) }
+        elif (var(VAR_RESULT) == MOVE_ACID_SPRAY) { setvar(VAR_0x8005, MOVE_ACID_SPRAY) buffermovename(STR_VAR_1, MOVE_ACID_SPRAY) }
+        elif (var(VAR_RESULT) == MOVE_SNARL) { setvar(VAR_0x8005, MOVE_SNARL) buffermovename(STR_VAR_1, MOVE_SNARL) }
+        elif (var(VAR_RESULT) == MOVE_PSYBEAM) { setvar(VAR_0x8005, MOVE_PSYBEAM) buffermovename(STR_VAR_1, MOVE_PSYBEAM) }
+        elif (var(VAR_RESULT) == MOVE_DISARMING_VOICE) { setvar(VAR_0x8005, MOVE_DISARMING_VOICE) buffermovename(STR_VAR_1, MOVE_DISARMING_VOICE) }
+        elif (var(VAR_RESULT) == MOVE_OMINOUS_WIND) { setvar(VAR_0x8005, MOVE_OMINOUS_WIND) buffermovename(STR_VAR_1, MOVE_OMINOUS_WIND) }
+        elif (var(VAR_RESULT) == MOVE_ANCIENT_POWER) { setvar(VAR_0x8005, MOVE_ANCIENT_POWER) buffermovename(STR_VAR_1, MOVE_ANCIENT_POWER) }
+        elif (var(VAR_RESULT) == MOVE_SILVER_WIND) { setvar(VAR_0x8005, MOVE_SILVER_WIND) buffermovename(STR_VAR_1, MOVE_SILVER_WIND) }
+        elif (var(VAR_RESULT) == MOVE_CLEAR_SMOG) { setvar(VAR_0x8005, MOVE_CLEAR_SMOG) buffermovename(STR_VAR_1, MOVE_CLEAR_SMOG) }
+        elif (var(VAR_RESULT) == MOVE_HEX) { setvar(VAR_0x8005, MOVE_HEX) buffermovename(STR_VAR_1, MOVE_HEX) }
+        elif (var(VAR_RESULT) == MOVE_BULLET_SEED) { setvar(VAR_0x8005, MOVE_BULLET_SEED) buffermovename(STR_VAR_1, MOVE_BULLET_SEED) }
+        elif (var(VAR_RESULT) == MOVE_ICICLE_SPEAR) { setvar(VAR_0x8005, MOVE_ICICLE_SPEAR) buffermovename(STR_VAR_1, MOVE_ICICLE_SPEAR) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_BLAST) { setvar(VAR_0x8005, MOVE_ROCK_BLAST) buffermovename(STR_VAR_1, MOVE_ROCK_BLAST) }
+        elif (var(VAR_RESULT) == MOVE_ARM_THRUST) { setvar(VAR_0x8005, MOVE_ARM_THRUST) buffermovename(STR_VAR_1, MOVE_ARM_THRUST) }
+        elif (var(VAR_RESULT) == MOVE_FURY_SWIPES) { setvar(VAR_0x8005, MOVE_FURY_SWIPES) buffermovename(STR_VAR_1, MOVE_FURY_SWIPES) }
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+
+script HeatBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE04_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Heat Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Mid-Game Elemental & Utility Coverage (BP 60 - 75)
+        dynmultipush("Fire Punch", MOVE_FIRE_PUNCH)
+        dynmultipush("Ice Punch", MOVE_ICE_PUNCH)
+        dynmultipush("Thunder Punch", MOVE_THUNDER_PUNCH)
+        dynmultipush("Air Cutter", MOVE_AIR_CUTTER)
+        dynmultipush("Water Pulse", MOVE_WATER_PULSE)
+        dynmultipush("Bug Bite", MOVE_BUG_BITE)
+        dynmultipush("Pluck", MOVE_PLUCK)
+        dynmultipush("Bite", MOVE_BITE)
+        dynmultipush("Heart Stamp", MOVE_HEART_STAMP)
+        dynmultipush("Stomp", MOVE_STOMP)
+
+        // Balanced STAB Alternatives
+        dynmultipush("Flame Burst", MOVE_FLAME_BURST)
+        dynmultipush("Bubble Beam", MOVE_BUBBLE_BEAM)
+        dynmultipush("Aurora Beam", MOVE_AURORA_BEAM)
+        dynmultipush("Shock Wave", MOVE_SHOCK_WAVE)
+        dynmultipush("Mega Drain", MOVE_MEGA_DRAIN)
+        dynmultipush("Mud-Shot", MOVE_MUD_SHOT)
+        dynmultipush("Rock Tomb", MOVE_ROCK_TOMB)
+        dynmultipush("Bulldoze", MOVE_BULLDOZE)
+
+        // Utility Attacks
+        dynmultipush("Knock Off", MOVE_KNOCK_OFF)
+        dynmultipush("Thief", MOVE_THIEF)
+        dynmultipush("Rapid Spin", MOVE_RAPID_SPIN)
+        dynmultipush("Nuzzle", MOVE_NUZZLE)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_FIRE_PUNCH) { setvar(VAR_0x8005, MOVE_FIRE_PUNCH) buffermovename(STR_VAR_1, MOVE_FIRE_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_ICE_PUNCH) { setvar(VAR_0x8005, MOVE_ICE_PUNCH) buffermovename(STR_VAR_1, MOVE_ICE_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_THUNDER_PUNCH) { setvar(VAR_0x8005, MOVE_THUNDER_PUNCH) buffermovename(STR_VAR_1, MOVE_THUNDER_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_AIR_CUTTER) { setvar(VAR_0x8005, MOVE_AIR_CUTTER) buffermovename(STR_VAR_1, MOVE_AIR_CUTTER) }
+        elif (var(VAR_RESULT) == MOVE_WATER_PULSE) { setvar(VAR_0x8005, MOVE_WATER_PULSE) buffermovename(STR_VAR_1, MOVE_WATER_PULSE) }
+        elif (var(VAR_RESULT) == MOVE_BUG_BITE) { setvar(VAR_0x8005, MOVE_BUG_BITE) buffermovename(STR_VAR_1, MOVE_BUG_BITE) }
+        elif (var(VAR_RESULT) == MOVE_PLUCK) { setvar(VAR_0x8005, MOVE_PLUCK) buffermovename(STR_VAR_1, MOVE_PLUCK) }
+        elif (var(VAR_RESULT) == MOVE_BITE) { setvar(VAR_0x8005, MOVE_BITE) buffermovename(STR_VAR_1, MOVE_BITE) }
+        elif (var(VAR_RESULT) == MOVE_HEART_STAMP) { setvar(VAR_0x8005, MOVE_HEART_STAMP) buffermovename(STR_VAR_1, MOVE_HEART_STAMP) }
+        elif (var(VAR_RESULT) == MOVE_STOMP) { setvar(VAR_0x8005, MOVE_STOMP) buffermovename(STR_VAR_1, MOVE_STOMP) }
+        elif (var(VAR_RESULT) == MOVE_FLAME_BURST) { setvar(VAR_0x8005, MOVE_FLAME_BURST) buffermovename(STR_VAR_1, MOVE_FLAME_BURST) }
+        elif (var(VAR_RESULT) == MOVE_BUBBLE_BEAM) { setvar(VAR_0x8005, MOVE_BUBBLE_BEAM) buffermovename(STR_VAR_1, MOVE_BUBBLE_BEAM) }
+        elif (var(VAR_RESULT) == MOVE_AURORA_BEAM) { setvar(VAR_0x8005, MOVE_AURORA_BEAM) buffermovename(STR_VAR_1, MOVE_AURORA_BEAM) }
+        elif (var(VAR_RESULT) == MOVE_SHOCK_WAVE) { setvar(VAR_0x8005, MOVE_SHOCK_WAVE) buffermovename(STR_VAR_1, MOVE_SHOCK_WAVE) }
+        elif (var(VAR_RESULT) == MOVE_MEGA_DRAIN) { setvar(VAR_0x8005, MOVE_MEGA_DRAIN) buffermovename(STR_VAR_1, MOVE_MEGA_DRAIN) }
+        elif (var(VAR_RESULT) == MOVE_MUD_SHOT) { setvar(VAR_0x8005, MOVE_MUD_SHOT) buffermovename(STR_VAR_1, MOVE_MUD_SHOT) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_TOMB) { setvar(VAR_0x8005, MOVE_ROCK_TOMB) buffermovename(STR_VAR_1, MOVE_ROCK_TOMB) }
+        elif (var(VAR_RESULT) == MOVE_BULLDOZE) { setvar(VAR_0x8005, MOVE_BULLDOZE) buffermovename(STR_VAR_1, MOVE_BULLDOZE) }
+        elif (var(VAR_RESULT) == MOVE_KNOCK_OFF) { setvar(VAR_0x8005, MOVE_KNOCK_OFF) buffermovename(STR_VAR_1, MOVE_KNOCK_OFF) }
+        elif (var(VAR_RESULT) == MOVE_THIEF) { setvar(VAR_0x8005, MOVE_THIEF) buffermovename(STR_VAR_1, MOVE_THIEF) }
+        elif (var(VAR_RESULT) == MOVE_RAPID_SPIN) { setvar(VAR_0x8005, MOVE_RAPID_SPIN) buffermovename(STR_VAR_1, MOVE_RAPID_SPIN) }
+        elif (var(VAR_RESULT) == MOVE_NUZZLE) { setvar(VAR_0x8005, MOVE_NUZZLE) buffermovename(STR_VAR_1, MOVE_NUZZLE) }
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+script BalanceBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE05_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Balance Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Tactical Pivots & High-Crit Slicing Moves (BP 70 - 80)
+        dynmultipush("U-turn", MOVE_U_TURN)
+        dynmultipush("Volt Switch", MOVE_VOLT_SWITCH)
+        dynmultipush("Night Slash", MOVE_NIGHT_SLASH)
+        dynmultipush("Psycho Cut", MOVE_PSYCHO_CUT)
+        dynmultipush("Slash", MOVE_SLASH)
+        dynmultipush("Shadow Claw", MOVE_SHADOW_CLAW)
+
+        // Reliable Mid-Game Combat Staples
+        dynmultipush("Drain Punch", MOVE_DRAIN_PUNCH)
+        dynmultipush("Brick Break", MOVE_BRICK_BREAK)
+        dynmultipush("Rock Slide", MOVE_ROCK_SLIDE)
+        dynmultipush("Crunch", MOVE_CRUNCH)
+        dynmultipush("Poison Jab", MOVE_POISON_JAB)
+        dynmultipush("Seed Bomb", MOVE_SEED_BOMB)
+        dynmultipush("Zen Headbutt", MOVE_ZEN_HEADBUTT)
+        dynmultipush("Iron Head", MOVE_IRON_HEAD)
+        dynmultipush("Lash Out", MOVE_LASH_OUT)
+        dynmultipush("Stomping Tantrum", MOVE_STOMPING_TANTRUM)
+        dynmultipush("Extreme Speed", MOVE_EXTREME_SPEED)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_U_TURN) { setvar(VAR_0x8005, MOVE_U_TURN) buffermovename(STR_VAR_1, MOVE_U_TURN) }
+        elif (var(VAR_RESULT) == MOVE_VOLT_SWITCH) { setvar(VAR_0x8005, MOVE_VOLT_SWITCH) buffermovename(STR_VAR_1, MOVE_VOLT_SWITCH) }
+        elif (var(VAR_RESULT) == MOVE_NIGHT_SLASH) { setvar(VAR_0x8005, MOVE_NIGHT_SLASH) buffermovename(STR_VAR_1, MOVE_NIGHT_SLASH) }
+        elif (var(VAR_RESULT) == MOVE_PSYCHO_CUT) { setvar(VAR_0x8005, MOVE_PSYCHO_CUT) buffermovename(STR_VAR_1, MOVE_PSYCHO_CUT) }
+        elif (var(VAR_RESULT) == MOVE_SLASH) { setvar(VAR_0x8005, MOVE_SLASH) buffermovename(STR_VAR_1, MOVE_SLASH) }
+        elif (var(VAR_RESULT) == MOVE_SHADOW_CLAW) { setvar(VAR_0x8005, MOVE_SHADOW_CLAW) buffermovename(STR_VAR_1, MOVE_SHADOW_CLAW) }
+        elif (var(VAR_RESULT) == MOVE_DRAIN_PUNCH) { setvar(VAR_0x8005, MOVE_DRAIN_PUNCH) buffermovename(STR_VAR_1, MOVE_DRAIN_PUNCH) }
+        elif (var(VAR_RESULT) == MOVE_BRICK_BREAK) { setvar(VAR_0x8005, MOVE_BRICK_BREAK) buffermovename(STR_VAR_1, MOVE_BRICK_BREAK) }
+        elif (var(VAR_RESULT) == MOVE_ROCK_SLIDE) { setvar(VAR_0x8005, MOVE_ROCK_SLIDE) buffermovename(STR_VAR_1, MOVE_ROCK_SLIDE) }
+        elif (var(VAR_RESULT) == MOVE_CRUNCH) { setvar(VAR_0x8005, MOVE_CRUNCH) buffermovename(STR_VAR_1, MOVE_CRUNCH) }
+        elif (var(VAR_RESULT) == MOVE_POISON_JAB) { setvar(VAR_0x8005, MOVE_POISON_JAB) buffermovename(STR_VAR_1, MOVE_POISON_JAB) }
+        elif (var(VAR_RESULT) == MOVE_SEED_BOMB) { setvar(VAR_0x8005, MOVE_SEED_BOMB) buffermovename(STR_VAR_1, MOVE_SEED_BOMB) }
+        elif (var(VAR_RESULT) == MOVE_ZEN_HEADBUTT) { setvar(VAR_0x8005, MOVE_ZEN_HEADBUTT) buffermovename(STR_VAR_1, MOVE_ZEN_HEADBUTT) }
+        elif (var(VAR_RESULT) == MOVE_IRON_HEAD) { setvar(VAR_0x8005, MOVE_IRON_HEAD) buffermovename(STR_VAR_1, MOVE_IRON_HEAD) }
+        elif (var(VAR_RESULT) == MOVE_LASH_OUT) { setvar(VAR_0x8005, MOVE_LASH_OUT) buffermovename(STR_VAR_1, MOVE_LASH_OUT) }
+        elif (var(VAR_RESULT) == MOVE_STOMPING_TANTRUM) { setvar(VAR_0x8005, MOVE_STOMPING_TANTRUM) buffermovename(STR_VAR_1, MOVE_STOMPING_TANTRUM) }
+        elif (var(VAR_RESULT) == MOVE_EXTREME_SPEED) { setvar(VAR_0x8005, MOVE_EXTREME_SPEED) buffermovename(STR_VAR_1, MOVE_EXTREME_SPEED) }
+
+        
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+    
+        goto(MoveTutorQuestion)
+    } 
+}
+
+script FeatherBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE06_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Feather Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Wind, Sound, & High-Accuracy Attacks (BP 60 - 80)
+        dynmultipush("Air Slash", MOVE_AIR_SLASH)
+        dynmultipush("Hyper Voice", MOVE_HYPER_VOICE)
+        dynmultipush("Bug Buzz", MOVE_BUG_BUZZ)
+        dynmultipush("Aura Sphere", MOVE_AURA_SPHERE)
+        dynmultipush("Dual Wingbeat", MOVE_DUAL_WINGBEAT)
+        dynmultipush("Fly", MOVE_FLY)
+        dynmultipush("Bounce", MOVE_BOUNCE)
+
+        // Terrain Manipulation & Synergy Attacks
+        dynmultipush("Scorching Sands", MOVE_SCORCHING_SANDS)
+        dynmultipush("Terrain Pulse", MOVE_TERRAIN_PULSE)
+        dynmultipush("Weather Ball", MOVE_WEATHER_BALL)
+        dynmultipush("Icy Wind", MOVE_ICY_WIND)
+        dynmultipush("Electroweb", MOVE_ELECTROWEB)
+        dynmultipush("Hex", MOVE_HEX)
+        dynmultipush("Mystical Fire", MOVE_MYSTICAL_FIRE)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_AIR_SLASH) { setvar(VAR_0x8005, MOVE_AIR_SLASH) buffermovename(STR_VAR_1, MOVE_AIR_SLASH) }
+        elif (var(VAR_RESULT) == MOVE_HYPER_VOICE) { setvar(VAR_0x8005, MOVE_HYPER_VOICE) buffermovename(STR_VAR_1, MOVE_HYPER_VOICE) }
+        elif (var(VAR_RESULT) == MOVE_BUG_BUZZ) { setvar(VAR_0x8005, MOVE_BUG_BUZZ) buffermovename(STR_VAR_1, MOVE_BUG_BUZZ) }
+        elif (var(VAR_RESULT) == MOVE_AURA_SPHERE) { setvar(VAR_0x8005, MOVE_AURA_SPHERE) buffermovename(STR_VAR_1, MOVE_AURA_SPHERE) }
+        elif (var(VAR_RESULT) == MOVE_DUAL_WINGBEAT) { setvar(VAR_0x8005, MOVE_DUAL_WINGBEAT) buffermovename(STR_VAR_1, MOVE_DUAL_WINGBEAT) }
+        elif (var(VAR_RESULT) == MOVE_FLY) { setvar(VAR_0x8005, MOVE_FLY) buffermovename(STR_VAR_1, MOVE_FLY) }
+        elif (var(VAR_RESULT) == MOVE_BOUNCE) { setvar(VAR_0x8005, MOVE_BOUNCE) buffermovename(STR_VAR_1, MOVE_BOUNCE) }
+        elif (var(VAR_RESULT) == MOVE_SCORCHING_SANDS) { setvar(VAR_0x8005, MOVE_SCORCHING_SANDS) buffermovename(STR_VAR_1, MOVE_SCORCHING_SANDS) }
+        elif (var(VAR_RESULT) == MOVE_TERRAIN_PULSE) { setvar(VAR_0x8005, MOVE_TERRAIN_PULSE) buffermovename(STR_VAR_1, MOVE_TERRAIN_PULSE) }
+        elif (var(VAR_RESULT) == MOVE_WEATHER_BALL) { setvar(VAR_0x8005, MOVE_WEATHER_BALL) buffermovename(STR_VAR_1, MOVE_WEATHER_BALL) }
+        elif (var(VAR_RESULT) == MOVE_ICY_WIND) { setvar(VAR_0x8005, MOVE_ICY_WIND) buffermovename(STR_VAR_1, MOVE_ICY_WIND) }
+        elif (var(VAR_RESULT) == MOVE_ELECTROWEB) { setvar(VAR_0x8005, MOVE_ELECTROWEB) buffermovename(STR_VAR_1, MOVE_ELECTROWEB) }
+        elif (var(VAR_RESULT) == MOVE_HEX) { setvar(VAR_0x8005, MOVE_HEX) buffermovename(STR_VAR_1, MOVE_HEX) }
+        elif (var(VAR_RESULT) == MOVE_MYSTICAL_FIRE) { setvar(VAR_0x8005, MOVE_MYSTICAL_FIRE) buffermovename(STR_VAR_1, MOVE_MYSTICAL_FIRE) }
+
+        
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+script MindBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE07_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Mind Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Mind, Cosmic, Priority Tricks, & Anti-Meta Coverage (BP 80 - 90)
+        dynmultipush("Psychic", MOVE_PSYCHIC)
+        dynmultipush("Shadow Ball", MOVE_SHADOW_BALL)
+        dynmultipush("Dark Pulse", MOVE_DARK_PULSE)
+        dynmultipush("Energy Ball", MOVE_ENERGY_BALL)
+        dynmultipush("Earth Power", MOVE_EARTH_POWER)
+        dynmultipush("Flash Cannon", MOVE_FLASH_CANNON)
+        dynmultipush("Sludge Bomb", MOVE_SLUDGE_BOMB)
+        dynmultipush("Dragon Pulse", MOVE_DRAGON_PULSE)
+        dynmultipush("Dazzling Gleam", MOVE_DAZZLING_GLEAM)
+
+        // Elite Physical Mind Variants
+        dynmultipush("Psychic Fangs", MOVE_PSYCHIC_FANGS)
+        dynmultipush("Play Rough", MOVE_PLAY_ROUGH)
+        dynmultipush("Liquidation", MOVE_LIQUIDATION)
+        dynmultipush("High Horsepower", MOVE_HIGH_HORSEPOWER)
+        dynmultipush("Throat Chop", MOVE_THROAT_CHOP) // Matches engine struct configuration
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_PSYCHIC) { setvar(VAR_0x8005, MOVE_PSYCHIC) buffermovename(STR_VAR_1, MOVE_PSYCHIC) }
+        elif (var(VAR_RESULT) == MOVE_SHADOW_BALL) { setvar(VAR_0x8005, MOVE_SHADOW_BALL) buffermovename(STR_VAR_1, MOVE_SHADOW_BALL) }
+        elif (var(VAR_RESULT) == MOVE_DARK_PULSE) { setvar(VAR_0x8005, MOVE_DARK_PULSE) buffermovename(STR_VAR_1, MOVE_DARK_PULSE) }
+        elif (var(VAR_RESULT) == MOVE_ENERGY_BALL) { setvar(VAR_0x8005, MOVE_ENERGY_BALL) buffermovename(STR_VAR_1, MOVE_ENERGY_BALL) }
+        elif (var(VAR_RESULT) == MOVE_EARTH_POWER) { setvar(VAR_0x8005, MOVE_EARTH_POWER) buffermovename(STR_VAR_1, MOVE_EARTH_POWER) }
+        elif (var(VAR_RESULT) == MOVE_FLASH_CANNON) { setvar(VAR_0x8005, MOVE_FLASH_CANNON) buffermovename(STR_VAR_1, MOVE_FLASH_CANNON) }
+        elif (var(VAR_RESULT) == MOVE_SLUDGE_BOMB) { setvar(VAR_0x8005, MOVE_SLUDGE_BOMB) buffermovename(STR_VAR_1, MOVE_SLUDGE_BOMB) }
+        elif (var(VAR_RESULT) == MOVE_DRAGON_PULSE) { setvar(VAR_0x8005, MOVE_DRAGON_PULSE) buffermovename(STR_VAR_1, MOVE_DRAGON_PULSE) }
+        elif (var(VAR_RESULT) == MOVE_DAZZLING_GLEAM) { setvar(VAR_0x8005, MOVE_DAZZLING_GLEAM) buffermovename(STR_VAR_1, MOVE_DAZZLING_GLEAM) }
+        elif (var(VAR_RESULT) == MOVE_PSYCHIC_FANGS) { setvar(VAR_0x8005, MOVE_PSYCHIC_FANGS) buffermovename(STR_VAR_1, MOVE_PSYCHIC_FANGS) }
+        elif (var(VAR_RESULT) == MOVE_PLAY_ROUGH) { setvar(VAR_0x8005, MOVE_PLAY_ROUGH) buffermovename(STR_VAR_1, MOVE_PLAY_ROUGH) }
+        elif (var(VAR_RESULT) == MOVE_LIQUIDATION) { setvar(VAR_0x8005, MOVE_LIQUIDATION) buffermovename(STR_VAR_1, MOVE_LIQUIDATION) }
+        elif (var(VAR_RESULT) == MOVE_HIGH_HORSEPOWER) { setvar(VAR_0x8005, MOVE_HIGH_HORSEPOWER) buffermovename(STR_VAR_1, MOVE_HIGH_HORSEPOWER) }
+        elif (var(VAR_RESULT) == MOVE_THROAT_CHOP) { setvar(VAR_0x8005, MOVE_THROAT_CHOP) buffermovename(STR_VAR_1, MOVE_THROAT_CHOP) }
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+script RainBadgeMoveTutor {
+    lock 
+    faceplayer
+    if(flag(FLAG_BADGE08_GET) == FALSE) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("Unfortunately, it seems you don't have the Rain Badge."))
+        goto(MoveTutorMenu)
+    } else {
+        // --- DYNAMIC MULTICHOICE MENU FOR MOVES ---
+        // Late Game Heavy Hitter Elements (BP 90 - 120+)
+        dynmultipush("Flamethrower", MOVE_FLAMETHROWER)
+        dynmultipush("Ice Beam", MOVE_ICE_BEAM)
+        dynmultipush("Thunderbolt", MOVE_THUNDERBOLT)
+        dynmultipush("Surf", MOVE_SURF)
+        dynmultipush("Moonblast", MOVE_MOONBLAST)
+        dynmultipush("Bug Buzz", MOVE_BUG_BUZZ)
+
+        // Premium Heavy Artillery (Recoil/Stat Drops instead of Turn Recharge)
+        dynmultipush("Close Combat", MOVE_CLOSE_COMBAT)
+        dynmultipush("Superpower", MOVE_SUPERPOWER)
+        dynmultipush("Earthquake", MOVE_EARTHQUAKE)
+        dynmultipush("Flare Blitz", MOVE_FLARE_BLITZ)
+        dynmultipush("Wave Crash", MOVE_WAVE_CRASH)
+        dynmultipush("Wood Hammer", MOVE_WOOD_HAMMER)
+        dynmultipush("Brave Bird", MOVE_BRAVE_BIRD)
+        dynmultipush("Double-Edge", MOVE_DOUBLE_EDGE)
+        dynmultipush("Outrage", MOVE_OUTRAGE)
+        dynmultipush("Megahorn", MOVE_MEGAHORN)
+        dynmultipush("Gunk Shot", MOVE_GUNK_SHOT)
+        dynmultipush("Hurricane", MOVE_HURRICANE)
+
+        // --- DYNAMIC MULTICHOICE STACK ---
+        dynmultipush("Hydro Pump", MOVE_HYDRO_PUMP)
+        dynmultistack(17, 0, FALSE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+
+        // --- SET VAR/BUFFER NAME FOR MOVES ---
+        if (var(VAR_RESULT) == MOVE_FLAMETHROWER) { setvar(VAR_0x8005, MOVE_FLAMETHROWER) buffermovename(STR_VAR_1, MOVE_FLAMETHROWER) }
+        elif (var(VAR_RESULT) == MOVE_ICE_BEAM) { setvar(VAR_0x8005, MOVE_ICE_BEAM) buffermovename(STR_VAR_1, MOVE_ICE_BEAM) }
+        elif (var(VAR_RESULT) == MOVE_THUNDERBOLT) { setvar(VAR_0x8005, MOVE_THUNDERBOLT) buffermovename(STR_VAR_1, MOVE_THUNDERBOLT) }
+        elif (var(VAR_RESULT) == MOVE_SURF) { setvar(VAR_0x8005, MOVE_SURF) buffermovename(STR_VAR_1, MOVE_SURF) }
+        elif (var(VAR_RESULT) == MOVE_MOONBLAST) { setvar(VAR_0x8005, MOVE_MOONBLAST) buffermovename(STR_VAR_1, MOVE_MOONBLAST) }
+        elif (var(VAR_RESULT) == MOVE_BUG_BUZZ) { setvar(VAR_0x8005, MOVE_BUG_BUZZ) buffermovename(STR_VAR_1, MOVE_BUG_BUZZ) }
+        elif (var(VAR_RESULT) == MOVE_CLOSE_COMBAT) { setvar(VAR_0x8005, MOVE_CLOSE_COMBAT) buffermovename(STR_VAR_1, MOVE_CLOSE_COMBAT) }
+        elif (var(VAR_RESULT) == MOVE_SUPERPOWER) { setvar(VAR_0x8005, MOVE_SUPERPOWER) buffermovename(STR_VAR_1, MOVE_SUPERPOWER) }
+        elif (var(VAR_RESULT) == MOVE_EARTHQUAKE) { setvar(VAR_0x8005, MOVE_EARTHQUAKE) buffermovename(STR_VAR_1, MOVE_EARTHQUAKE) }
+        elif (var(VAR_RESULT) == MOVE_FLARE_BLITZ) { setvar(VAR_0x8005, MOVE_FLARE_BLITZ) buffermovename(STR_VAR_1, MOVE_FLARE_BLITZ) }
+        elif (var(VAR_RESULT) == MOVE_WAVE_CRASH) { setvar(VAR_0x8005, MOVE_WAVE_CRASH) buffermovename(STR_VAR_1, MOVE_WAVE_CRASH) }
+        elif (var(VAR_RESULT) == MOVE_WOOD_HAMMER) { setvar(VAR_0x8005, MOVE_WOOD_HAMMER) buffermovename(STR_VAR_1, MOVE_WOOD_HAMMER) }
+        elif (var(VAR_RESULT) == MOVE_BRAVE_BIRD) { setvar(VAR_0x8005, MOVE_BRAVE_BIRD) buffermovename(STR_VAR_1, MOVE_BRAVE_BIRD) }
+        elif (var(VAR_RESULT) == MOVE_DOUBLE_EDGE) { setvar(VAR_0x8005, MOVE_DOUBLE_EDGE) buffermovename(STR_VAR_1, MOVE_DOUBLE_EDGE) }
+        elif (var(VAR_RESULT) == MOVE_OUTRAGE) { setvar(VAR_0x8005, MOVE_OUTRAGE) buffermovename(STR_VAR_1, MOVE_OUTRAGE) }
+        elif (var(VAR_RESULT) == MOVE_MEGAHORN) { setvar(VAR_0x8005, MOVE_MEGAHORN) buffermovename(STR_VAR_1, MOVE_MEGAHORN) }
+        elif (var(VAR_RESULT) == MOVE_GUNK_SHOT) { setvar(VAR_0x8005, MOVE_GUNK_SHOT) buffermovename(STR_VAR_1, MOVE_GUNK_SHOT) }
+        elif (var(VAR_RESULT) == MOVE_HURRICANE) { setvar(VAR_0x8005, MOVE_HURRICANE) buffermovename(STR_VAR_1, MOVE_HURRICANE) }
+        elif (var(VAR_RESULT) == MOVE_HYDRO_PUMP) { setvar(VAR_0x8005, MOVE_HYDRO_PUMP) buffermovename(STR_VAR_1, MOVE_HYDRO_PUMP) }
+
+        goto_if_eq(VAR_RESULT, 127, MoveTutorMenuBadgeList)
+        goto(MoveTutorQuestion)
+    } 
+}
+
+
+text FirstTimeItemShop {
+	"Since this is your first time using my\n"
+	"item shop system let me explain.\p"
+	"I can sell you items just like the\n"
+	"PokeMart. You can unlock more shops\p"
+	"by obtaining gym badges. The more gym\n"
+	"badges you obtain increases the list\p"
+	"of shops you can access."
+}
+
+// script WailmerPailItem {
+// 	giveitem(ITEM_WAILMER_PAIL)
+// 	setflag(FLAG_WAILMER_PAIL)
+// 	removeobject(LOCALID_WAILMER_PAIL)
+// 	release
+// 	end
+// }
+
+script Wonder_Trade {
+	if(flag(FLAG_BADGE01_GET) == TRUE) {
+    getpartysize()
+    goto_if_eq(VAR_RESULT, 0, EventScript_End)
+    chooseboxmon(SELECT_PC_MON_WONDER_TRADE)
+    waitstate
+    
+    // @ 255 (0xFF) is PARTY_NOTHING_CHOSEN. This triggers when the user cancels.
+    goto_if_eq(VAR_0x8004, 255, EventScript_End) 
+    
+    lockall
+    delay(20)
+    msgbox(format("Searching for a Wonder Trade partner... Press the {A_BUTTON} to continue."))
+    waitmessage
+    // @ If we get here, they chose a valid mon: (0-5 for Party) OR 254 for (PC Box).
+    copyvar(VAR_0x8005, VAR_0x8004)
+    special(CreateWonderTradePokemon)
+    playse(SE_PC_LOGIN)
+    waitse
+    playse(SE_DING_DONG)
+    msgbox(format("Success! A trade partner was found.\nTrading with {STR_VAR_1}! Press {A_BUTTON} to trade."))
+    waitmessage
+    waitbuttonpress
+    closemessage
+
+    special(DoInGameTradeScene)
+	goto(WonderTradeAgain)
+	} else {
+		setspeaker(SP_NAME_WISDOM)
+		msgbox(format("Unfortunately, it seems you don't have the Stone Badge."))
+	goto(OtherServices)
+	}
+}
+
+script WonderTradeAgain {
+  lock
+  msgbox(format("Want to Wonder Trade again?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == YES) {
+      goto(Wonder_Trade)
+    }else {
+      goto(PokemonCompendium2)
+    }
+}
+
+
+// script Cacoon_Ritual {
+//   lockall
+//   setspeaker(SP_NAME_WISDOM)
+//   msgbox(format("Select the Pokémon to be cleansed."))
+//   chooseboxmon(SELECT_PC_MON_REDUCE_BEV_PERCENTAGE)
+//   waitstate
+//   goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
+  
+//   // 1. STORE THE TARGET'S VARIABLES
+//   copyvar(VAR_0x8007, VAR_0x8004)       // Target Choice
+//   copyvar(VAR_0x8008, VAR_MON_BOX_ID)   // Target Box Number
+//   copyvar(VAR_0x8009, VAR_MON_BOX_POS)  // Target Box Slot
+
+//   msgbox(format("Select a Cascoon or Silcoon to sacrifice."))
+//   chooseboxmon(SELECT_PC_MON_RITUAL)
+//   waitstate
+//   goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
+  
+//   // 2. STORE THE SACRIFICE'S VARIABLES 
+//   // (VAR_0x8004 is already automatically set to the Sacrifice Choice by chooseboxmon!)
+//   copyvar(VAR_0x8005, VAR_MON_BOX_ID)   // Sacrifice Box Number
+//   copyvar(VAR_0x8006, VAR_MON_BOX_POS)  // Sacrifice Box Slot
+
+//   // 3. EXECUTE THE RITUAL
+//   callnative(PerformCocoonRitual)
+//   goto_if_eq(VAR_RESULT, FALSE, Ritual_Failed)
+  
+//   playfanfare(MUS_LEVEL_UP)
+//   setspeaker(SP_NAME_WISDOM)
+//   msgbox(format("The ritual is complete. The cocoon\nhas been consumed."))
+//   waitfanfare
+//   goto(RitualAgain)
+// }
+
+// script RitualAgain {
+//   lockall
+//   msgbox(format("Would you like to perform another ritual?"), MSGBOX_YESNO)
+//     if(var(VAR_RESULT) == YES) {
+//       goto(Cacoon_Ritual)
+//     }else {
+//       goto(PokemonCompendium2)
+//     }
+// }
+
+// script Ritual_Failed {
+//   lockall
+//   setspeaker(SP_NAME_WISDOM)
+//   msgbox(format("The ritual failed. You must sacrifice\na Cascoon or Silcoon."))
+  
+// }
+
+
+// script MysteryGift_Code_Script {
+//     lock
+//     faceplayer
+//     msgbox(Text_CheckingCode, MSGBOX_DEFAULT)
+    
+//     // Manual introduction handled entirely by you in Poryscript!
+//     msgbox(Text_MyManualIntro, MSGBOX_DEFAULT)
+    
+//     // Jump to the raw assembly macro to display and give the pack
+//     goto(MysteryGift_Code_RawPart)
+// }
+
+// script MysteryGift_Code_PostRaw {
+//     // Wait for the player to finish reading through the item pages
+//     waitmessage
+//     waitbuttonpress
+    
+//     if (var(VAR_RESULT) == FALSE) {
+//         msgbox(Text_BagIsFull, MSGBOX_DEFAULT)
+//     } else {
+//         playfanfare(MUS_OBTAIN_ITEM)
+//         msgbox(Text_ReceivedPack, MSGBOX_DEFAULT)
+//         waitfanfare
+//     }
+    
+//     release
+//     end
+// }
+
+// script MysteryGift_Code_RawPart{
+
+//     goto(MysteryGift_Code_PostRaw)
+// }
+
+text Text_ShowPackContents {
+    "The Mystery Gift contains:\n"
+    "{STR_VAR_1}"
+}
+
+text Text_ShowPackContentsDemo2 {
+    "The Demo 2 Pack contains:\n"
+    "{STR_VAR_1}"
+}
+
+text Text_ReceivedDemo2Pack {
+    "{PLAYER} received the Demo 2 Pack!"
+}
+
+text Text_BagIsFull {
+    "Oh no! You don't have enough room\n"
+    "in your Bag for all of these items."
+}
+
+
+// script MysteryManGreeting {
+//     setspeaker("Mystery Man")
+//     msgbox(format("Hello, would you like to use the Mystery Gift?"), MSGBOX_YESNO)
+//     if(var(VAR_RESULT) == YES) {
+//     msgbox(format("Enter a code."))
+//     special(EnterCode)
+//     waitstate
+//     special(GetCodeFeedback)
+//     compare(VAR_RESULT, 0)
+//     goto_if_eq(VAR_RESULT, 0, IncorrectCode)
+//     goto_if_eq(VAR_RESULT, 1, Demo2Code)
+// 	  goto_if_eq(VAR_RESULT, 2, ShinyStarterWithZigzagoon)      
+//     end
+//     } else {
+//         setspeaker("Mystery Man")
+//         msgbox(format("Please come back when you discover a code."))
+//         release
+//         end
+//     }
+
+// }
+
+// script IncorrectCode {
+//         setspeaker("Mystery Man")
+//         msgbox(format("Sorry, that code is incorrect."))
+//         goto(ComebackWithCode)
+// }
+
+// script ComebackWithCode {
+//         setspeaker("Mystery Man")
+//         msgbox(format("Please come back when you discover a code."))
+//         release
+//         end
+// }
+
+// script Demo2Code {
+//     if(flag(FLAG_MYSTERY_GIFT_16) == TRUE) {
+//         setspeaker("Mystery Man")
+//         msgbox(format("I am sorry but you have already redeemed this code."))
+//         playfanfare(MUS_TOO_BAD)
+//         waitfanfare
+//         goto(ComebackWithCode)
+//     } else {
+//         setspeaker("Mystery Man")
+//         msgbox(format("Thank you for entering in the Demo 2 code. Here's your item pack."))
+//         playfanfare(MUS_EVOLVED)
+//         waitfanfare
+        
+//         // Jump over to raw assembly to handle the items
+//         goto(MysteryGift_Code_RawPart)
+//     }
+// }
+
+// script Demo2Code_PostDisplay {
+//     // Check if the transaction was successful
+//     if (var(VAR_RESULT) == FALSE) {
+//         setspeaker("Mystery Man")
+//         msgbox(format("Oh no! You don't have enough room in your Bag for all of these items."))
+//     } else {
+//         playfanfare(MUS_OBTAIN_ITEM)
+//         setspeaker("Mystery Man")
+//         msgbox(format("{PLAYER} received the item pack!"))
+//         waitfanfare
+//         setflag(FLAG_MYSTERY_GIFT_16)
+//     }
+//     goto(ComebackWithCode)
+// }
+
+// raw `
+// MysteryGift_Code_RawPart::
+//     @ List your items here. The macro will automatically append 0xFFFF at the end.
+//     giveitempack ITEM_GREAT_BALL, 10, ITEM_HYPER_POTION, 10, ITEM_FIRE_STONE, 10, ITEM_WATER_STONE, 10, ITEM_THUNDER_STONE, 10, ITEM_LEAF_STONE, 10, ITEM_SUN_STONE, 10, ITEM_MOON_STONE, 10, ITEM_ICE_STONE, 10, ITEM_DUSK_STONE, 10, ITEM_SHINY_STONE, 10, ITEM_DAWN_STONE, 10, ITEM_JOLLY_MINT, 10, ITEM_ADAMANT_MINT, 10, ITEM_BOLD_MINT, 10, ITEM_NAIVE_MINT, 10, ITEM_MODEST_MINT, 10, ITEM_HASTY_MINT, 10, ITEM_RELAXED_MINT, 10, ITEM_LAX_MINT, 10, ITEM_TIMID_MINT, 10, ITEM_GENTLE_MINT, 10, ITEM_NAUGHTY_MINT, 10, ITEM_BRAVE_MINT, 10, ITEM_MILD_MINT, 10, ITEM_CALM_MINT, 10, ITEM_IMPISH_MINT, 10, ITEM_LONELY_MINT, 10, ITEM_RASH_MINT, 10, ITEM_SASSY_MINT, 10, ITEM_SERIOUS_MINT, 10, ITEM_CAREFUL_MINT, 10, ITEM_LINKING_CORD, 10, ITEM_BOTTLE_CAP, 10
+    
+//     @ Explicitly handle the message drawing without closing the speaker tags
+//     loadword 0, gLargeItemPackBuffer
+//     message 0x0
+//     waitmessage
+//     waitbuttonpress
+//     closemessage
+    
+//     goto Demo2Code_PostDisplay
+// `
+
+// script ShinyStarterWithZigzagoon {
+//     if(flag(FLAG_MYSTERY_GIFT_17) == TRUE) {
+//         setspeaker("Mystery Man")
+//         msgbox(format("I am sorry but you have already redeemed this code."))
+//         playfanfare(MUS_TOO_BAD)
+//         waitfanfare
+//         goto(ComebackWithCode)
+//     } else {
+//     setspeaker("Mystery Man")
+//     msgbox(format("Thank you for entering in the Shiny Starter code."))
+//     playfanfare(MUS_EVOLVED)
+//     waitfanfare
+//     msgbox(format("Here is your Shiny Zigzagoon."))
+// 	createmon(0, 6, SPECIES_ZIGZAGOON, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10)
+//     goto(ShinyStarterMenu)
+// }
+// }
+
+
+// script ShinyStarterMenu {
+//     lock
+//     faceplayer
+// 	setflag(FLAG_SUPPRESS_SPEAKER_NAME)
+// 	msgbox("Choose your shiny starter.")
+// 	hidemonpic
+// 	waitmessage
+//     goto(ShinyStarters)
+// 	}
+
+//   script ShinyStarters {
+// 	    dynmultipush("Bulbasaur", SPECIES_BULBASAUR)
+// 	    dynmultipush("Charmander", SPECIES_CHARMANDER)
+// 	    dynmultipush("Squirtle", SPECIES_SQUIRTLE)
+//     	dynmultipush("Chikorita", SPECIES_CHIKORITA)
+//     	dynmultipush("Cyndaquil", SPECIES_CYNDAQUIL)
+//     	dynmultipush("Totodile", SPECIES_TOTODILE)
+// 	    dynmultipush("Treecko", SPECIES_TREECKO)
+//     	dynmultipush("Torchic", SPECIES_TORCHIC)
+//     	dynmultipush("Mudkip", SPECIES_MUDKIP)
+//    	 	dynmultipush("Turtwig", SPECIES_TURTWIG)
+//     	dynmultipush("Chimchar", SPECIES_CHIMCHAR)
+//     	dynmultipush("Piplup", SPECIES_PIPLUP)
+//     	dynmultipush("Snivy", SPECIES_SNIVY)
+//     	dynmultipush("Tepig", SPECIES_TEPIG)
+//     	dynmultipush("Oshawott", SPECIES_OSHAWOTT)
+//     	dynmultipush("Chespin", SPECIES_CHESPIN)
+//     	dynmultipush("Fennekin", SPECIES_FENNEKIN)
+//     	dynmultipush("Froakie", SPECIES_FROAKIE)
+//     	dynmultipush("Rowlet", SPECIES_ROWLET)
+//     	dynmultipush("Litten", SPECIES_LITTEN)
+//     	dynmultipush("Popplio", SPECIES_POPPLIO)
+//     	dynmultipush("Grookey", SPECIES_GROOKEY)
+//     	dynmultipush("Scorbunny", SPECIES_SCORBUNNY)
+//     	dynmultipush("Sobble", SPECIES_SOBBLE)
+//     	dynmultipush("Sprigatito", SPECIES_SPRIGATITO)
+//     	dynmultipush("Fuecoco", SPECIES_FUECOCO)
+//     	dynmultipush("Quaxly", SPECIES_QUAXLY)
+// 	    dynmultistack(0, 0, TRUE, 6, FALSE, VAR_0x800A, DYN_MULTICHOICE_CB_NONE)
+        
+// 		if (var(VAR_RESULT) == SPECIES_BULBASAUR) {
+// 		showmonpic(SPECIES_BULBASAUR, 10, 3)
+// 		playmoncry(SPECIES_BULBASAUR, CRY_MODE_NORMAL)
+// 		msgbox("Are you sure you want Bulbasaur?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_BULBASAUR, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Bulbasaur!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_CHARMANDER) {
+// 	    playmoncry(SPECIES_CHARMANDER, CRY_MODE_NORMAL)
+// 		showmonpic(SPECIES_CHARMANDER, 10, 3)
+// 		msgbox("Are you sure you want Charmander?", MSGBOX_YESNO) 
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return
+		   
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_CHARMANDER, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Charmander!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_SQUIRTLE) {
+// 		playmoncry(SPECIES_SQUIRTLE, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_SQUIRTLE, 10, 3)
+// 		msgbox("Are you sure you want Squirtle?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+		  
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_SQUIRTLE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Squirtle!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_CHIKORITA) {
+// 		playmoncry(SPECIES_CHIKORITA, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_CHIKORITA, 10, 3)
+// 		msgbox("Are you sure you want Chikorita?", MSGBOX_YESNO)
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return   
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_CHIKORITA, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Chikorita!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+		
+// 		if (var(VAR_RESULT) == SPECIES_CYNDAQUIL) {
+// 		playmoncry(SPECIES_CYNDAQUIL, CRY_MODE_NORMAL)
+// 		showmonpic(SPECIES_CYNDAQUIL, 10, 3)
+// 		msgbox("Are you sure you want Cyndaquil?", MSGBOX_YESNO) 
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_CYNDAQUIL, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Cyndaquil!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_TOTODILE) {
+// 		playmoncry(SPECIES_TOTODILE, CRY_MODE_NORMAL)
+// 		showmonpic(SPECIES_TOTODILE, 10, 3)
+// 		msgbox("Are you sure you want Totodile?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_TOTODILE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Totodile!")
+// 		waitfanfare
+// 		waitmessage
+
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_TREECKO) {
+// 		showmonpic(SPECIES_TREECKO, 10, 3)
+// 		playmoncry(SPECIES_TREECKO, CRY_MODE_NORMAL)
+// 		msgbox("Are you sure you want Treecko?", MSGBOX_YESNO)
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_TREECKO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Treecko!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_TORCHIC) {
+// 	    playmoncry(SPECIES_TORCHIC, CRY_MODE_NORMAL)
+// 		showmonpic(SPECIES_TORCHIC, 10, 3)
+// 		msgbox("Are you sure you want Torchic?", MSGBOX_YESNO) 
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_TORCHIC, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Torchic!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_MUDKIP) {
+// 		playmoncry(SPECIES_MUDKIP, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_MUDKIP, 10, 3)
+// 		msgbox("Are you sure you want Mudkip?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_MUDKIP, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Mudkip!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_TURTWIG) {
+// 		playmoncry(SPECIES_TURTWIG, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_TURTWIG, 10, 3)
+// 		msgbox("Are you sure you want Turtwig?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_TURTWIG, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Turtwig!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_CHIMCHAR) {
+// 		playmoncry(SPECIES_CHIMCHAR, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_CHIMCHAR, 10, 3)
+// 		msgbox("Are you sure you want Chimchar?", MSGBOX_YESNO)
+// 		waitfanfare
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0,0, SPECIES_CHIMCHAR, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Chimchar!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_PIPLUP) {
+// 		playmoncry(SPECIES_PIPLUP, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_PIPLUP, 10, 3)
+// 		msgbox("Are you sure you want Piplup?", MSGBOX_YESNO)
+// 		waitfanfare
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_PIPLUP, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Piplup!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_SNIVY) {
+// 		playmoncry(SPECIES_SNIVY, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_SNIVY, 10, 3)
+// 		msgbox("Are you sure you want Snivy?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_SNIVY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10 ) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Snivy!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_TEPIG) {
+// 		playmoncry(SPECIES_TEPIG, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_TEPIG, 10, 3)
+// 		msgbox("Are you sure you want Tepig?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return  
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_TEPIG, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Tepig!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_OSHAWOTT) {
+// 		playmoncry(SPECIES_OSHAWOTT, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_OSHAWOTT, 10, 3)
+// 		msgbox("Are you sure you want Oshawott?", MSGBOX_YESNO)
+// 		waitfanfare
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_OSHAWOTT, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Oshawott!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_CHESPIN) {
+// 		playmoncry(SPECIES_CHESPIN, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_CHESPIN, 10, 3)
+// 		msgbox("Are you sure you want Chespin?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return  
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_CHESPIN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Chespin!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_FENNEKIN) {
+// 		playmoncry(SPECIES_FENNEKIN, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_FENNEKIN, 10, 3)
+// 		msgbox("Are you sure you want Fennekin?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return
+		  
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_FENNEKIN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Fennekin!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_FROAKIE) {
+// 		playmoncry(SPECIES_FROAKIE, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_FROAKIE, 10, 3)
+// 		msgbox("Are you sure you want Froakie?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_FROAKIE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Froakie!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_ROWLET) {
+// 		playmoncry(SPECIES_ROWLET, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_ROWLET, 10, 3)
+// 		msgbox("Are you sure you want Rowlet?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return  
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_ROWLET, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Rowlet!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_LITTEN) {
+// 		playmoncry(SPECIES_LITTEN, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_LITTEN, 10, 3)
+// 		msgbox("Are you sure you want Litten?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_LITTEN, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Litten!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_POPPLIO) {
+// 		playmoncry(SPECIES_POPPLIO, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_POPPLIO, 10, 3)
+// 		msgbox("Are you sure you want Popplio?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_POPPLIO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Popplio!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_GROOKEY) {
+// 		playmoncry(SPECIES_GROOKEY, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_GROOKEY, 10, 3)
+// 		msgbox("Are you sure you want Grookey?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return 
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_GROOKEY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Grookey!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_SCORBUNNY) {
+// 		playmoncry(SPECIES_SCORBUNNY, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_SCORBUNNY, 10, 3)
+// 		msgbox("Are you sure you want Scorbunny?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_SCORBUNNY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Scorbunny!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_SOBBLE) {
+// 		playmoncry(SPECIES_SOBBLE, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_SOBBLE, 10, 3)
+// 		msgbox("Are you sure you want Sobble?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)   
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_SOBBLE, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Sobble!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_SPRIGATITO) {
+// 		playmoncry(SPECIES_SPRIGATITO, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_SPRIGATITO, 10, 3)
+// 		msgbox("Are you sure you want Sprigatito?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return   
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_SPRIGATITO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Sprigatito!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_FUECOCO) {
+// 		playmoncry(SPECIES_FUECOCO, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_FUECOCO, 10, 3)
+// 		msgbox("Are you sure you want Fuecoco?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu) 
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_FUECOCO, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Fuecoco!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// 		if (var(VAR_RESULT) == SPECIES_QUAXLY) {
+// 		playmoncry(SPECIES_QUAXLY, CRY_MODE_NORMAL)		
+// 		showmonpic(SPECIES_QUAXLY, 10, 3)
+// 		msgbox("Are you sure you want Quaxly?", MSGBOX_YESNO)
+// 		waitmessage
+// 		} if(var(VAR_RESULT) == NO) {
+// 		hidemonpic
+// 		call(ShinyStarterMenu)
+// 		return
+
+// 		} elif (var(VAR_RESULT) == YES) {
+// 		createmon(0, 6, SPECIES_QUAXLY, 5, ITEM_NONE, BALL_CHERISH, NATURE_RANDOM, NUM_ABILITY_PERSONALITY, MON_GENDER_RANDOM, 0, 0, 0, 0, 0, 0, 31, 31, 31, 31, 31, 31, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, MOVE_DEFAULT, SHINY_MODE_ALWAYS, 0, 0, 10) }
+// 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+//         playfanfare(MUS_EVOLVED)
+//         msgbox("{PLAYER} received Quaxly!")
+// 		waitfanfare
+// 		waitmessage
+// 		call(NicknamePartyMon2)
+// 		}
+
+// }
+
+// script NicknameBoxMon2{
+// 	msgbox("Would you like to give your starter a\nNickname?", MSGBOX_YESNO)
+// 	waitmessage
+//     hidemonpic
+//     if(var(VAR_RESULT) == YES){
+//         call(Common_EventScript_NameReceivedBoxMon)
+// 		closemessage
+// 		release
+//     }
+//     msgbox("Transferred to PC")
+// }
+
+// script NicknamePartyMon2{
+//     msgbox("Would you like to give your starter\na nickname?", MSGBOX_YESNO)
+// 	waitmessage
+//     if(var(VAR_RESULT) == YES){
+//         call(Common_EventScript_GetGiftMonPartySlot)
+//         call(Common_EventScript_NameReceivedPartyMon)
+// 		setflag(FLAG_SYS_POKEMON_GET)
+// 		hidemonpic
+//     release
+//     end 
+// 		} elif (var(VAR_RESULT) == NO) {
+//         call(Common_EventScript_GetGiftMonPartySlot)
+// 		setflag(FLAG_SYS_POKEMON_GET)
+// 		hidemonpic
+//     release
+//     end 
+//     }
+// 	}
+
+
+script TeraTypeChangerMenu {
+    lock 
+    faceplayer
+    
+    // --- PARTY SELECTION ---
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Which Pokémon's Tera Type would you like to change?"))
+    special(ChoosePartyMon)
+    if(var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
+        goto(PokemonCompendium2)
+    }
+
+    specialvar(VAR_RESULT, ScriptGetPartyMonSpecies)
+    if(var(VAR_RESULT) == SPECIES_EGG) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("I cannot change the Tera Type of an Egg!"))
+        goto(TeraTypeChangerMenu)
+    }
+
+    // --- DYNAMIC MULTICHOICE MENU FOR ALL TERA TYPES ---
+    dynmultipush("Normal", TYPE_NORMAL)
+    dynmultipush("Fighting", TYPE_FIGHTING)
+    dynmultipush("Flying", TYPE_FLYING)
+    dynmultipush("Poison", TYPE_POISON)
+    dynmultipush("Ground", TYPE_GROUND)
+    dynmultipush("Rock", TYPE_ROCK)
+    dynmultipush("Bug", TYPE_BUG)
+    dynmultipush("Ghost", TYPE_GHOST)
+    dynmultipush("Steel", TYPE_STEEL)
+    dynmultipush("Fire", TYPE_FIRE)
+    dynmultipush("Water", TYPE_WATER)
+    dynmultipush("Grass", TYPE_GRASS)
+    dynmultipush("Electric", TYPE_ELECTRIC)
+    dynmultipush("Psychic", TYPE_PSYCHIC)
+    dynmultipush("Ice", TYPE_ICE)
+    dynmultipush("Dragon", TYPE_DRAGON)
+    dynmultipush("Dark", TYPE_DARK)
+    dynmultipush("Fairy", TYPE_FAIRY)
+
+    // --- DYNAMIC MULTICHOICE STACK ---
+    dynmultistack(19, 0, FALSE, 6, FALSE, VAR_0x800A, 0)
+
+    // Handle exiting the menu safely if they press B
+    if (var(VAR_RESULT) == MULTI_B_PRESSED) {
+        goto(PokemonCompendium2)
+    }
+
+    copyvar(VAR_0x8005, VAR_RESULT) // Store chosen Tera Type in VAR_0x8005
+
+    // --- SET VAR/BUFFER FOR ALL TERA SHARDS ---
+    if(var(VAR_0x8005) == TYPE_NORMAL)       { setvar(VAR_0x8006, ITEM_NORMAL_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setvar(VAR_0x8006, ITEM_FIGHTING_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FLYING)     { setvar(VAR_0x8006, ITEM_FLYING_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_POISON)     { setvar(VAR_0x8006, ITEM_POISON_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GROUND)     { setvar(VAR_0x8006, ITEM_GROUND_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ROCK)       { setvar(VAR_0x8006, ITEM_ROCK_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_BUG)        { setvar(VAR_0x8006, ITEM_BUG_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GHOST)      { setvar(VAR_0x8006, ITEM_GHOST_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_STEEL)      { setvar(VAR_0x8006, ITEM_STEEL_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FIRE)       { setvar(VAR_0x8006, ITEM_FIRE_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_WATER)      { setvar(VAR_0x8006, ITEM_WATER_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GRASS)      { setvar(VAR_0x8006, ITEM_GRASS_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setvar(VAR_0x8006, ITEM_ELECTRIC_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setvar(VAR_0x8006, ITEM_PSYCHIC_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ICE)        { setvar(VAR_0x8006, ITEM_ICE_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_DRAGON)     { setvar(VAR_0x8006, ITEM_DRAGON_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_DARK)       { setvar(VAR_0x8006, ITEM_DARK_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FAIRY)      { setvar(VAR_0x8006, ITEM_FAIRY_TERA_SHARD) }
+
+    // Buffer the matched Shard Item into STR_VAR_1
+    bufferitemname(STR_VAR_1, VAR_0x8006)
+
+    // --- LOGIC CHECK TRANSACTION ---
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Are you sure you want to change to this Tera Type?\nIt will cost 100 {STR_VAR_1}s."), MSGBOX_YESNO)
+    
+    if(var(VAR_RESULT) == YES) {
+        if(checkitem(VAR_0x8006, 100) == FALSE) {
+            setspeaker(SP_NAME_WISDOM)
+            msgbox(format("You don't have 100 {STR_VAR_1}s."))  
+            goto(TeraTypeChangerMenu)
+        }
+        
+        msgbox(format("Thank you! Your Pokémon's Tera Type was changed."))
+        removeitem(VAR_0x8006, 100)
+        
+        // --- APPLY TERA TYPE ---
+        if(var(VAR_0x8005) == TYPE_NORMAL)       { setteratype(TYPE_NORMAL, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setteratype(TYPE_FIGHTING, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FLYING)     { setteratype(TYPE_FLYING, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_POISON)     { setteratype(TYPE_POISON, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GROUND)     { setteratype(TYPE_GROUND, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ROCK)       { setteratype(TYPE_ROCK, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_BUG)        { setteratype(TYPE_BUG, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GHOST)      { setteratype(TYPE_GHOST, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_STEEL)      { setteratype(TYPE_STEEL, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FIRE)       { setteratype(TYPE_FIRE, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_WATER)      { setteratype(TYPE_WATER, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GRASS)      { setteratype(TYPE_GRASS, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setteratype(TYPE_ELECTRIC, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setteratype(TYPE_PSYCHIC, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ICE)        { setteratype(TYPE_ICE, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_DRAGON)     { setteratype(TYPE_DRAGON, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_DARK)       { setteratype(TYPE_DARK, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FAIRY)      { setteratype(TYPE_FAIRY, VAR_0x8004) }
+
+        playse(SE_SUCCESS)
+        waitse
+        goto(TeraVerifyMenu)
+        
+    } else {
+        goto(TeraTypeChangerMenu)
+    }
+}
+
+script TeraVerifyMenu {
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Would you like to change another Pokémon's Tera Type?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == YES) {
+        goto(TeraTypeChangerMenu)
+    } else {
+        goto(PokemonCompendium2)
+    } 
+}
