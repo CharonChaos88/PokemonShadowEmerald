@@ -10,7 +10,7 @@
 #include "pokemon.h"
 #include "constants/trainers.h"
 
-#define PICS_COUNT 8
+#define PICS_COUNT 32
 
 // Needs to be large enough to store either a decompressed Pokémon pic or trainer pic
 #define PIC_SPRITE_SIZE max(MON_PIC_SIZE, TRAINER_PIC_SIZE)

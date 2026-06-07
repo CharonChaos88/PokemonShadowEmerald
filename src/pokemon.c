@@ -3382,7 +3382,16 @@ const struct FormChange *GetSpeciesFormChanges(enum Species species)
 u8 CalculatePPWithBonus(enum Move move, u8 ppBonuses, u8 moveIndex)
 {
     u8 basePP = GetMovePP(move);
-    return basePP + ((basePP * 20 * ((gPPUpGetMask[moveIndex] & ppBonuses) >> (2 * moveIndex))) / 100);
+    u8 calculatedPP = basePP + ((basePP * 20 * ((gPPUpGetMask[moveIndex] & ppBonuses) >> (2 * moveIndex))) / 100);
+    u8 maxPPUpCount = (gPPUpGetMask[moveIndex] & ppBonuses) >> (2 * moveIndex);
+
+    // If the move slot has reached 3 PP Ups (or a PP Max was used)
+    if (maxPPUpCount >= 3)
+    {
+        return 99;
+    }
+
+    return calculatedPP;
 }
 
 void RemoveMonPPBonus(struct Pokemon *mon, u8 moveIndex)

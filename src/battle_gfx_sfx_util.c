@@ -645,6 +645,25 @@ void BattleLoadMonSpriteGfx(struct Pokemon *mon, enum BattlerId battler)
         BlendPalette(OBJ_PLTT_ID(battler), 16, 6, RGB_WHITE);
         BlendPalette(BG_PLTT_ID(8) + BG_PLTT_ID(battler), 16, 6, RGB_WHITE);
     }
+
+    // Dynamax tint
+    if (GetActiveGimmick(battler) == GIMMICK_DYNAMAX)
+    {
+        // Calyrex and its forms have a blue dynamax aura instead of red.
+        if (GET_BASE_SPECIES_ID(species) == SPECIES_CALYREX)
+            BlendPalette(OBJ_PLTT_ID(battler), 16, 4, RGB(12, 0, 31));
+        else
+            BlendPalette(OBJ_PLTT_ID(battler), 16, 4, RGB(31, 0, 12));
+            
+        CpuCopy32(gPlttBufferFaded + OBJ_PLTT_ID(battler), gPlttBufferUnfaded + OBJ_PLTT_ID(battler), PLTT_SIZEOF(16));
+    }
+
+    // Terastallization tint
+    if (GetActiveGimmick(battler) == GIMMICK_TERA)
+    {
+        BlendPalette(OBJ_PLTT_ID(battler), 16, 8, GetTeraTypeRGB(GetBattlerTeraType(battler)));
+        CpuCopy32(gPlttBufferFaded + OBJ_PLTT_ID(battler), gPlttBufferUnfaded + OBJ_PLTT_ID(battler), PLTT_SIZEOF(16));
+    }
 }
 
 void BattleGfxSfxDummy2(enum Species species)

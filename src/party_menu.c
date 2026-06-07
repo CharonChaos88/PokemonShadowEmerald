@@ -2888,7 +2888,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
             u16 moveId = FieldMove_GetMoveId(i);
 
             // Case 1: Fly and Flash - show if learnable and badge obtained
-            if (moveId == MOVE_FLY || moveId == MOVE_FLASH)
+            if (moveId == MOVE_FLY || moveId == MOVE_FLASH || moveId == MOVE_CUT)
             {
                 if (IsFieldMoveUnlocked(i) && CanLearnTeachableMove(species, moveId))
                 {

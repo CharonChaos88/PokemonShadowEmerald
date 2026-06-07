@@ -764,7 +764,7 @@ void ItemUseOutOfBattle_PokemonBoxLink(u8 taskId)
 
 static void Task_AccessPokemonBoxLink(u8 taskId)
 {
-    ScriptContext_SetupScript(EventScript_AccessPokemonBoxLink);
+    ScriptContext_SetupScript(EventScript_PC);
     DestroyTask(taskId);
 }
 
