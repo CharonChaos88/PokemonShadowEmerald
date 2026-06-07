@@ -887,6 +887,11 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_LIGHTSCREENWOREOFF]                   = COMPOUND_STRING("{B_DEF_TEAM1} team's Light Screen wore off!"),
     [STRINGID_AURORAVEILWOREOFF]                    = COMPOUND_STRING("{B_DEF_TEAM1} team's Aurora Veil wore off!"),
     [STRINGID_STICKYWEBDISAPPEAREDFROMYOU]          = COMPOUND_STRING("The sticky web has disappeared from the ground around you!"),
+    [STRINGID_ZIGZAGMERANG_GATHERED]                = COMPOUND_STRING("The Zigzagmerang gathered\n{B_BUFF1}!\p"),
+    [STRINGID_LINOONMERANG_GATHERED_1]              = COMPOUND_STRING("The Linoonmerang gathered\n{B_BUFF1}!\p"),
+    [STRINGID_LINOONMERANG_GATHERED_2]              = COMPOUND_STRING("The Linoonmerang gathered\n{B_BUFF1} and {B_BUFF2}!\p"),
+    [STRINGID_LINOONMERANG_GATHERED_3]              = COMPOUND_STRING("The Linoonmerang gathered\n{B_BUFF1}, {B_BUFF2},\nand {B_BUFF3}!\p"),
+    [STRINGID_BOTH_BOOMERANGS_GATHERED]             = COMPOUND_STRING("Both boomerangs returned with\nseveral items!\p"), 
 };
 
 const u16 gTrainerUsedItemStringIds[] =

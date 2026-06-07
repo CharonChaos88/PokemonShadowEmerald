@@ -2483,13 +2483,13 @@ static void FillHealthboxObject(void *dest, u32 valMult, u32 numTiles)
  * FG = ForeGround
  * SH = SHadow
  */
-#define ABILITY_POP_UP_BATTLER_BG_TXTCLR 2
-#define ABILITY_POP_UP_BATTLER_FG_TXTCLR 7
-#define ABILITY_POP_UP_BATTLER_SH_TXTCLR 1
+#define ABILITY_POP_UP_BATTLER_BG_TXTCLR 5
+#define ABILITY_POP_UP_BATTLER_FG_TXTCLR 8
+#define ABILITY_POP_UP_BATTLER_SH_TXTCLR 9
 
 #define ABILITY_POP_UP_ABILITY_BG_TXTCLR 7
-#define ABILITY_POP_UP_ABILITY_FG_TXTCLR 9
-#define ABILITY_POP_UP_ABILITY_SH_TXTCLR 1
+#define ABILITY_POP_UP_ABILITY_FG_TXTCLR 8
+#define ABILITY_POP_UP_ABILITY_SH_TXTCLR 9
 
 #define sState          data[0]
 #define sAutoDestroy    data[1]

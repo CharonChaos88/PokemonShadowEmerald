@@ -15971,9 +15971,39 @@ const struct ItemInfo gItemsInfo[] =
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_CraftBundle,
-        .iconPic = gItemIcon_TMCase,
-        .iconPalette = gItemIconPalette_TMCase,
+        .iconPic = gItemIcon_Workbench,
+        .iconPalette = gItemIconPalette_Workbench,
     },
+    [ITEM_ZIGZAGMERANG] =
+    {
+        .name = ITEM_NAME("Zigzagmerang"),
+        .price = 0,
+        .importance = 1,
+        .description = COMPOUND_STRING(
+            "A boomerang that\n"
+            "picks up items\n"
+            "like a Zigzagoon."),
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_BAG_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_Zigzagmerang,
+        .iconPic = gItemIcon_Zigzagmerang,
+        .iconPalette = gItemIconPalette_Zigzagmerang,
+    },
+    [ITEM_LINOONMERANG] =
+    {
+        .name = ITEM_NAME("Linoonmerang"),
+        .price = 0,
+        .importance = 1,
+        .description = COMPOUND_STRING(
+            "An upgrade of\n"
+            "Zigzagmerang that\n"
+            "picks up more items."),
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_BAG_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_Linoonmerang,
+        .iconPic = gItemIcon_Linoonmerang,
+        .iconPalette = gItemIconPalette_Linoonmerang,
+    }
 };
 
 #undef ITEM_NAME

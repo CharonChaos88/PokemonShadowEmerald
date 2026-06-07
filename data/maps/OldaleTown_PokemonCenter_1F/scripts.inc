@@ -3428,7 +3428,7 @@ StoneBadgeMoveTutor_1:
 # 1213 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	setspeaker SP_NAME_WISDOM
 # 1214 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
-	msgbox KnuckleBadgeItemShopMenu_Text_0
+	msgbox StoneBadgeItemShopMenu_Text_0
 # 1215 "data/maps/OldaleTown_PokemonCenter_1F/scripts.pory"
 	goto MoveTutorMenu
 	return

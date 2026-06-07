@@ -2141,3 +2141,15 @@ const u16 gBattleIcons_Pal2[] = INCGFX_U16("graphics/types/battle_icons2.pal", "
 
 const u16 gGhostPalette[] = INCGFX_U16("graphics/pokemon/ghost/front.png", ".gbapal");
 const u32 gGhostFrontPic[] = INCGFX_U32("graphics/pokemon/ghost/front.png", ".4bpp.smol");
+
+const u32 gItemIcon_Zigzagmerang[] = INCGFX_U32("graphics/items/icons/zigzagmerang.png", ".4bpp.smol");
+const u16 gItemIconPalette_Zigzagmerang[] = INCGFX_U16("graphics/items/icon_palettes/zigzagmerang.pal", ".gbapal");
+
+const u32 gItemIcon_Linoonmerang[] = INCGFX_U32("graphics/items/icons/linoonmerang.png", ".4bpp.smol");
+const u16 gItemIconPalette_Linoonmerang[] = INCGFX_U16("graphics/items/icon_palettes/linoonmerang.pal", ".gbapal");
+
+// const u32 gItemIcon_Explorer_Kit[] = INCGFX_U32("graphics/items/icons/explorer_kit.png", ".4bpp.smol");
+// const u16 gItemIconPalette_Explorer_Kit[] = INCGFX_U16("graphics/items/icon_palettes/explorer_kit.pal", ".gbapal");
+
+const u32 gItemIcon_Workbench[] = INCGFX_U32("graphics/items/icons/workbench.png", ".4bpp.smol");
+const u16 gItemIconPalette_Workbench[] = INCGFX_U16("graphics/items/icon_palettes/workbench.pal", ".gbapal");

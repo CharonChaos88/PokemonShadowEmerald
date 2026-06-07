@@ -27,9 +27,9 @@ void ActivateTera(enum BattlerId battler)
     if (IsTeraOrbCharged()
         && IsOnPlayerSide(battler)
         && !(IsDoubleBattle() && !IsPartnerMonFromSameTrainer(battler)))
-    {
-        FlagClear(B_FLAG_TERA_ORB_CHARGED);
-    }
+    // {
+    //     FlagClear(B_FLAG_TERA_ORB_CHARGED);
+    // }
 
     // Execute battle script.
     PREPARE_TYPE_BUFFER(gBattleTextBuff1, GetBattlerTeraType(battler));

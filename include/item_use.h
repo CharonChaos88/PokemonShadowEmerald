@@ -63,7 +63,8 @@ void ItemUseOutOfBattle_RockSmash(u8 taskId);
 void ItemUseOutOfBattle_Waterfall(u8 taskId);
 void ItemUseOutOfBattle_Dive(u8 taskId); // field items end
 void ItemUseOutOfBattle_CraftBundle(u8);
-
+void ItemUseOutOfBattle_Zigzagmerang(u8 taskId);
+void ItemUseOutOfBattle_Linoonmerang(u8 taskId);
 enum {
     BALL_THROW_UNABLE_TWO_MONS,
     BALL_THROW_UNABLE_NO_ROOM,

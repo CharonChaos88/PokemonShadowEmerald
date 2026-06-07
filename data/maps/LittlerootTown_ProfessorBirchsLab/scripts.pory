@@ -1160,9 +1160,9 @@ script GivePlayerZigzagmerang {
 	msgbox(format("Well done! Here's the Key Item and an Exp Share."))
 	if(checkitem(ITEM_EXP_SHARE, 1)) {
 	msgbox(format("Well done! Here's the Key Item."))
-	// giveitem(ITEM_ZIGZAGMERANG)	
+	giveitem(ITEM_ZIGZAGMERANG)	
 	} else {
-		// giveitem(ITEM_ZIGZAGMERANG)
+		giveitem(ITEM_ZIGZAGMERANG)
 		giveitem(ITEM_EXP_SHARE)
 		addvar(VAR_PROFESSOR_ASSISTANT_KEY_ITEMS, 1)
 	}
@@ -1180,7 +1180,7 @@ script GivePlayerExpShare {
 script GiveLinoonmerang {
 	lock
 	msgbox(format("Well done! Here's the upgraded Key Item"))
-	// giveitem(ITEM_LINOONMERANG, 1)
+	giveitem(ITEM_LINOONMERANG, 1)
 	giveitem(ITEM_EXP_CANDY_S, 10)
 	addvar(VAR_PROFESSOR_ASSISTANT_KEY_ITEMS, 1)
 	msgbox(format("This gives you 35% chance to get 3 items in one battle. It also stacks with the Zigzagmerang."))

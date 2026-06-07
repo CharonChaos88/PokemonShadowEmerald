@@ -2157,6 +2157,9 @@ extern const u8 gText_OakThisIsListOfPokemon[];
 
 extern const u8 gText_Boy[];
 extern const u8 gText_Girl[];
-
+extern const u8 gText_ZigzagmerangOn[];
+extern const u8 gText_ZigzagmerangOff[];
+extern const u8 gText_LinoonmerangOn[];
+extern const u8 gText_LinoonmerangOff[];
 
 #endif // GUARD_STRINGS_H

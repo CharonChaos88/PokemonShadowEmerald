@@ -3445,4 +3445,16 @@ extern const u16 gBattleIcons_Pal2[];
 extern const u32 gGhostFrontPic[];
 extern const u16 gGhostPalette[];
 
+extern const u32 gBattleEnvironmentTiles_Lava[];
+extern const u16 gBattleEnvironmentPalette_Lava[];
+extern const u32 gBattleEnvironmentAnimTiles_Lava[];
+extern const u32 gBattleEnvironmentTilemap_Lava[];
+extern const u32 gItemIcon_Workbench[];
+extern const u16 gItemIconPalette_Workbench[];
+extern const u32 gItemIcon_Zigzagmerang[];
+extern const u16 gItemIconPalette_Zigzagmerang[];
+extern const u32 gItemIcon_Linoonmerang[];
+extern const u16 gItemIconPalette_Linoonmerang[];
+extern const u16 gItemIconPalette_Workbench[];
+
 #endif //GUARD_GRAPHICS_H

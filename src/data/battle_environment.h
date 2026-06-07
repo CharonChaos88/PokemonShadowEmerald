@@ -28,6 +28,20 @@
 #define CAVE_CAMOUFLAGE_BLEND       RGB(14, 9, 3)
 #define CAVE_BATTLE_INTRO_SLIDE     BattleIntroSlide1
 
+// Cave values. Used for BATTLE_ENVIRONMENT_LAVA as well as BATTLE_ENVIRONMENT_GROUDON and BATTLE_ENVIRONMENT_KYOGRE
+#if B_NATURE_POWER_MOVES >= GEN_6
+    #define LAVA_NATURE_POWER MOVE_POWER_GEM
+#elif B_NATURE_POWER_MOVES >= GEN_4
+    #define LAVA_NATURE_POWER MOVE_ROCK_SLIDE
+#else
+    #define LAVA_NATURE_POWER MOVE_SHADOW_BALL
+#endif
+#define LAVA_SECRET_POWER_ANIMATION B_SECRET_POWER_ANIMATION >= GEN_4 ? gBattleAnimMove_RockThrow : gBattleAnimMove_Bite
+#define LAVA_SECRET_POWER_EFFECT    MOVE_EFFECT_FLINCH
+#define LAVA_CAMOUFLAGE_TYPE        TYPE_ROCK
+#define LAVA_CAMOUFLAGE_BLEND       RGB(14, 9, 3)
+#define LAVA_BATTLE_INTRO_SLIDE     BattleIntroSlide1
+
 // Building values. Used for BATTLE_ENVIRONMENT_BUILDING as well as the environments that come from the vanilla MAP_BATTLE_SCENEs: BATTLE_ENVIRONMENT_PLAIN, BATTLE_ENVIRONMENT_FRONTIER, BATTLE_ENVIRONMENT_GYM, BATTLE_ENVIRONMENT_LEADER, BATTLE_ENVIRONMENT_MAGMA, BATTLE_ENVIRONMENT_AQUA, BATTLE_ENVIRONMENT_SIDNEY, BATTLE_ENVIRONMENT_PHOEBE, BATTLE_ENVIRONMENT_GLACIA, BATTLE_ENVIRONMENT_DRAKE, BATTLE_ENVIRONMENT_CHAMPION
 #define BUILDING_NATURE_POWER        B_NATURE_POWER_MOVES >= GEN_4 ? MOVE_TRI_ATTACK : MOVE_SWIFT
 #if B_SECRET_POWER_ANIMATION >= GEN_7
@@ -401,6 +415,20 @@ const struct BattleEnvironment gBattleEnvironmentInfo[BATTLE_ENVIRONMENT_COUNT] 
         .background = ENVIRONMENT_BACKGROUND(Rayquaza),
         .palette = gBattleEnvironmentPalette_Rayquaza,
         .battleIntroSlide = PLAIN_BATTLE_INTRO_SLIDE,
+    },
+    
+    [BATTLE_ENVIRONMENT_LAVA] =
+    {
+        .name = _("Lava"),
+        .naturePower = LAVA_NATURE_POWER,
+        .secretPowerAnimation = LAVA_SECRET_POWER_ANIMATION,
+        .secretPowerEffect = LAVA_SECRET_POWER_EFFECT,
+        .camouflageType = LAVA_CAMOUFLAGE_TYPE,
+        .camouflageBlend = LAVA_CAMOUFLAGE_BLEND,
+        .entry = ENVIRONMENT_ENTRY(Cave),
+        .background = ENVIRONMENT_BACKGROUND(Lava),
+        .palette = gBattleEnvironmentPalette_Lava,
+        .battleIntroSlide = LAVA_BATTLE_INTRO_SLIDE,
     },
 
     [BATTLE_ENVIRONMENT_SOARING] =

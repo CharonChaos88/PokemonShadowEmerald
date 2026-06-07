@@ -989,7 +989,7 @@ static void UpdateBattleBg(u8 taskId, bool8 increment)
     else
     {
         if (data->battleEnvironment == BATTLE_ENVIRONMENT_GRASS)
-            data->battleEnvironment = BATTLE_ENVIRONMENT_RAYQUAZA;
+            data->battleEnvironment = BATTLE_ENVIRONMENT_LAVA;
         else
             data->battleEnvironment -= 1;
     }

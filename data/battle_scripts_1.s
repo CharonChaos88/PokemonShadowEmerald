@@ -6310,3 +6310,13 @@ BattleScript_SilphScopeUnveiled::
 	printstring STRINGID_GHOSTWASMAROWAK
 	waitmessage B_WAIT_TIME_LONG
 	end2
+
+BattleScript_ZigzagmerangGathered::
+    printstring 0
+    waitmessage 0x40
+    return
+	
+BattleScript_LinoonmerangGathered::
+    printstring 0
+    waitmessage 0x40
+    return

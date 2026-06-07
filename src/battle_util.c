@@ -9338,6 +9338,22 @@ bool32 IsBattlerWeatherAffected(enum HoldEffect holdEffect, u32 weather, u32 wea
     return TRUE;
 }
 
+bool32 IsZigzagmerangEnabled(void)
+{
+    if (FLAG_ZIGZAGMERANG_ENABLED <= TEMP_FLAGS_END)
+        return FALSE;
+
+    return FlagGet(FLAG_ZIGZAGMERANG_ENABLED);
+}
+
+bool32 IsLinoonmerangEnabled(void)
+{
+    if (FLAG_LINOONMERANG_ENABLED <= TEMP_FLAGS_END)
+        return FALSE;
+
+    return FlagGet(FLAG_LINOONMERANG_ENABLED);
+}
+
 static u32 CanBattlerHitBothFoesInTerrain(enum BattlerId battler, enum Move move, enum BattleMoveEffects effect)
 {
     return effect == EFFECT_TERRAIN_BOOST

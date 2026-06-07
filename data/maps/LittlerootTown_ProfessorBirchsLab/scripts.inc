@@ -2237,6 +2237,8 @@ GivePlayerZigzagmerang::
 # 0 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_ne GivePlayerZigzagmerang_2
+# 1165 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_ZIGZAGMERANG
 # 1166 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	giveitem ITEM_EXP_SHARE
 # 1167 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
@@ -2249,6 +2251,8 @@ GivePlayerZigzagmerang_1:
 GivePlayerZigzagmerang_2:
 # 1162 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox GivePlayerZigzagmerang_Text_1
+# 1163 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_ZIGZAGMERANG
 	goto GivePlayerZigzagmerang_1
 
 
@@ -2267,6 +2271,8 @@ GiveLinoonmerang::
 	lock
 # 1182 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox GiveLinoonmerang_Text_0
+# 1183 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_LINOONMERANG, 1
 # 1184 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	giveitem ITEM_EXP_CANDY_S, 10
 # 1185 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"

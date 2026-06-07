@@ -900,7 +900,7 @@ static u8 GetBattleEnvironmentOverride(void)
         switch (GetMonData(&gParties[B_TRAINER_OPPONENT_A][0], MON_DATA_SPECIES))
         {
         case SPECIES_GROUDON:
-            return BATTLE_ENVIRONMENT_GROUDON;
+            return BATTLE_ENVIRONMENT_LAVA;
         case SPECIES_KYOGRE:
             return BATTLE_ENVIRONMENT_KYOGRE;
         case SPECIES_RAYQUAZA:

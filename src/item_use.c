@@ -1881,4 +1881,53 @@ void ItemUseOutOfBattle_CraftBundle(u8 taskId)
     }
 }
 
+void ItemUseOutOfBattle_Linoonmerang(u8 taskId)
+{
+
+    if (IsLinoonmerangEnabled())
+    {
+        PlaySE(SE_PC_OFF);
+        if (!gTasks[taskId].data[2]) // to account for pressing select in the overworld
+            DisplayItemMessageOnField(taskId, gText_LinoonmerangOff, Task_CloseCantUseKeyItemMessage);
+        else
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_LinoonmerangOff, CloseItemMessage);
+    }
+    else
+    {
+        PlaySE(SE_EXP_MAX);
+        if (!gTasks[taskId].data[2]) // to account for pressing select in the overworld
+            DisplayItemMessageOnField(taskId, gText_LinoonmerangOn, Task_CloseCantUseKeyItemMessage);
+        else
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_LinoonmerangOn, CloseItemMessage);
+    }
+    
+    // Flip the flag state (On -> Off, or Off -> On)
+    FlagToggle(FLAG_LINOONMERANG_ENABLED);
+}
+
+void ItemUseOutOfBattle_Zigzagmerang(u8 taskId)
+{
+
+    
+    if (IsZigzagmerangEnabled())
+    {
+        PlaySE(SE_PC_OFF);
+        if (!gTasks[taskId].data[2]) // to account for pressing select in the overworld
+            DisplayItemMessageOnField(taskId, gText_ZigzagmerangOff, Task_CloseCantUseKeyItemMessage);
+        else
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_ZigzagmerangOff, CloseItemMessage);
+    }
+    else
+    {
+        PlaySE(SE_EXP_MAX);
+        if (!gTasks[taskId].data[2]) // to account for pressing select in the overworld
+            DisplayItemMessageOnField(taskId, gText_ZigzagmerangOn, Task_CloseCantUseKeyItemMessage);
+        else
+            DisplayItemMessage(taskId, FONT_NORMAL, gText_ZigzagmerangOn, CloseItemMessage);
+    }
+    
+    // Flip the flag state (On -> Off, or Off -> On)
+    FlagToggle(FLAG_ZIGZAGMERANG_ENABLED);
+}
+
 #undef tUsingRegisteredKeyItem

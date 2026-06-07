@@ -1211,7 +1211,7 @@ script StoneBadgeMoveTutor {
     faceplayer
     if(flag(FLAG_BADGE01_GET) == FALSE) {
         setspeaker(SP_NAME_WISDOM)
-        msgbox(format("Unfortunately, it seems you don't have the Knuckle Badge."))
+        msgbox(format("Unfortunately, it seems you don't have the Stone Badge."))
         goto(MoveTutorMenu)
     } else {
         // --- DYNAMIC MULTICHOICE MENU FOR MOVES --- 

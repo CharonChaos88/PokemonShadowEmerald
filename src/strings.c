@@ -205,19 +205,19 @@ const u8 gText_ReturnToVar1[] = _("Return to\n{STR_VAR_1}.");
 
 const u8 *const gPocketNamesStringsTable[] =
 {
-    [POCKET_ITEMS]      = COMPOUND_STRING("ITEMS"),
-    [POCKET_POKE_BALLS] = COMPOUND_STRING("POKé BALLS"),
+    [POCKET_ITEMS]      = COMPOUND_STRING("Items"),
+    [POCKET_POKE_BALLS] = COMPOUND_STRING("Poké Balls"),
     [POCKET_TM_HM]      = COMPOUND_STRING("TMs & HMs"),
-    [POCKET_BERRIES]    = COMPOUND_STRING("BERRIES"),
-    [POCKET_KEY_ITEMS]  = COMPOUND_STRING("KEY ITEMS")
+    [POCKET_BERRIES]    = COMPOUND_STRING("Berries"),
+    [POCKET_KEY_ITEMS]  = COMPOUND_STRING("Key Items")
 };
 
 const u8 gText_NumberItem_TMBerry[] = _("{NO}{STR_VAR_1}{CLEAR 3}{STR_VAR_2}");
 const u8 gText_NumberItem_HM[] = _("{CLEAR_TO 17}{STR_VAR_1}{CLEAR 5}{STR_VAR_2}");
 
-const u8 gText_ShopBuy[] = _("BUY");
-const u8 gText_ShopSell[] = _("SELL");
-const u8 gText_ShopQuit[] = _("QUIT");
+const u8 gText_ShopBuy[] = _("Buy");
+const u8 gText_ShopSell[] = _("Sell");
+const u8 gText_ShopQuit[] = _("Quit");
 const u8 gText_ThatItemIsSoldOut[] = _("I'm sorry, but that item is sold out.{PAUSE_UNTIL_PRESS}");
 const u8 gText_SoldOut[] = _("SOLD OUT");
 const u8 gText_InBagVar1[] = _("IN BAG: {STR_VAR_1}");
@@ -1031,6 +1031,10 @@ const u8 gText_F700Players[] = _("{DYNAMIC 0} players");
 const u8 gText_F701Players[] = _("{DYNAMIC 1} players");
 const u8 gText_F702Players[] = _("{DYNAMIC 2} players");
 const u8 gText_F703Players[] = _("{DYNAMIC 3} players");
+const u8 gText_ZigzagmerangOn[] = _("The Zigzagmerang has been turned on.{PAUSE_UNTIL_PRESS}");
+const u8 gText_ZigzagmerangOff[] = _("The Zigzagmerang has been turned off.{PAUSE_UNTIL_PRESS}");
+const u8 gText_LinoonmerangOn[] = _("The Linoonmerang has been turned on.{PAUSE_UNTIL_PRESS}");
+const u8 gText_LinoonmerangOff[] = _("The Linoonmerang has been turned off.{PAUSE_UNTIL_PRESS}");
 
 const u8 *const gTextTable_Players[] = {
     gText_F700Players,

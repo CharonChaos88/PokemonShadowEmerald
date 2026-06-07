@@ -59,7 +59,8 @@ void RestoreTarget(void);
 bool32 CanBurnHitThaw(enum Move move);
 bool32 CanMoveThawTarget(enum Ability abilityAtk, enum Move move);
 bool32 CanFireMoveThawTarget(enum Move move);
-
+extern const u8 BattleScript_ZigzagmerangGathered[];
+extern const u8 BattleScript_LinoonmerangGathered[];
 extern void (*const gBattleScriptingCommandsTable[])(void);
 extern const struct StatFractions gAccuracyStageRatios[];
 

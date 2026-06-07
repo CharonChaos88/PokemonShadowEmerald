@@ -885,37 +885,46 @@ static const struct SpriteTemplate sSpriteTemplate_MonIconOnLvlUpBanner =
 #define _ 0
 
 static const struct PickupItem sPickupTable[] =
-{//   Item                      1+  11+  21+  31+  41+  51+  61+  71+  81+  91+   Levels
-    { ITEM_POTION,          {  35,   _,   _,   _,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_TINY_MUSHROOM,   {  25,  10,   _,   _,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_REPEL,           {   8,  30,   _,   _,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_SUPER_POTION,    {   8,  10,  30,   _,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_POKE_DOLL,       {   8,  10,   9,  30,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_BIG_MUSHROOM,    {   3,  10,   9,   _,   _,   _,   _,   _,   _,   _, } },
-    { ITEM_SUPER_REPEL,     {   3,  10,   9,   9,  30,   _,   _,   _,   _,   _, } },
-    { ITEM_FULL_HEAL,       {   3,   3,   9,   8,   9,  30,   _,   _,   _,   _, } },
-    { ITEM_REVIVE,          {   3,   3,   3,   8,   8,   9,  30,   _,   _,   _, } },
-    { ITEM_HYPER_POTION,    {   3,   3,   3,   4,   8,   9,   8,  30,   _,   _, } },
-    { ITEM_ETHER,           {   1,   1,   3,   4,   4,   _,   _,   _,   _,   _, } },
-    { ITEM_MAX_REPEL,       {   _,   3,   3,   4,   4,   9,   8,   8,  30,   _, } },
-    { ITEM_MOON_STONE,      {   _,   3,   3,   4,   4,   4,   4,   5,   9,  10, } },
-    { ITEM_SUN_STONE,       {   _,   3,   3,   4,   4,   4,   4,   5,   9,  10, } },
-    { ITEM_RARE_CANDY,      {   _,   1,   1,   1,   1,   4,   4,   5,   4,   5, } },
-    { ITEM_NUGGET,          {   _,   _,   3,   4,   4,   4,   4,   5,   4,   5, } },
-    { ITEM_MAX_POTION,      {   _,   _,   3,   4,   4,   4,   8,   8,   9,  30, } },
-    { ITEM_MAX_ETHER,       {   _,   _,   1,   1,   4,   4,   4,   _,   _,   _, } },
-    { ITEM_PP_UP,           {   _,   _,   1,   1,   1,   4,   4,   5,   4,   5, } },
-    { ITEM_BIG_NUGGET,      {   _,   _,   1,   1,   1,   1,   4,   5,   4,   5, } },
-    { ITEM_DESTINY_KNOT,    {   _,   _,   1,   1,   1,   1,   1,   1,   1,   1, } },
-    { ITEM_LEFTOVERS,       {   _,   _,   1,   1,   1,   1,   1,   1,   1,   1, } },
-    { ITEM_MENTAL_HERB,     {   _,   _,   1,   1,   1,   1,   1,   1,   1,   1, } },
-    { ITEM_POWER_HERB,      {   _,   _,   1,   1,   1,   1,   1,   1,   1,   1, } },
-    { ITEM_WHITE_HERB,      {   _,   _,   1,   1,   1,   1,   1,   1,   1,   1, } },
-    { ITEM_BALM_MUSHROOM,   {   _,   _,   1,   4,   4,   4,   4,   5,   4,   5, } },
-    { ITEM_MAX_REVIVE,      {   _,   _,   _,   4,   4,   4,   4,   7,   9,   9, } },
-    { ITEM_ELIXIR,          {   _,   _,   _,   _,   1,   1,   4,   5,   4,   5, } },
-    { ITEM_MAX_ELIXIR,      {   _,   _,   _,   _,   _,   _,   1,   1,   4,   5, } },
-    { ITEM_BOTTLE_CAP,      {   _,   _,   _,   _,   _,   _,   _,   1,   1,   1, } },
+{//   Item                      1+  11+   21+   31+   41+  51+  61+  71+  81+  91+ Levels
+    { ITEM_QUICK_BALL,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_TINY_MUSHROOM,   {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_STARDUST,        {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_SUPER_POTION,    {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_POKE_DOLL,       {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_BIG_MUSHROOM,    {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_SUPER_REPEL,     {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_FULL_HEAL,       {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_REVIVE,          {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_HYPER_POTION,    {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_FIRE_STONE,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_MAX_REPEL,       {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_MOON_STONE,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_SUN_STONE,       {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_RARE_CANDY,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_NUGGET,          {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_FULL_RESTORE,    {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_THUNDER_STONE,   {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_PP_MAX,          {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_BIG_NUGGET,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_DESTINY_KNOT,    {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_LEFTOVERS,       {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_MENTAL_HERB,     {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_POWER_HERB,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_WHITE_HERB,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_BALM_MUSHROOM,   {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_MAX_REVIVE,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_WATER_STONE,     {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_MAX_ELIXIR,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_BOTTLE_CAP,      {   1,   5,   10,   10,   15,  20,  25,  30,  35,  50,  } },
+    { ITEM_ABILITY_CAPSULE, {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_ABILITY_PATCH,   {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_LINKING_CORD,    {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_LEAF_STONE,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_SHINY_STONE,     {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_DUSK_STONE,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_DAWN_STONE,      {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_ICE_STONE,       {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
+    { ITEM_HEART_SCALE,     {   1,   5,   10,   15,   20,  25,  30,  35,  40,  60,  } },
 };
 
 #undef _
@@ -9417,76 +9426,187 @@ static void Cmd_jumpifhasnohp(void)
 static void Cmd_pickup(void)
 {
     CMD_ARGS();
-
-    u32 i, j;
-    enum Species species;
-    enum Item heldItem;
+    u32 i, j, k;
+    u16 species, heldItem;
     u8 lvlDivBy10;
     enum Ability ability;
+    bool8 pushedScript = FALSE;
+
+    bool8 linoonTriggered = FALSE;
+    bool8 zigzagTriggered = FALSE;
+    u8 linoonItemsAdded = 0;
 
     if (!InBattlePike()) // No items in Battle Pike.
     {
         bool32 isInPyramid = CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE;
-        for (i = 0; i < PARTY_SIZE; i++)
+
+        // 1. Linoonmerang Check (Independent)
+        if (CheckBagHasItem(ITEM_LINOONMERANG, 1) && FlagGet(FLAG_LINOONMERANG_ENABLED) && (Random() % 100) < 35)
         {
-            species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG);
-            heldItem = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM);
-            lvlDivBy10 = (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_LEVEL)-1) / 10; //Moving this here makes it easier to add in abilities like Honey Gather.
-            if (lvlDivBy10 > 9)
-                lvlDivBy10 = 9;
+            u8 leadLevel = GetMonData(&gPlayerParty[0], MON_DATA_LEVEL);
+            u8 bagLvlDivBy10 = (leadLevel - 1) / 10;
+            if (bagLvlDivBy10 > 9) bagLvlDivBy10 = 9;
 
-            ability = GetSpeciesAbility(species, GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_ABILITY_NUM));
+            u16 gatheredItems[3] = {ITEM_NONE, ITEM_NONE, ITEM_NONE};
+            u8 gatheredAmounts[3] = {0, 0, 0};
 
-            if (ability == ABILITY_PICKUP
-                && species != SPECIES_NONE
-                && species != SPECIES_EGG
-                && heldItem == ITEM_NONE
-                && (Random() % 10) == 0)
+            for (k = 0; k < 3; k++)
             {
+                u8 amount = (Random() % 100 < 25) ? 2 : 1;
+
                 if (isInPyramid)
                 {
-                    heldItem = GetBattlePyramidPickupItemId();
-                    SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &heldItem);
+                    u16 pyramidItem = GetBattlePyramidPickupItemId();
+                    if (AddBagItem(pyramidItem, amount) == TRUE)
+                    {
+                        gatheredItems[linoonItemsAdded] = pyramidItem;
+                        gatheredAmounts[linoonItemsAdded] = amount;
+                        linoonItemsAdded++;
+                    }
                 }
                 else
                 {
-                    u32 rand = Random() % 100;
-                    u32 percentTotal = 0;
+                    u32 totalWeight = 0;
+                    for (j = 0; j < ARRAY_COUNT(sPickupTable); j++)
+                        totalWeight += sPickupTable[j].percentage[bagLvlDivBy10];
 
+                    if (totalWeight > 0)
+                    {
+                        u32 rand = Random() % totalWeight;
+                        u32 currentWeight = 0;
+                        
+                        for (j = 0; j < ARRAY_COUNT(sPickupTable); j++)
+                        {
+                            currentWeight += sPickupTable[j].percentage[bagLvlDivBy10];
+                            if (rand < currentWeight)
+                            {
+                                if (AddBagItem(sPickupTable[j].itemId, amount) == TRUE)
+                                {
+                                    gatheredItems[linoonItemsAdded] = sPickupTable[j].itemId;
+                                    gatheredAmounts[linoonItemsAdded] = amount;
+                                    linoonItemsAdded++;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (linoonItemsAdded > 0)
+            {
+                linoonTriggered = TRUE;
+                // Buffer the names for the message
+                if (linoonItemsAdded >= 1) CopyItemNameHandlePlural(gatheredItems[0], gBattleTextBuff1, gatheredAmounts[0]);
+                if (linoonItemsAdded >= 2) CopyItemNameHandlePlural(gatheredItems[1], gBattleTextBuff2, gatheredAmounts[1]);
+                if (linoonItemsAdded >= 3) CopyItemNameHandlePlural(gatheredItems[2], gBattleTextBuff3, gatheredAmounts[2]);
+            }
+        }
+
+        // 2. Zigzagmerang Check (Notice there is no 'else' here! It rolls independently)
+        if (CheckBagHasItem(ITEM_ZIGZAGMERANG, 1) && FlagGet(FLAG_ZIGZAGMERANG_ENABLED) && (Random() % 10) == 0)
+        {
+            u8 leadLevel = GetMonData(&gPlayerParty[0], MON_DATA_LEVEL);
+            u8 bagLvlDivBy10 = (leadLevel - 1) / 10;
+            if (bagLvlDivBy10 > 9) bagLvlDivBy10 = 9;
+
+            if (isInPyramid)
+            {
+                u16 pyramidItem = GetBattlePyramidPickupItemId();
+                if (AddBagItem(pyramidItem, 1) == TRUE)
+                {
+                    // Only buffer this text if Linoon didn't trigger, to prevent overwriting B_BUFF1
+                    if (!linoonTriggered) CopyItemName(pyramidItem, gBattleTextBuff1);
+                    zigzagTriggered = TRUE;
+                }
+            }
+            else
+            {
+                u32 totalWeight = 0;
+                for (j = 0; j < ARRAY_COUNT(sPickupTable); j++)
+                    totalWeight += sPickupTable[j].percentage[bagLvlDivBy10];
+
+                if (totalWeight > 0)
+                {
+                    u32 rand = Random() % totalWeight;
+                    u32 currentWeight = 0;
+                    
                     for (j = 0; j < ARRAY_COUNT(sPickupTable); j++)
                     {
-                        percentTotal += sPickupTable[j].percentage[lvlDivBy10];
-                        if (rand < percentTotal)
+                        currentWeight += sPickupTable[j].percentage[bagLvlDivBy10];
+                        if (rand < currentWeight)
                         {
-                            SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &sPickupTable[j].itemId);
+                            if (AddBagItem(sPickupTable[j].itemId, 1) == TRUE)
+                            {
+                                if (!linoonTriggered) CopyItemName(sPickupTable[j].itemId, gBattleTextBuff1);
+                                zigzagTriggered = TRUE;
+                            }
                             break;
                         }
                     }
                 }
             }
-            else if (ability == ABILITY_HONEY_GATHER
-                && species != 0
-                && species != SPECIES_EGG
-                && heldItem == ITEM_NONE)
+        }
+
+        // 3. Resolve Messages
+        if (linoonTriggered && zigzagTriggered)
+        {
+            // Both triggered! Use the special combined message
+            gBattleScripting.savedStringId = STRINGID_BOTH_BOOMERANGS_GATHERED;
+            BattleScriptPush(cmd->nextInstr);
+            gBattlescriptCurrInstr = BattleScript_LinoonmerangGathered; // Reusing this script is fine, it just prints the string
+            pushedScript = TRUE;
+        }
+        else if (linoonTriggered)
+        {
+            if (linoonItemsAdded == 1) gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_1;
+            else if (linoonItemsAdded == 2) gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_2;
+            else gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_3;
+
+            BattleScriptPush(cmd->nextInstr);
+            gBattlescriptCurrInstr = BattleScript_LinoonmerangGathered;
+            pushedScript = TRUE;
+        }
+        else if (zigzagTriggered)
+        {
+            gBattleScripting.savedStringId = STRINGID_ZIGZAGMERANG_GATHERED;
+            BattleScriptPush(cmd->nextInstr);
+            gBattlescriptCurrInstr = BattleScript_ZigzagmerangGathered;
+            pushedScript = TRUE;
+        }
+
+        // 4. Preserve Honey Gather and Berry Juice for the party
+        if (!pushedScript)
+        {
+            for (i = 0; i < PARTY_SIZE; i++)
             {
-                if ((lvlDivBy10 + 1 ) * 5 > Random() % 100)
+                species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
+                heldItem = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+                lvlDivBy10 = (GetMonData(&gPlayerParty[i], MON_DATA_LEVEL)-1) / 10;
+                
+                if (lvlDivBy10 > 9) lvlDivBy10 = 9;
+                    
+                ability = GetSpeciesAbility(species, GetMonData(&gPlayerParty[i], MON_DATA_ABILITY_NUM));
+
+                if (ability == ABILITY_HONEY_GATHER && species != 0 && species != SPECIES_EGG && heldItem == ITEM_NONE)
                 {
-                    heldItem = ITEM_HONEY;
-                    SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &heldItem);
+                    if ((lvlDivBy10 + 1 ) * 5 > Random() % 100)
+                    {
+                        heldItem = ITEM_HONEY;
+                        SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &heldItem);
+                    }
                 }
-            }
-            else if (P_SHUCKLE_BERRY_JUICE == GEN_2
-                && species == SPECIES_SHUCKLE
-                && heldItem == ITEM_ORAN_BERRY
-                && (Random() % 16) == 0)
-            {
-                heldItem = ITEM_BERRY_JUICE;
-                SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &heldItem);
+                else if (P_SHUCKLE_BERRY_JUICE == GEN_2 && species == SPECIES_SHUCKLE && heldItem == ITEM_ORAN_BERRY && (Random() % 16) == 0)
+                {
+                    heldItem = ITEM_BERRY_JUICE;
+                    SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &heldItem);
+                }
             }
         }
     }
 
-    gBattlescriptCurrInstr = cmd->nextInstr;
+    if (!pushedScript)
+        gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
 // Water and Mud Sport
