@@ -1746,6 +1746,8 @@ const u32 gShopMenu_Gfx[] = INCGFX_U32("graphics/shop/menu.png", ".4bpp.smol");
 const u16 gShopMenu_Pal[] = INCGFX_U16("graphics/shop/menu.png", ".gbapal");
 const u32 gShopMenu_Tilemap[] = INCGFX_U32("graphics/shop/menu.bin", ".smolTM");
 const u32 gShopMenuMoney_Gfx[] = INCGFX_U32("graphics/shop/money.png", ".4bpp.smol");
+//tx_registered_items_menu
+const u32 gSwapLineGfx_RegisteredItemsMenu[] = INCBIN_U32("graphics/interface/swap_line_tx.4bpp.smol");
 
 const u32 gCraftWorkbench_TopLeft_Gfx[]    = INCBIN_U32("graphics/crafting/workbench_top_left.4bpp.lz");
 const u32 gCraftWorkbench_TopMid_Gfx[]     = INCBIN_U32("graphics/crafting/workbench_top_mid.4bpp.lz");

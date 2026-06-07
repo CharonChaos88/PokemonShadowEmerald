@@ -116,6 +116,8 @@ enum Language
 #define BAG_POKEBALLS_COUNT 16
 #define BAG_TMHM_COUNT 64
 #define BAG_BERRIES_COUNT 46
+//tx_registered_items_menu
+#define REGISTERED_ITEMS_MAX 25
 
 // Number of facilities for Ranking Hall.
 // 7 facilities for single mode + tower double mode + tower multi mode.
