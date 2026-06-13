@@ -32,6 +32,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "config/pokedex_plus_hgss.h"
+#include "palette_editor.h"
 
 enum
 {
@@ -4025,7 +4026,7 @@ u8 DisplayCaughtMonDexPage(enum Species species, bool32 isShiny, u32 personality
 
 static void LoadDexMonPalette(u32 taskId, bool32 isShiny)
 {
-    const u16 *paletteData = GetMonSpritePalFromSpeciesAndPersonality(gTasks[taskId].tSpecies, isShiny, GetWordTaskArg(taskId, tPersonalityLo));
+    const u16 *paletteData = GetCustomMonSpritePal(gTasks[taskId].tSpecies, isShiny, GetWordTaskArg(taskId, tPersonalityLo));
     u32 paletteNum = gSprites[gTasks[taskId].tMonSpriteId].oam.paletteNum;
     LoadPalette(paletteData, OBJ_PLTT_ID(paletteNum), PLTT_SIZE_4BPP);
 }

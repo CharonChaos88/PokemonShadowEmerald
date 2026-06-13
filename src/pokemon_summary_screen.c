@@ -52,6 +52,7 @@
 #include "constants/region_map_sections.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "palette_editor.h"
 
 // Screen titles (upper left)
 #define PSS_LABEL_WINDOW_POKEMON_INFO_TITLE 0
@@ -1827,6 +1828,34 @@ static void Task_HandleInput(u8 taskId)
             StopPokemonAnimations();
             PlaySE(SE_SELECT);
             CloseSummaryScreen(taskId);
+        }
+        else if (JOY_NEW(START_BUTTON)
+                 && !gMain.inBattle
+                 && !sMonSummaryScreen->lockMovesFlag
+                 && (sMonSummaryScreen->currPageIndex == PSS_PAGE_INFO || sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS))
+        {
+            sMonSummaryScreen->callback = CB2_InitPaletteEditor;
+            
+            // Route PC Box selections vs Party selections safely
+            if (sMonSummaryScreen->isBoxMon)
+            {
+                gSpecialVar_0x8005 = TRUE;
+                struct BoxPokemon *boxBase = (struct BoxPokemon *)sMonSummaryScreen->monList.mons;
+                struct BoxPokemon *firstBox = (struct BoxPokemon *)gPokemonStoragePtr->boxes;
+                
+                gSpecialVar_MonBoxId = (boxBase - firstBox) / IN_BOX_COUNT;
+                gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
+                gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex; // Cache cursor position
+            }
+            else
+            {
+                gSpecialVar_0x8005 = FALSE;
+                gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex; // Cache cursor position
+            }
+
+            StopPokemonAnimations();
+            PlaySE(SE_SELECT);
+            BeginCloseSummaryScreen(taskId);
         }
         else if (ShouldShowMoveRelearner() && IS_MOVE_PAGE(sMonSummaryScreen->currPageIndex))
         {
@@ -4531,7 +4560,10 @@ static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state)
         (*state)++;
         return 0xFF;
     case 1:
-        LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonalityIsEgg(summary->species, summary->isShiny, summary->pid, summary->isEgg), summary->species2);
+        if (summary->isEgg)
+            LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonalityIsEgg(summary->species, summary->isShiny, summary->pid, summary->isEgg), summary->species2);
+        else
+            LoadSpritePaletteWithTag(GetUnifiedMonPalette(summary->species2, summary->isShiny, summary->pid, GetMonData(mon, MON_DATA_ALT_PALETTE)), summary->species2);
         SetMultiuseSpriteTemplateToPokemon(summary->species2, B_POSITION_OPPONENT_LEFT);
         (*state)++;
         return 0xFF;

@@ -15,7 +15,6 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .types = MON_TYPES(TYPE_GRASS),
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 62 : 65,
-        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
@@ -69,10 +68,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
             gOverworldPalette_Treecko,
             gShinyOverworldPalette_Treecko
         )
+        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_GROVYLE}),
         .levelUpLearnset = sTreeckoLevelUpLearnset,
         .teachableLearnset = sTreeckoTeachableLearnset,
         .eggMoveLearnset = sTreeckoEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_GROVYLE}),
     },
 
     [SPECIES_GROVYLE] =
@@ -391,8 +390,6 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .types = MON_TYPES(TYPE_FIRE, TYPE_FIGHTING),
         .catchRate = 45,
         .expYield = 142,
-        
-        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
@@ -457,9 +454,9 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
             TRACKS_FOOT,
             sAnimTable_Following
         )
+        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_BLAZIKEN}),
         .levelUpLearnset = sCombuskenLevelUpLearnset,
         .teachableLearnset = sCombuskenTeachableLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 36, SPECIES_BLAZIKEN}),
     },
 
     [SPECIES_BLAZIKEN] =
@@ -479,7 +476,6 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     #else
         .expYield = 209,
     #endif
-        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,

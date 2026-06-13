@@ -55,11 +55,18 @@ static bool32 ShouldRunTrainerSlideLastLowHp(u32 lastId, enum BattlerId battler)
 static void SetTrainerSlideParameters(enum BattlerId battler, u32* lastId, u32* trainerId, u32* retValue);
 static bool32 IsSlideInitalizedOrPlayed(enum BattlerId battler, enum TrainerSlideType slideId);
 
+
+
 // Partner trainers must be added as TRAINER_PARTNER(PARTNER_XXXX)
 static const u8* const sTrainerSlides[DIFFICULTY_COUNT][TRAINER_PARTNER(PARTNER_COUNT)][TRAINER_SLIDE_COUNT] =
 {
     [DIFFICULTY_NORMAL] =
     {
+         [TRAINER_ROXANNE_1] = // use the Trainer's Id from include/constants/opponents.h
+        {
+            [TRAINER_SLIDE_DYNAMAX] = COMPOUND_STRING("Lets show them how you work Probopass!{PAUSE_UNTIL_PRESS}"), // find the id for the slide to be used.
+            //[TRAINER_SLIDE_MEGA_EVOLUTION] = gText_ThatsTheWay, // You can use globals or COMPOUND_STRING to define text here.
+        }
     },
 };
 

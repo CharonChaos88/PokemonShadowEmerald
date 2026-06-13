@@ -208,6 +208,8 @@ EWRAM_DATA enum Species gUnionRoomOfferedSpecies = SPECIES_NONE;
 EWRAM_DATA enum Type gUnionRoomRequestedMonType = TYPE_NONE;
 static EWRAM_DATA struct UnionRoomTrade sUnionRoomTrade = {};
 
+static EWRAM_DATA struct WirelessLink_URoom *sAllocatedURoom = NULL;
+
 static struct WirelessLink_Leader *sLeader;
 static struct WirelessLink_Group *sGroup;
 static struct WirelessLink_URoom *sURoom;
@@ -2427,8 +2429,11 @@ void RunUnionRoom(void)
     // dumb line needed to match
     sWirelessLinkMain.uRoom = sWirelessLinkMain.uRoom;
 
-    uroom = AllocZeroed(sizeof(*sWirelessLinkMain.uRoom));
-    sWirelessLinkMain.uRoom = uroom;
+    if (sAllocatedURoom == NULL)
+        sAllocatedURoom = AllocZeroed(sizeof(*sAllocatedURoom));
+
+    sWirelessLinkMain.uRoom = sAllocatedURoom;
+    uroom = sAllocatedURoom;
     sURoom = uroom;
 
     uroom->state = UR_STATE_INIT;
@@ -2466,17 +2471,24 @@ static void ScheduleFieldMessageAndExit(const u8 *src)
 
 #define PLAYER_LIST_BUFFER_SIZE (MAX_UNION_ROOM_LEADERS * sizeof(struct RfuPlayer))
 
-// Note: This probably could be alloced instead, but I'm not familiar enough with the union room system.
-static EWRAM_DATA ALIGNED(4) u8 sPlayerListBuffer[PLAYER_LIST_BUFFER_SIZE];
+static EWRAM_DATA u8 *sPlayerListBuffer = NULL;
 
 static void CopyPlayerListToBuffer(struct WirelessLink_URoom *uroom)
 {
+    if (sPlayerListBuffer == NULL)
+        sPlayerListBuffer = Alloc(PLAYER_LIST_BUFFER_SIZE);
+        
     memcpy(sPlayerListBuffer, uroom->playerList, PLAYER_LIST_BUFFER_SIZE);
 }
 
 static void CopyPlayerListFromBuffer(struct WirelessLink_URoom *uroom)
 {
-    memcpy(uroom->playerList, sPlayerListBuffer, PLAYER_LIST_BUFFER_SIZE);
+    if (sPlayerListBuffer != NULL)
+    {
+        memcpy(uroom->playerList, sPlayerListBuffer, PLAYER_LIST_BUFFER_SIZE);
+        Free(sPlayerListBuffer);
+        sPlayerListBuffer = NULL;
+    }
 }
 
 static void Task_RunUnionRoom(u8 taskId)
@@ -2490,11 +2502,24 @@ static void Task_RunUnionRoom(u8 taskId)
     switch (uroom->state)
     {
     case UR_STATE_INIT:
-        uroom->incomingChildList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
-        uroom->incomingParentList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
-        uroom->playerList = AllocZeroed(MAX_UNION_ROOM_LEADERS * sizeof(struct RfuPlayer));
-        uroom->spawnPlayer = AllocZeroed(sizeof(struct RfuPlayer));
+        if (uroom->incomingChildList == NULL)
+            uroom->incomingChildList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
+        else
+            ClearIncomingPlayerList(uroom->incomingChildList, RFU_CHILD_MAX);
+
+        if (uroom->incomingParentList == NULL)
+            uroom->incomingParentList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
+        else
+            ClearIncomingPlayerList(uroom->incomingParentList, RFU_CHILD_MAX);
+
+        if (uroom->playerList == NULL)
+            uroom->playerList = AllocZeroed(MAX_UNION_ROOM_LEADERS * sizeof(struct RfuPlayer));
         ClearRfuPlayerList(uroom->playerList->players, MAX_UNION_ROOM_LEADERS);
+
+        if (uroom->spawnPlayer == NULL)
+            uroom->spawnPlayer = AllocZeroed(sizeof(struct RfuPlayer));
+        ClearRfuPlayerList(&uroom->spawnPlayer->players[0], 1);
+
         gPlayerCurrActivity = IN_UNION_ROOM;
         uroom->searchTaskId = CreateTask_SearchForChildOrParent(uroom->incomingParentList, uroom->incomingChildList, LINK_GROUP_UNION_ROOM_RESUME);
         InitUnionRoomPlayerObjects(uroom->objects);
@@ -3020,6 +3045,10 @@ static void Task_RunUnionRoom(u8 taskId)
         Free(uroom->playerList);
         Free(uroom->incomingParentList);
         Free(uroom->incomingChildList);
+            uroom->spawnPlayer = NULL;
+            uroom->playerList = NULL;
+            uroom->incomingParentList = NULL;
+            uroom->incomingChildList = NULL;
         DestroyTask(uroom->searchTaskId);
         DestroyUnionRoomPlayerSprites(uroom->spriteIds);
         uroom->state = UR_STATE_START_ACTIVITY_FADE;
@@ -3033,7 +3062,9 @@ static void Task_RunUnionRoom(u8 taskId)
         {
             DestroyUnionRoomPlayerObjects();
             DestroyTask(taskId);
-            Free(sWirelessLinkMain.uRoom);
+                Free(sAllocatedURoom);
+                sAllocatedURoom = NULL;
+                sWirelessLinkMain.uRoom = NULL;
             CreateTask_StartActivity();
         }
         break;
@@ -3330,13 +3361,20 @@ static void Task_InitUnionRoom(u8 taskId)
         data->state = 2;
         break;
     case 2:
-        data->incomingChildList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
+        if (data->incomingChildList == NULL)
+            data->incomingChildList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
         ClearIncomingPlayerList(data->incomingChildList, RFU_CHILD_MAX);
-        data->incomingParentList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
+
+        if (data->incomingParentList == NULL)
+            data->incomingParentList = AllocZeroed(RFU_CHILD_MAX * sizeof(struct RfuIncomingPlayer));
         ClearIncomingPlayerList(data->incomingParentList, RFU_CHILD_MAX);
-        data->playerList = AllocZeroed(MAX_UNION_ROOM_LEADERS * sizeof(struct RfuPlayer));
+
+        if (data->playerList == NULL)
+            data->playerList = AllocZeroed(MAX_UNION_ROOM_LEADERS * sizeof(struct RfuPlayer));
         ClearRfuPlayerList(data->playerList->players, MAX_UNION_ROOM_LEADERS);
-        data->spawnPlayer = AllocZeroed(sizeof(struct RfuPlayer));
+
+        if (data->spawnPlayer == NULL)
+            data->spawnPlayer = AllocZeroed(sizeof(struct RfuPlayer));
         ClearRfuPlayerList(&data->spawnPlayer->players[0], 1);
         data->searchTaskId = CreateTask_SearchForChildOrParent(data->incomingParentList, data->incomingChildList, LINK_GROUP_UNION_ROOM_INIT);
         data->state = 3;
@@ -3371,8 +3409,14 @@ static void Task_InitUnionRoom(u8 taskId)
         Free(data->playerList);
         Free(data->incomingParentList);
         Free(data->incomingChildList);
+            data->spawnPlayer = NULL;
+            data->playerList = NULL;
+            data->incomingParentList = NULL;
+            data->incomingChildList = NULL;
         DestroyTask(data->searchTaskId);
-        Free(sWirelessLinkMain.uRoom);
+            Free(sAllocatedURoom);
+            sAllocatedURoom = NULL;
+            sWirelessLinkMain.uRoom = NULL;
         LinkRfu_Shutdown();
         DestroyTask(taskId);
         break;

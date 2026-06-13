@@ -15,7 +15,6 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .types = MON_TYPES(TYPE_GRASS, TYPE_POISON),
         .catchRate = 45,
         .expYield = 64,
-        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,
@@ -68,10 +67,10 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
             gOverworldPalette_Bulbasaur,
             gShinyOverworldPalette_Bulbasaur
         )
+        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_IVYSAUR}),
         .levelUpLearnset = sBulbasaurLevelUpLearnset,
         .teachableLearnset = sBulbasaurTeachableLearnset,
         .eggMoveLearnset = sBulbasaurEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 16, SPECIES_IVYSAUR}),
     },
 
     [SPECIES_IVYSAUR] =
@@ -163,8 +162,6 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .types = MON_TYPES(TYPE_GRASS, TYPE_POISON),
         .catchRate = 45,
         .expYield = VENUSAUR_EXP_YIELD,
-        
-        
         .genderRatio = PERCENT_FEMALE(12.5),
         .eggCycles = 20,
         .friendship = STANDARD_FRIENDSHIP,

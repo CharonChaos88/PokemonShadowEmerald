@@ -22,6 +22,7 @@
 #include "constants/script_menu.h"
 #include "constants/seagallop.h"
 #include "constants/songs.h"
+#include "palette_editor.h"
 
 #include "data/script_menu.h"
 

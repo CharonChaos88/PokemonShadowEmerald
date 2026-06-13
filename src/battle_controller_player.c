@@ -1574,9 +1574,15 @@ static void Task_UpdateLvlInHealthbox(u8 taskId)
         u8 monIndex = gTasks[taskId].tExpTask_monId;
 
         if (IsDoubleBattle() == TRUE && monIndex == gBattlerPartyIndexes[BATTLE_PARTNER(battler)])
+        {
             UpdateHealthboxAttribute(gHealthboxSpriteIds[BATTLE_PARTNER(battler)], &gParties[B_TRAINER_PLAYER][monIndex], HEALTHBOX_ALL);
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[BATTLE_PARTNER(battler)], &gParties[B_TRAINER_PLAYER][monIndex], HEALTHBOX_EXP_BAR);
+        }
         else
+        {
             UpdateHealthboxAttribute(gHealthboxSpriteIds[battler], &gParties[B_TRAINER_PLAYER][monIndex], HEALTHBOX_ALL);
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[battler], &gParties[B_TRAINER_PLAYER][monIndex], HEALTHBOX_EXP_BAR);
+        }
 
         gTasks[taskId].func = Task_SetControllerToWaitForString;
     }

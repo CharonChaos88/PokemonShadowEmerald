@@ -51,6 +51,7 @@ EventScript_DoNoIntroTrainerBattle::
 	clearflag FLAG_SAFE_FOLLOWER_MOVEMENT
 	special PlayTrainerEncounterMusic
 	dotrainerbattle
+	giveterashards_battle
 	gotopostbattlescript
 
 EventScript_TryDoRematchBattle::
@@ -63,6 +64,7 @@ EventScript_TryDoRematchBattle::
 	waitmessage
 	waitbuttonpress
 	special BattleSetup_StartRematchBattle
+	giveterashards_battle
 	releaseall
 	end
 
@@ -80,6 +82,7 @@ EventScript_TryDoDoubleRematchBattle::
 	waitmessage
 	waitbuttonpress
 	special BattleSetup_StartRematchBattle
+	giveterashards_battle
 	releaseall
 	end
 
@@ -122,6 +125,7 @@ EventScript_DoTrainerBattle::
 	goto_if_eq VAR_RESULT, TRAINER_BATTLE_CONTINUE_SCRIPT_DOUBLE, EventScript_EndTrainerBattle
 	goto_if_eq VAR_RESULT, TRAINER_BATTLE_CONTINUE_SCRIPT_DOUBLE_NO_MUSIC, EventScript_EndTrainerBattle
 EventScript_EndTrainerBattle::
+	giveterashards_battle
 	gotobeatenscript
 	releaseall
 	end

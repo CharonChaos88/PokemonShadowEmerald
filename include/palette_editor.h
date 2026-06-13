@@ -6,6 +6,7 @@
 
 // The unified global fetcher for all custom/default palettes
 const u16* GetUnifiedMonPalette(u16 species, bool32 isShiny, u32 personality, u8 altPalette);
+const u16 *GetCustomMonSpritePal(u16 species, bool32 isShiny, u32 personality);
 
 // Initializes the Palette Editor UI
 void CB2_InitPaletteEditor(void);

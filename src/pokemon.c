@@ -74,6 +74,7 @@
 #include "constants/trainers.h"
 #include "constants/union_room.h"
 #include "constants/weather.h"
+#include "palette_editor.h"
 
 extern u16 gSpecialVar_ItemId;
 
@@ -5453,7 +5454,10 @@ const u16 *GetMonFrontSpritePal(struct Pokemon *mon)
     bool32 isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
     bool32 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
-    return GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, personality, isEgg);
+    if (!isEgg)
+        return GetUnifiedMonPalette(species, isShiny, personality, GetMonData(mon, MON_DATA_ALT_PALETTE));
+    else
+        return GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, personality, isEgg);
 }
 
 const u16 *GetMonSpritePalFromSpeciesAndPersonality(enum Species species, bool32 isShiny, u32 personality)

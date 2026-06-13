@@ -35,6 +35,7 @@
 #include "main.h"
 #include "map_preview_screen.h"
 #include "menu.h"
+#include "menu_helpers.h"
 #include "money.h"
 #include "move.h"
 #include "move_relearner.h"
@@ -62,13 +63,18 @@
 #include "window.h"
 #include "list_menu.h"
 #include "malloc.h"
+#include "battle_setup.h"
 #include "battle.h"
 #include "constants/event_objects.h"
 #include "constants/map_types.h"
 #include "constants/party_menu.h"
 #include "new_shop.h"
 #include "constants/new_shop.h"
-
+#include "sound.h"
+#include "constants/songs.h"
+#include "bg.h"
+#include "scanline_effect.h"
+#include "constants/rgb.h"
 typedef u16 (*SpecialFunc)(void);
 typedef void (*NativeFunc)(struct ScriptContext *ctx);
 
@@ -2340,50 +2346,42 @@ static u16 GetKeyItemForFieldMove(u16 move)
 bool8 ScrCmd_checkfieldmove(struct ScriptContext *ctx)
 {
     enum FieldMove fieldMove = ScriptReadByte(ctx);
-    bool32 doUnlockedCheck UNUSED = ScriptReadByte(ctx);
     u16 move = FieldMove_GetMoveId(fieldMove);
     u16 keyItem = GetKeyItemForFieldMove(move);
     u32 i;
 
-    // 1. Check for a party Pokémon that can learn the move.
-    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
+    // Check for party Pokemon that can learn the move
+    for (i = 0; i < gPlayerPartyCount; i++)
     {
-        enum Species species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES);
-        if (!species)
-            break;
-        if (!GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG) && MonKnowsMove(&gParties[B_TRAINER_PLAYER][i], move) == TRUE)
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
         {
+            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
             if (CanLearnTeachableMove(species, move))
             {
-                // Pokémon found. Check for the badge flag.
                 if (IsFieldMoveUnlocked(fieldMove))
                 {
-                    gSpecialVar_Result = i; // Return party slot
+                    gSpecialVar_Result = i; // Party slot
                     SetFieldMoveSource(FIELD_MOVE_SOURCE_POKEMON);
-                    return FALSE; // Continue script execution
+                    return FALSE;
                 }
-                // Found a Pokémon but don't have the badge, so fail completely.
                 gSpecialVar_Result = PARTY_SIZE;
                 return FALSE;
             }
         }
     }
 
-    // 2. If no Pokémon is found, check for the key item.
+    // Check for key item
     if (keyItem != ITEM_NONE && CheckBagHasItem(keyItem, 1))
     {
-        // Key item found. Check for the badge flag.
         if (IsFieldMoveUnlocked(fieldMove))
         {
-            gSpecialVar_Result = PARTY_SIZE + 1; // Special value indicating item use
+            gSpecialVar_Result = PARTY_SIZE + 1; // Item indicator
             SetFieldMoveSource(FIELD_MOVE_SOURCE_ITEM);
             return FALSE;
         }
     }
 
-    // 3. If neither is found, or badge check fails, fail.
     gSpecialVar_Result = PARTY_SIZE;
-
     return FALSE;
 }
 
@@ -3493,52 +3491,193 @@ bool8 ScrCmd_getbraillestringwidth(struct ScriptContext * ctx)
     return FALSE;
 }
 
-// A globally visible, massive RAM buffer that will not overlap with gStringVar4
-EWRAM_DATA u8 gLargeItemPackBuffer[2048];
-
-// Helper function to build the multi-page item list safely
-void BufferItemPackContents(const u16 *packPtr, u16 size)
+struct GiveItemPackMenu
 {
-    // Clear our large custom buffer
-    gLargeItemPackBuffer[0] = EOS;
+    u32 scriptPtr;
+    u16 numItems;
+    u16 listMenuTaskId;
+    u8 windowId;
+    struct ListMenuItem *listItems;
+    u8 *itemNames;
+    u16 *itemsArray;
+};
 
-    for (int i = 0; i < size; i++) {
-        u16 itemId = packPtr[i * 2];
-        u16 amount = packPtr[(i * 2) + 1];
+static EWRAM_DATA struct GiveItemPackMenu *sGiveItemPackMenu = NULL;
 
-        // 1. Buffer item name into gStringVar2 and amount into gStringVar3
-        CopyItemName(itemId, gStringVar2);
-        ConvertIntToDecimalStringN(gStringVar3, amount, STR_CONV_MODE_LEFT_ALIGN, 3);
+static const struct BgTemplate sGiveItemPackBgTemplates[] =
+{
+    {
+        .bg = 0,
+        .charBaseIndex = 0,
+        .mapBaseIndex = 31,
+        .screenSize = 0,
+        .paletteMode = 0,
+        .priority = 0,
+        .baseTile = 0
+    }
+};
 
-        // 2. Append the item prefix: "- "
-        static const u8 sText_DashSpace[] = _("- ");
-        StringAppend(gLargeItemPackBuffer, sText_DashSpace);
+static const struct WindowTemplate sGiveItemPackWindowTemplate =
+{
+    .bg = 0,
+    .tilemapLeft = 2,
+    .tilemapTop = 1,
+    .width = 26,
+    .height = 18,
+    .paletteNum = 15,
+    .baseBlock = 1
+};
 
-        // 3. Append the item name
-        StringAppend(gLargeItemPackBuffer, gStringVar2);
-
-        // 4. Append the " x" text and amount
-        static const u8 sText_SpaceX[] = _(" x");
-        StringAppend(gLargeItemPackBuffer, sText_SpaceX);
-        StringAppend(gLargeItemPackBuffer, gStringVar3);
-        
-        // 5. Handle Line Breaks and Page Breaks ('\p')
-        if (i < size - 1) {
-            // Every 3rd item (e.g., index 2, 5, 8, 11...), we inject a page break code
-            if ((i + 1) % 3 == 0) {
-                static const u8 sText_PageBreak[] = _("\p"); 
-                StringAppend(gLargeItemPackBuffer, sText_PageBreak);
-            } else {
-                // Otherwise, standard line change to start the next item on the next row
-                static const u8 sText_Newline[] = _("\n");
-                StringAppend(gLargeItemPackBuffer, sText_Newline);
-            }
-        }
+static void Task_GiveItemPackMenu_WaitFadeIn(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        Free(GetBgTilemapBuffer(0));
+        Free(sGiveItemPackMenu->listItems);
+        Free(sGiveItemPackMenu->itemNames);
+        if (sGiveItemPackMenu->itemsArray)
+            Free(sGiveItemPackMenu->itemsArray);
+        Free(sGiveItemPackMenu);
+        sGiveItemPackMenu = NULL;
+        VarSet(VAR_RESULT, TRUE);
+        DestroyTask(taskId);
+        SetMainCallback2(CB2_ReturnToFieldContinueScript);
     }
 }
 
-// EWRAM_DATA securely places this massive array in external RAM, preventing .bss overflow/New Game crashes!
-EWRAM_DATA u8 gLargeItemPackBuffer[2048];
+static void Task_GiveItemPackMenu(u8 taskId)
+{
+    ListMenu_ProcessInput(sGiveItemPackMenu->listMenuTaskId);
+    if (JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        gTasks[taskId].func = Task_GiveItemPackMenu_WaitFadeIn;
+    }
+}
+
+static void VBlankCB_GiveItemPackMenu(void)
+{
+    LoadOam();
+    ProcessSpriteCopyRequests();
+    TransferPlttBuffer();
+}
+
+static void CB2_GiveItemPackMenuMain(void)
+{
+    RunTasks();
+    AnimateSprites();
+    BuildOamBuffer();
+    DoScheduledBgTilemapCopiesToVram();
+    UpdatePaletteFade();
+}
+
+static void CB2_GiveItemPackMenu(void)
+{
+    switch (gMain.state)
+    {
+    case 0:
+        SetVBlankHBlankCallbacksToNull();
+        ResetVramOamAndBgCntRegs();
+        ClearScheduledBgCopiesToVram();
+        gMain.state++;
+        break;
+    case 1:
+        ScanlineEffect_Stop();
+        FreeAllSpritePalettes();
+        ResetPaletteFade();
+        ResetSpriteData();
+        ResetTasks();
+        gMain.state++;
+        break;
+    case 2:
+        ResetBgsAndClearDma3BusyFlags(0);
+        InitBgsFromTemplates(0, sGiveItemPackBgTemplates, ARRAY_COUNT(sGiveItemPackBgTemplates));
+        SetBgTilemapBuffer(0, AllocZeroed(BG_SCREEN_SIZE));
+        gMain.state++;
+        break;
+    case 3:
+        sGiveItemPackMenu->windowId = AddWindow(&sGiveItemPackWindowTemplate);
+        DeactivateAllTextPrinters();
+        gMain.state++;
+        break;
+    case 4:
+        LoadMessageBoxAndBorderGfx();
+        DrawStdWindowFrame(sGiveItemPackMenu->windowId, FALSE);
+        gMain.state++;
+        break;
+    case 5:
+        {
+            u16 i;
+            const u8 *ptr = (const u8 *)sGiveItemPackMenu->scriptPtr;
+            struct ListMenuTemplate listTemplate;
+            sGiveItemPackMenu->listItems = AllocZeroed(sGiveItemPackMenu->numItems * sizeof(struct ListMenuItem));
+            sGiveItemPackMenu->itemNames = AllocZeroed(sGiveItemPackMenu->numItems * 64);
+            
+            for (i = 0; i < sGiveItemPackMenu->numItems; i++)
+            {
+                u16 itemId = T1_READ_16(ptr); ptr += 2;
+                u16 amount = T1_READ_16(ptr); ptr += 2;
+                u8 *nameStr = &sGiveItemPackMenu->itemNames[i * 64];
+                
+                AddBagItem(itemId, amount);
+                
+                CopyItemName(itemId, gStringVar2);
+                ConvertIntToDecimalStringN(gStringVar3, amount, STR_CONV_MODE_LEFT_ALIGN, 4);
+                
+                StringCopy(nameStr, (const u8[]) _("- "));
+                StringAppend(nameStr, gStringVar2);
+                StringAppend(nameStr, (const u8[]) _(" x"));
+                StringAppend(nameStr, gStringVar3);
+                
+                sGiveItemPackMenu->listItems[i].name = nameStr;
+                sGiveItemPackMenu->listItems[i].id = i;
+            }
+            
+            listTemplate.items = sGiveItemPackMenu->listItems;
+            listTemplate.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
+            listTemplate.itemPrintFunc = NULL;
+            listTemplate.totalItems = sGiveItemPackMenu->numItems;
+            listTemplate.maxShowed = sGiveItemPackMenu->numItems > 8 ? 8 : sGiveItemPackMenu->numItems;
+            listTemplate.windowId = sGiveItemPackMenu->windowId;
+            listTemplate.header_X = 0;
+            listTemplate.item_X = 8;
+            listTemplate.cursor_X = 0;
+            listTemplate.upText_Y = 1;
+            listTemplate.cursorPal = 2;
+            listTemplate.fillValue = 1;
+            listTemplate.cursorShadowPal = 3;
+            listTemplate.lettersSpacing = 0;
+            listTemplate.itemVerticalPadding = 0;
+            listTemplate.scrollMultiple = LIST_NO_MULTIPLE_SCROLL;
+            listTemplate.fontId = FONT_NARROW;
+            listTemplate.cursorKind = CURSOR_BLACK_ARROW;
+            
+            sGiveItemPackMenu->listMenuTaskId = ListMenuInit(&listTemplate, 0, 0);
+            
+            CopyWindowToVram(sGiveItemPackMenu->windowId, COPYWIN_FULL);
+        }
+        gMain.state++;
+        break;
+    case 6:
+        SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_MODE_0 | DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON | DISPCNT_OBJ_ON);
+        ShowBg(0);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
+        SetVBlankCallback(VBlankCB_GiveItemPackMenu);
+        CreateTask(Task_GiveItemPackMenu, 8);
+        SetMainCallback2(CB2_GiveItemPackMenuMain);
+        break;
+    }
+}
+
+static void Task_GiveItemPackMenu_FadeOut(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        DestroyTask(taskId);
+        SetMainCallback2(CB2_GiveItemPackMenu);
+    }
+}
 
 bool8 ScrCmd_giveitempack(struct ScriptContext *ctx)
 {
@@ -3546,70 +3685,100 @@ bool8 ScrCmd_giveitempack(struct ScriptContext *ctx)
     u16 size = 0;
     bool8 allItemsFit = TRUE;
 
-    // 1. First Pass: Read dynamically until 0xFFFF is reached
-    gLargeItemPackBuffer[0] = EOS;
-    
     while (TRUE) {
         u16 itemId = ScriptReadHalfword(ctx);
         if (itemId == 0xFFFF) {
-            break; // Reached the end of the item list!
+            break;
         }
         u16 amount = ScriptReadHalfword(ctx);
         
         if (!CheckBagHasSpace(itemId, amount)) {
             allItemsFit = FALSE;
         }
-
-        // Limit visual text layout to 30 items safely
-        if (size < 30) {
-            CopyItemName(itemId, gStringVar2);
-            ConvertIntToDecimalStringN(gStringVar3, amount, STR_CONV_MODE_LEFT_ALIGN, 3);
-
-            static const u8 sText_DashSpace[] = _("- ");
-            static const u8 sText_SpaceX[] = _(" x");
-            
-            StringAppend(gLargeItemPackBuffer, sText_DashSpace);
-            StringAppend(gLargeItemPackBuffer, gStringVar2);
-            StringAppend(gLargeItemPackBuffer, sText_SpaceX);
-            StringAppend(gLargeItemPackBuffer, gStringVar3);
-            
-            // Peek at the next item to determine if we need a page break
-            u16 nextItemId = ScriptReadHalfword(ctx);
-            ctx->scriptPtr -= 2; // Rewind the peek
-            
-            if (nextItemId != 0xFFFF && size < 29) {
-                if ((size + 1) % 3 == 0) {
-                    static const u8 sText_PageBreak[] = _("\p"); 
-                    StringAppend(gLargeItemPackBuffer, sText_PageBreak);
-                } else {
-                    static const u8 sText_Newline[] = _("\n");
-                    StringAppend(gLargeItemPackBuffer, sText_Newline);
-                }
-            }
-        }
-        
-        if (size == 30) {
-            static const u8 sText_AndMore[] = _("\p...and more items!");
-            StringAppend(gLargeItemPackBuffer, sText_AndMore);
-        }
         
         size++;
     }
 
-    // 2. Second Pass: Rewind instruction pointer and give items if everything fits
     if (allItemsFit) {
-        ctx->scriptPtr = startPtr; 
-        while (TRUE) {
-            u16 itemId = ScriptReadHalfword(ctx);
-            if (itemId == 0xFFFF) break;
-            u16 amount = ScriptReadHalfword(ctx);
-            AddBagItem(itemId, amount);
-        }
-        VarSet(VAR_RESULT, TRUE);
+        sGiveItemPackMenu = AllocZeroed(sizeof(*sGiveItemPackMenu));
+        sGiveItemPackMenu->scriptPtr = (u32)startPtr;
+        sGiveItemPackMenu->numItems = size;
+        
+        ScriptContext_Stop();
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+        CreateTask(Task_GiveItemPackMenu_FadeOut, 8);
+        return TRUE;
     } else {
         VarSet(VAR_RESULT, FALSE);
+        return FALSE;
     }
-
-    return FALSE;
 }
 
+void Cmd_giveterashards_battle(void)
+{
+    static const u16 sTeraShards[] = {
+        ITEM_NORMAL_TERA_SHARD,
+        ITEM_FIGHTING_TERA_SHARD,
+        ITEM_FLYING_TERA_SHARD,
+        ITEM_POISON_TERA_SHARD,
+        ITEM_GROUND_TERA_SHARD,
+        ITEM_ROCK_TERA_SHARD,
+        ITEM_BUG_TERA_SHARD,
+        ITEM_GHOST_TERA_SHARD,
+        ITEM_STEEL_TERA_SHARD,
+        ITEM_FIRE_TERA_SHARD,
+        ITEM_WATER_TERA_SHARD,
+        ITEM_GRASS_TERA_SHARD,
+        ITEM_ELECTRIC_TERA_SHARD,
+        ITEM_PSYCHIC_TERA_SHARD,
+        ITEM_ICE_TERA_SHARD,
+        ITEM_DRAGON_TERA_SHARD,
+        ITEM_DARK_TERA_SHARD,
+        ITEM_FAIRY_TERA_SHARD,
+    };
+    
+    u32 i, idx = 0;
+    u16 amount = 5;
+    bool8 giveStellar = FALSE;
+    u16 trainerId = TRAINER_BATTLE_PARAM.opponentA;
+    u16 trainerClass = gTrainers[trainerId]->trainerClass;
+    u8 trainerPic = gTrainers[trainerId]->trainerPic;
+
+    bool8 isFrontierBrain = (trainerPic == TRAINER_PIC_SALON_MAIDEN_ANABEL
+                          || trainerPic == TRAINER_PIC_DOME_ACE_TUCKER
+                          || trainerPic == TRAINER_PIC_PALACE_MAVEN_SPENSER
+                          || trainerPic == TRAINER_PIC_ARENA_TYCOON_GRETA
+                          || trainerPic == TRAINER_PIC_FACTORY_HEAD_NOLAND
+                          || trainerPic == TRAINER_PIC_PIKE_QUEEN_LUCY
+                          || trainerPic == TRAINER_PIC_PYRAMID_KING_BRANDON);
+
+    if (trainerClass == TRAINER_CLASS_ELITE_FOUR || trainerClass == TRAINER_CLASS_CHAMPION || isFrontierBrain)
+        amount = 10;
+        
+    if (trainerClass == TRAINER_CLASS_CHAMPION || isFrontierBrain)
+        giveStellar = TRUE;
+
+    u16 numItems = ARRAY_COUNT(sTeraShards) + (giveStellar ? 1 : 0);
+    u16 *itemsArray = AllocZeroed(numItems * 2 * sizeof(u16));
+    
+    for (i = 0; i < ARRAY_COUNT(sTeraShards); i++)
+    {
+        itemsArray[idx++] = sTeraShards[i];
+        itemsArray[idx++] = amount;
+    }
+    
+    if (giveStellar)
+    {
+        itemsArray[idx++] = ITEM_STELLAR_TERA_SHARD;
+        itemsArray[idx++] = 5;
+    }
+
+    sGiveItemPackMenu = AllocZeroed(sizeof(*sGiveItemPackMenu));
+    sGiveItemPackMenu->scriptPtr = (u32)itemsArray;
+    sGiveItemPackMenu->numItems = numItems;
+    sGiveItemPackMenu->itemsArray = itemsArray;
+    
+    ScriptContext_Stop();
+    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+    CreateTask(Task_GiveItemPackMenu_FadeOut, 8);
+}

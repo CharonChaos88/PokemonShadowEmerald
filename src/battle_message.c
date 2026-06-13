@@ -7,6 +7,7 @@
 #include "battle_setup.h"
 #include "battle_special.h"
 #include "battle_z_move.h"
+#include "battle_gimmick.h"
 #include "data.h"
 #include "event_data.h"
 #include "frontier_util.h"
@@ -2778,6 +2779,13 @@ void BufferStringBattle(enum StringID stringID, enum BattlerId battler)
         break;
     case STRINGID_TRAINERSLIDE:
         stringPtr = gBattleStruct->trainerSlideMsg;
+        break;
+    case STRINGID_PKMNTERASTALLIZEDINTO:
+        gBattleTextBuff1[0] = B_BUFF_PLACEHOLDER_BEGIN;
+        gBattleTextBuff1[1] = B_BUFF_TYPE;
+        gBattleTextBuff1[2] = GetBattlerTeraType(gBattlerAttacker);
+        gBattleTextBuff1[3] = B_BUFF_EOS;
+        stringPtr = gBattleStringsTable[stringID];
         break;
     default: // load a string from the table
         if (stringID >= STRINGID_COUNT)

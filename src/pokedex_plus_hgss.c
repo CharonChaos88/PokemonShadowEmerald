@@ -51,6 +51,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "config/pokedex_plus_hgss.h"
+#include "palette_editor.h"
 
 enum
 {
@@ -4063,8 +4064,7 @@ static void UNUSED HighlightScreenSelectBarItem(u8 selectedScreen, u16 unused)
 #define tSpecies       data[1]
 #define tPalTimer      data[2]
 #define tMonSpriteId   data[3]
-#define tOtIdLo        data[12]
-#define tOtIdHi        data[13]
+#define tIsShiny       data[13]
 #define tPersonalityLo data[14]
 #define tPersonalityHi data[15]
 
@@ -4138,7 +4138,7 @@ void Task_DisplayCaughtMonDexPageHGSS(u8 taskId)
     case 4:
     {
         u32 personality = ((u16)gTasks[taskId].tPersonalityHi << 16) | (u16)gTasks[taskId].tPersonalityLo;
-        const u16 *paletteData = GetMonSpritePalFromSpeciesAndPersonality(species, FALSE, personality);
+        const u16 *paletteData = GetCustomMonSpritePal(species, FALSE, personality);
 
         spriteId = Pokedex_CreateCaughtMonSprite(species, MON_PAGE_X, MON_PAGE_Y);
         LoadPalette(paletteData, OBJ_PLTT_ID(gSprites[spriteId].oam.paletteNum), PLTT_SIZE_4BPP);
@@ -4200,7 +4200,6 @@ static void Task_ExitCaughtMonPage(u8 taskId)
     if (!gPaletteFade.active)
     {
         enum Species species;
-        u32 otId;
         u32 personality;
         u8 paletteNum;
         const u16 *paletteData;
@@ -4216,10 +4215,9 @@ static void Task_ExitCaughtMonPage(u8 taskId)
             Free(buffer);
 
         species = gTasks[taskId].tSpecies;
-        otId = ((u16)gTasks[taskId].tOtIdHi << 16) | (u16)gTasks[taskId].tOtIdLo;
         personality = ((u16)gTasks[taskId].tPersonalityHi << 16) | (u16)gTasks[taskId].tPersonalityLo;
         paletteNum = gSprites[gTasks[taskId].tMonSpriteId].oam.paletteNum;
-        paletteData = GetMonSpritePalFromSpeciesAndPersonality(species, otId, personality);
+        paletteData = GetCustomMonSpritePal(species, (bool8)gTasks[taskId].tIsShiny, personality);
         LoadPalette(paletteData, OBJ_PLTT_ID(paletteNum), PLTT_SIZE_4BPP);
 
         if (sPokedexView)
@@ -4246,11 +4244,10 @@ static void SpriteCB_SlideCaughtMonToCenter(struct Sprite *sprite)
 }
 
 #undef tState
-#undef tDexNum
+#undef tSpecies
 #undef tPalTimer
 #undef tMonSpriteId
-#undef tOtIdLo
-#undef tOtIdHi
+#undef tIsShiny
 #undef tPersonalityLo
 #undef tPersonalityHi
 

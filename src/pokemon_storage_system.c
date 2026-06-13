@@ -47,6 +47,7 @@
 #include "constants/pokemon_icon.h"
 #include "chooseboxmon.h"
 #include "party_menu.h"
+#include "palette_editor.h"
 
 /*
     NOTE: This file is large. Some general groups of functions have
@@ -7016,7 +7017,10 @@ static void SetDisplayMonData(void *pokemon, u8 mode)
             sStorage->displayMonMarkings = GetBoxMonData(boxMon, MON_DATA_MARKINGS);
             sStorage->displayMonPersonality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY);
             sStorage->displayMonIsEgg = GetBoxMonData(boxMon, MON_DATA_IS_EGG);
-            sStorage->displayMonPalette = GetMonSpritePalFromSpeciesAndPersonalityIsEgg(sStorage->displayMonSpecies, isShiny, sStorage->displayMonPersonality, sStorage->displayMonIsEgg);
+            if (sStorage->displayMonIsEgg)
+                sStorage->displayMonPalette = GetMonSpritePalFromSpeciesAndPersonalityIsEgg(sStorage->displayMonSpecies, isShiny, sStorage->displayMonPersonality, TRUE);
+            else
+                sStorage->displayMonPalette = GetUnifiedMonPalette(sStorage->displayMonSpecies, isShiny, sStorage->displayMonPersonality, GetBoxMonData(boxMon, MON_DATA_ALT_PALETTE));
             gender = GetGenderFromSpeciesAndPersonality(sStorage->displayMonSpecies, sStorage->displayMonPersonality);
             sStorage->displayMonItemId = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
         }
@@ -10078,7 +10082,10 @@ void UpdateSpeciesSpritePSS(struct BoxPokemon *boxMon)
 
     // Update front sprite
     sStorage->displayMonSpecies = species;
-    sStorage->displayMonPalette = GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, pid, isEgg);
+    if (isEgg)
+        sStorage->displayMonPalette = GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, pid, TRUE);
+    else
+        sStorage->displayMonPalette = GetUnifiedMonPalette(species, isShiny, pid, GetBoxMonData(boxMon, MON_DATA_ALT_PALETTE));
     sStorage->displayMonIsEgg = isEgg;
     if (!sJustOpenedBag)
     {

@@ -56,6 +56,28 @@ const u16 *GetUnifiedMonPalette(u16 species, bool32 isShiny, u32 personality, u8
     return defaultPal;
 }
 
+const u16 *GetCustomMonSpritePal(u16 species, bool32 isShiny, u32 personality)
+{
+    const u16 *defaultPal = GetMonSpritePalFromSpeciesAndPersonality(species, isShiny, personality);
+
+    if (species >= NUM_SPECIES)
+        return defaultPal;
+
+    for (u8 i = 0; i < MAX_CUSTOM_PALETTES; i++)
+    {
+        u32 savedPersonality = isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].personality
+                                       : gSaveBlock3Ptr->customPalettesNormal[i].personality;
+
+        if (savedPersonality == personality)
+        {
+            return isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].palette
+                           : gSaveBlock3Ptr->customPalettesNormal[i].palette;
+        }
+    }
+
+    return defaultPal;
+}
+
 // --- EDITOR UI STATE ---
 struct PaletteEditor
 {
@@ -99,6 +121,8 @@ static const u8 sText_ArrowGreen[] = _("{RIGHT_ARROW} Green: ");
 static const u8 sText_EmptyGreen[] = _("  Green: ");
 static const u8 sText_ArrowBlue[] = _("{RIGHT_ARROW} Blue:  ");
 static const u8 sText_EmptyBlue[] = _("  Blue:  ");
+static const u8 sText_Controls1[] = _("{L_BUTTON}{R_BUTTON} Shiny {START_BUTTON} Reset");
+static const u8 sText_Controls2[] = _("{A_BUTTON}{B_BUTTON} Save & Exit");
 
 static void PrintEditorUI(struct PaletteEditor *data)
 {
@@ -162,6 +186,10 @@ static void PrintEditorUI(struct PaletteEditor *data)
     ConvertIntToDecimalStringN(gStringVar1, ((color >> 10) & 0x1F), STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
     AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 88, 0, 0, sTextColor, 0, gStringVar4);
+
+    // Controls
+    AddTextPrinterParameterized4(0, FONT_SMALL, 4, 104, 0, 0, sTextColor, 0, sText_Controls1);
+    AddTextPrinterParameterized4(0, FONT_SMALL, 4, 114, 0, 0, sTextColor, 0, sText_Controls2);
 
     PutWindowTilemap(0);
     CopyWindowToVram(0, COPYWIN_FULL);
@@ -286,6 +314,27 @@ static void HandleInput_PaletteEditor(u8 taskId)
         u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
 
         memcpy(data->mutablePalette, GetUnifiedMonPalette(species, data->isShiny, personality, data->currentAlt), 32);
+
+        u8 palSlot = IndexOfSpritePaletteTag(personality);
+        if (palSlot != 0xFF)
+        {
+            LoadPalette(data->mutablePalette, OBJ_PLTT_ID(palSlot), 32);
+        }
+
+        PrintEditorUI(data);
+        PlaySE(SE_SELECT);
+        return;
+    }
+
+    // RESET PALETTE TO DEFAULT (START Button)
+    if (JOY_NEW(START_BUTTON))
+    {
+        u16 species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
+        u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
+
+        // Fetch the default palette
+        const u16 *defaultPal = GetMonSpritePalFromSpeciesAndPersonality(species, data->isShiny, personality);
+        memcpy(data->mutablePalette, defaultPal, 32);
 
         u8 palSlot = IndexOfSpritePaletteTag(personality);
         if (palSlot != 0xFF)

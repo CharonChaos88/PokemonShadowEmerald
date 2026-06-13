@@ -20,6 +20,7 @@
 #include "text.h"
 #include "window.h"
 #include "constants/rgb.h"
+#include "palette_editor.h"
 
 COMMON_DATA u16 (*gContestMonPixels)[][32] = {0};
 COMMON_DATA struct ImageProcessingContext gImageProcessingContext = {0};
@@ -337,7 +338,7 @@ static void VBlankCB_ContestPainting(void)
 
 static void InitContestMonPixels(enum Species species, bool8 backPic)
 {
-    const void *pal = GetMonSpritePalFromSpeciesAndPersonality(species, gContestPaintingWinner->isShiny, gContestPaintingWinner->personality);
+    const void *pal = GetCustomMonSpritePal(species, gContestPaintingWinner->isShiny, gContestPaintingWinner->personality);
     memcpy(gContestPaintingMonPalette, pal, PLTT_SIZE_4BPP);
     if (!backPic)
     {

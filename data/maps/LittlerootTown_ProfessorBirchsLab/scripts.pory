@@ -1087,8 +1087,6 @@ script BirchGiveTeraOrbToPlayer {
 }
 
 
-
-
 movement LittlerootTown_ProfessorBirchsLab_Movement_MaxieEnterLab {
 	walk_left
 	walk_up * 8

@@ -25,7 +25,6 @@
 #include "trainer_hill.h"
 #include "test_runner.h"
 #include "constants/rgb.h"
-
 static void VBlankIntr(void);
 static void HBlankIntr(void);
 static void VCountIntr(void);
@@ -467,3 +466,4 @@ void ClearPokemonCrySongs(void)
 {
     CpuFill16(0, gPokemonCrySongs, MAX_POKEMON_CRIES * sizeof(struct PokemonCrySong));
 }
+EWRAM_DATA u8 gLargeItemPackBuffer[2048];

@@ -1901,26 +1901,6 @@ script WonderTradeAgain {
 //     goto(MysteryGift_Code_PostRaw)
 // }
 
-text Text_ShowPackContents {
-    "The Mystery Gift contains:\n"
-    "{STR_VAR_1}"
-}
-
-text Text_ShowPackContentsDemo2 {
-    "The Demo 2 Pack contains:\n"
-    "{STR_VAR_1}"
-}
-
-text Text_ReceivedDemo2Pack {
-    "{PLAYER} received the Demo 2 Pack!"
-}
-
-text Text_BagIsFull {
-    "Oh no! You don't have enough room\n"
-    "in your Bag for all of these items."
-}
-
-
 script MysteryManGreeting {
     setspeaker("Mystery Man")
     msgbox(format("Hello, would you like to use the Mystery Gift?"), MSGBOX_YESNO)
@@ -1968,41 +1948,17 @@ script Demo2Code {
         msgbox(format("Thank you for entering in the Demo 2 code. Here's your item pack."))
         playfanfare(MUS_EVOLVED)
         waitfanfare
-        
-        // Jump over to raw assembly to handle the items
-        goto(MysteryGift_Code_RawPart)
+        closemessage
+        giveitempack(ITEM_GREAT_BALL, 10, ITEM_HYPER_POTION, 10, ITEM_FIRE_STONE, 10, ITEM_WATER_STONE, 10, ITEM_THUNDER_STONE, 10, ITEM_LEAF_STONE, 10, ITEM_SUN_STONE, 10, ITEM_MOON_STONE, 10, ITEM_ICE_STONE, 10, ITEM_DUSK_STONE, 10, ITEM_SHINY_STONE, 10, ITEM_DAWN_STONE, 10, ITEM_JOLLY_MINT, 10, ITEM_ADAMANT_MINT, 10, ITEM_BOLD_MINT, 10, ITEM_NAIVE_MINT, 10, ITEM_MODEST_MINT, 10, ITEM_HASTY_MINT, 10, ITEM_RELAXED_MINT, 10, ITEM_LAX_MINT, 10, ITEM_TIMID_MINT, 10, ITEM_GENTLE_MINT, 10, ITEM_NAUGHTY_MINT, 10, ITEM_BRAVE_MINT, 10, ITEM_MILD_MINT, 10, ITEM_CALM_MINT, 10, ITEM_IMPISH_MINT, 10, ITEM_LONELY_MINT, 10, ITEM_RASH_MINT, 10, ITEM_SASSY_MINT, 10, ITEM_SERIOUS_MINT, 10, ITEM_CAREFUL_MINT, 10, ITEM_LINKING_CORD, 10, ITEM_BOTTLE_CAP, 10)
+        if (var(VAR_RESULT) == FALSE) {
+            setspeaker("Mystery Man")
+            msgbox(format("Oh no! You don't have enough room in your Bag for all of these items."))
+        } else {
+            setflag(FLAG_MYSTERY_GIFT_16)
+        }
+        goto(ComebackWithCode)
     }
 }
-
-script Demo2Code_PostDisplay {
-    // Check if the transaction was successful
-    if (var(VAR_RESULT) == FALSE) {
-        setspeaker("Mystery Man")
-        msgbox(format("Oh no! You don't have enough room in your Bag for all of these items."))
-    } else {
-        playfanfare(MUS_OBTAIN_ITEM)
-        setspeaker("Mystery Man")
-        msgbox(format("{PLAYER} received the item pack!"))
-        waitfanfare
-        setflag(FLAG_MYSTERY_GIFT_16)
-    }
-    goto(ComebackWithCode)
-}
-
-raw `
-MysteryGift_Code_RawPart::
-    @ List your items here. The macro will automatically append 0xFFFF at the end.
-    giveitempack ITEM_GREAT_BALL, 10, ITEM_HYPER_POTION, 10, ITEM_FIRE_STONE, 10, ITEM_WATER_STONE, 10, ITEM_THUNDER_STONE, 10, ITEM_LEAF_STONE, 10, ITEM_SUN_STONE, 10, ITEM_MOON_STONE, 10, ITEM_ICE_STONE, 10, ITEM_DUSK_STONE, 10, ITEM_SHINY_STONE, 10, ITEM_DAWN_STONE, 10, ITEM_JOLLY_MINT, 10, ITEM_ADAMANT_MINT, 10, ITEM_BOLD_MINT, 10, ITEM_NAIVE_MINT, 10, ITEM_MODEST_MINT, 10, ITEM_HASTY_MINT, 10, ITEM_RELAXED_MINT, 10, ITEM_LAX_MINT, 10, ITEM_TIMID_MINT, 10, ITEM_GENTLE_MINT, 10, ITEM_NAUGHTY_MINT, 10, ITEM_BRAVE_MINT, 10, ITEM_MILD_MINT, 10, ITEM_CALM_MINT, 10, ITEM_IMPISH_MINT, 10, ITEM_LONELY_MINT, 10, ITEM_RASH_MINT, 10, ITEM_SASSY_MINT, 10, ITEM_SERIOUS_MINT, 10, ITEM_CAREFUL_MINT, 10, ITEM_LINKING_CORD, 10, ITEM_BOTTLE_CAP, 10
-    
-    @ Explicitly handle the message drawing without closing the speaker tags
-    loadword 0, gLargeItemPackBuffer
-    message 0x0
-    waitmessage
-    waitbuttonpress
-    closemessage
-    
-    goto Demo2Code_PostDisplay
-`
 
 script ShinyStarterWithZigzagoon {
     if(flag(FLAG_MYSTERY_GIFT_17) == TRUE) {
@@ -2758,4 +2714,22 @@ script TeraVerifyMenu {
     } else {
         goto(PokemonCompendium2)
     } 
+}
+
+script EventScript_MichaelMysteryGift {
+    trainerbattle_single(TRAINER_MICHAEL_MYSTERY_GIFT, MichaelMysteryGift_Text_Intro, MichaelMysteryGift_Text_Defeat)
+    msgbox(MichaelMysteryGift_Text_PostBattle, MSGBOX_AUTOCLOSE)
+    end
+}
+
+text MichaelMysteryGift_Text_Intro {
+    "Let's battle!"
+}
+
+text MichaelMysteryGift_Text_Defeat {
+    "I lost..."
+}
+
+text MichaelMysteryGift_Text_PostBattle {
+    "Good battle."
 }

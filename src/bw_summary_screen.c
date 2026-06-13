@@ -4452,7 +4452,7 @@ static void PrintMonTrainerMemo(void)
 static void BufferNatureString(void)
 {
     struct PokemonSummaryScreenData *sumStruct = sMonSummaryScreen;
-    DynamicPlaceholderTextUtil_SetPlaceholderPtr(2, gNaturesInfo[sumStruct->summary.nature].name);
+    DynamicPlaceholderTextUtil_SetPlaceholderPtr(2, gNaturesInfo[sumStruct->summary.mintNature].name);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(5, gText_EmptyString5);
 }
 
@@ -5522,7 +5522,7 @@ static u8 LoadMonGfxAndSprite(struct Pokemon *mon, s16 *state, bool32 isShadow)
 
     case 1:
         // 1. Cache Registration: Ensure the palette tag is safely registered (handles normal mons and cache initialization)
-        LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonality(summary->species2, summary->isShiny, summary->pid), summary->species2);
+        LoadSpritePaletteWithTag(GetUnifiedMonPalette(summary->species2, summary->isShiny, summary->pid, GetMonData(mon, MON_DATA_ALT_PALETTE)), summary->species2);
         
         // 3. Template Binding: Link the sprite object to the correct VRAM offset
         SetMultiuseSpriteTemplateToPokemon(summary->species2, B_POSITION_OPPONENT_LEFT);

@@ -904,15 +904,6 @@ void CreateWonderTradePokemon(void)
     SetMonData(&gParties[B_TRAINER_OPPONENT_A][0], MON_DATA_MET_LOCATION, &metLocation);
     CalculateMonStats(&gParties[B_TRAINER_OPPONENT_A][0]);
     
-    // NEW: 5% chance to force the Wonder Traded Pokemon to be Shiny!
-    // 2. Sanitize the Original Trainer Name (Max 7 chars)
-    for (i = 0; i < PLAYER_NAME_LENGTH; i++)
-    {
-        if (gParties[B_TRAINER_OPPONENT_A][0].box.otName[i] == EOS)
-            break;
-    }
-    if (i == PLAYER_NAME_LENGTH)
-        gParties[B_TRAINER_OPPONENT_A][0].box.otName[PLAYER_NAME_LENGTH - 1] = EOS;
 
     // NEW: 5% chance to force the Wonder Traded Pokemon to be Shiny!
     if ((Random() % 100) < 5)

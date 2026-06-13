@@ -3032,4 +3032,8 @@
     .2byte 0xFFFF
     .endm
 
-
+@ Gives the player 10 (or 20) of every Tera Shard
+	.macro giveterashards_battle
+	callnative Cmd_giveterashards_battle, requests_effects=1
+	waitfanfare
+	.endm

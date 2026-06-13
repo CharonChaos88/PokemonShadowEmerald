@@ -1838,10 +1838,12 @@ static void UpdateStatusIconInHealthbox(u8 healthboxSpriteId)
     const u8 *statusGfxPtr;
     s16 tileNumAdder;
     u8 statusPalId;
+    bool32 isPlayerSingles;
 
     battler = gSprites[healthboxSpriteId].hMain_Battler;
     healthBarSpriteId = gSprites[healthboxSpriteId].hMain_HealthBarSpriteId;
     status = GetMonData(GetBattlerMon(battler), MON_DATA_STATUS);
+    isPlayerSingles = IsOnPlayerSide(battler) && (GetBattlerCoordsIndex(battler) == BATTLE_COORDS_SINGLES);
     if (IsOnPlayerSide(battler))
     {
         switch (GetBattlerCoordsIndex(battler))
@@ -1900,7 +1902,53 @@ static void UpdateStatusIconInHealthbox(u8 healthboxSpriteId)
             CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_1), (void *)(OBJ_VRAM0 + gSprites[healthBarSpriteId].oam.tileNum * TILE_SIZE_4BPP), 64);
 
         TryAddPokeballIconToHealthbox(healthboxSpriteId, TRUE);
+        
+        if (isPlayerSingles)
+        {
+            struct Pokemon *mon = GetBattlerMon(battler);
+            u8 text[16];
+            u8 *txtPtr;
+            const u8 sText_Max[] = _("Max");
+            const u8 sText_Percent[] = _("%");
+            u8 level = GetMonData(mon, MON_DATA_LEVEL);
+            
+            if (level >= MAX_LEVEL)
+            {
+                StringCopy(text, sText_Max);
+            }
+            else
+            {
+                u16 species = GetMonData(mon, MON_DATA_SPECIES);
+                u32 exp = GetMonData(mon, MON_DATA_EXP);
+                u32 currLevelExp = gExperienceTables[gSpeciesInfo[species].growthRate][level];
+                u32 nextLevelExp = gExperienceTables[gSpeciesInfo[species].growthRate][level + 1];
+                u32 currValue = exp - currLevelExp;
+                u32 maxValue = nextLevelExp - currLevelExp;
+                u32 percentage = 0;
+                
+                if (maxValue > 0)
+                    percentage = (currValue * 100) / maxValue;
+                if (percentage > 100) 
+                    percentage = 100;
+                    
+                txtPtr = ConvertIntToDecimalStringN(text, percentage, STR_CONV_MODE_RIGHT_ALIGN, 3);
+                StringCopy(txtPtr, sText_Percent);
+            }
+
+            u32 textWidth = GetStringWidth(FONT_SMALL, text, 0);
+            s32 textX = 40 - textWidth;
+            if (textX < 8)
+                textX = 8;
+            
+            FillSpriteRectColor(healthboxSpriteId, 8, 20, 32, 12, HEALTHBOX_BG_INDEX);
+            AddSpriteTextPrinterParameterized6(healthboxSpriteId, FONT_SMALL, textX, 20, 0, 0, sHealthBoxTextColor, 0, text);
+        }
         return;
+    }
+
+    if (isPlayerSingles)
+    {
+        FillSpriteRectColor(healthboxSpriteId, 8, 20, 32, 12, HEALTHBOX_BG_INDEX);
     }
 
     pltAdder = PLTT_ID(gSprites[healthboxSpriteId].oam.paletteNum);
@@ -2243,13 +2291,40 @@ static void MoveBattleBarGraphically(enum BattlerId battler, u8 whichBar)
         break;
     case EXP_BAR:
     {
+        u8 healthboxSpriteId = gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId;
+        u8 expBarSpriteId = gSprites[healthboxSpriteId].hMain_ExpBarSpriteId;
+
+        CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
+                            gBattleSpritesDataPtr->battleBars[battler].oldValue,
+                            gBattleSpritesDataPtr->battleBars[battler].receivedValue,
+                            &gBattleSpritesDataPtr->battleBars[battler].currValue,
+                            array, B_EXPBAR_PIXELS / 8);
+
+        for (i = 0; i < 8; i++)
+        {
+            if (expBarSpriteId != MAX_SPRITES)
+            {
+                CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_12) + array[i] * 32,
+                          (void *)(OBJ_VRAM0 + (gSprites[expBarSpriteId].oam.tileNum + i) * TILE_SIZE_4BPP), 32);
+            }
+            else
+            {
+                if (i < 4)
+                    CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_12) + array[i] * 32,
+                              (void *)(OBJ_VRAM0 + (gSprites[healthboxSpriteId].oam.tileNum + 0x24 + i) * TILE_SIZE_4BPP), 32);
+                else
+                    CpuCopy32(GetHealthboxElementGfxPtr(HEALTHBOX_GFX_12) + array[i] * 32,
+                              (void *)(OBJ_VRAM0 + 0xB0 + (i + gSprites[healthboxSpriteId].oam.tileNum) * TILE_SIZE_4BPP), 32);
+            }
+        }
+
         s32 currValue = gBattleSpritesDataPtr->battleBars[battler].currValue;
         s32 maxValue = gBattleSpritesDataPtr->battleBars[battler].maxValue;
         u8 text[16];
         u8 *txtPtr;
         
         // Define strings locally because the _() macro expands to a curly-brace array
-        const u8 sText_Max[] = _("MAX");
+        const u8 sText_Max[] = _("Max");
         const u8 sText_Percent[] = _("%");
 
         // The battle engine stores values smaller than the bar width in Q_24_8 fixed-point format.
@@ -2277,11 +2352,14 @@ static void MoveBattleBarGraphically(enum BattlerId battler, u8 whichBar)
             StringCopy(txtPtr, sText_Percent);
         }
 
-        u8 healthboxSpriteId = gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId;
+        u32 textWidth = GetStringWidth(FONT_SMALL, text, 0);
+        s32 textX = 40 - textWidth;
+        if (textX < 8)
+            textX = 8;
         
         // Clear the old text and print the new percentage
-        FillSpriteRectColor(healthboxSpriteId, 12, 20, 28, 12, HEALTHBOX_BG_INDEX);
-        AddSpriteTextPrinterParameterized6(healthboxSpriteId, FONT_SMALL, 12, 20, 0, 0, sHealthBoxTextColor, 0, text);
+        FillSpriteRectColor(healthboxSpriteId, 8, 20, 32, 12, HEALTHBOX_BG_INDEX);
+        AddSpriteTextPrinterParameterized6(healthboxSpriteId, FONT_SMALL, textX, 20, 0, 0, sHealthBoxTextColor, 0, text);
         
         break;
     }
@@ -3287,4 +3365,3 @@ void CategoryIcons_LoadSpritesGfx(void)
     LoadCompressedSpriteSheet(&gSpriteSheet_CategoryIcons);
     LoadSpritePalette(&gSpritePal_CategoryIcons);
 }
-
