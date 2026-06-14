@@ -167,6 +167,8 @@ enum {
     MENU_MACHINE,
     MENU_SIMPLE,
     MENU_SELECT,
+    MENU_TAKE_ITEMS,
+    MENU_TAKE_ALL_ITEMS,
 };
 #define MENU_WALLPAPER_SETS_START MENU_SCENERY_1
 #define MENU_WALLPAPERS_START MENU_FOREST
@@ -592,6 +594,7 @@ static void Task_HandleWallpapers(u8);
 static void Task_NameBox(u8);
 static void Task_PrintCantStoreMail(u8);
 static void Task_HandleMovingMonFromParty(u8);
+static void Task_TakeAllItemsFromAllBoxes(u8);
 
 // Input handlers
 static u8 InBoxInput_Normal(void);
@@ -637,6 +640,8 @@ static void SetMovingMonPriority(u8);
 static void SpriteCB_HeldMon(struct Sprite *);
 static struct Sprite *CreateMonIconSprite(enum Species species, u32 personality, s16 x, s16 y, u8 oamPriority, u8 subpriority, bool32 isEgg);
 static void DestroyBoxMonIcon(struct Sprite *);
+static void CreateBoxMonIconAtPos(u8 boxPosition);
+static void DestroyBoxMonIconAtPosition(u8 boxPosition);
 
 // Pokémon data
 static void MoveMon(void);
@@ -1049,37 +1054,37 @@ static const u8 gText_PkmnIsSelected[] = _("{DYNAMIC 0} is selected.");
 
 static const struct StorageMessage sMessages[] =
 {
-    [MSG_EXIT_BOX]             = {COMPOUND_STRING("Exit from the BOX?"),         MSG_VAR_NONE},
+    [MSG_EXIT_BOX]             = {COMPOUND_STRING("Exit from the Box?"),         MSG_VAR_NONE},
     [MSG_WHAT_YOU_DO]          = {COMPOUND_STRING("What do you want to do?"),    MSG_VAR_NONE},
     [MSG_PICK_A_THEME]         = {COMPOUND_STRING("Please pick a theme."),       MSG_VAR_NONE},
     [MSG_PICK_A_WALLPAPER]     = {COMPOUND_STRING("Pick the wallpaper."),        MSG_VAR_NONE},
     [MSG_IS_SELECTED]          = {gText_PkmnIsSelected,                          MSG_VAR_MON_NAME_1},
-    [MSG_JUMP_TO_WHICH_BOX]    = {COMPOUND_STRING("Jump to which BOX?"),         MSG_VAR_NONE},
-    [MSG_DEPOSIT_IN_WHICH_BOX] = {COMPOUND_STRING("Deposit in which BOX?"),      MSG_VAR_NONE},
+    [MSG_JUMP_TO_WHICH_BOX]    = {COMPOUND_STRING("Jump to which Box?"),         MSG_VAR_NONE},
+    [MSG_DEPOSIT_IN_WHICH_BOX] = {COMPOUND_STRING("Deposit in which Box?"),      MSG_VAR_NONE},
     [MSG_WAS_DEPOSITED]        = {COMPOUND_STRING("{DYNAMIC 0} was deposited."), MSG_VAR_MON_NAME_1},
-    [MSG_BOX_IS_FULL]          = {COMPOUND_STRING("The BOX is full."),           MSG_VAR_NONE},
-    [MSG_RELEASE_POKE]         = {COMPOUND_STRING("Release this POKéMON?"),      MSG_VAR_NONE},
+    [MSG_BOX_IS_FULL]          = {COMPOUND_STRING("The Box is full."),           MSG_VAR_NONE},
+    [MSG_RELEASE_POKE]         = {COMPOUND_STRING("Release this Pokémon?"),      MSG_VAR_NONE},
     [MSG_WAS_RELEASED]         = {COMPOUND_STRING("{DYNAMIC 0} was released."),  MSG_VAR_RELEASE_MON_1},
     [MSG_BYE_BYE]              = {COMPOUND_STRING("Bye-bye, {DYNAMIC 0}!"),      MSG_VAR_RELEASE_MON_3},
-    [MSG_MARK_POKE]            = {COMPOUND_STRING("Mark your POKéMON."),         MSG_VAR_NONE},
-    [MSG_LAST_POKE]            = {COMPOUND_STRING("That's your last POKéMON!"),  MSG_VAR_NONE},
+    [MSG_MARK_POKE]            = {COMPOUND_STRING("Mark your Pokémon."),         MSG_VAR_NONE},
+    [MSG_LAST_POKE]            = {COMPOUND_STRING("That's your last Pokémon!"),  MSG_VAR_NONE},
     [MSG_PARTY_FULL]           = {gText_YourPartysFull,                          MSG_VAR_NONE},
-    [MSG_HOLDING_POKE]         = {COMPOUND_STRING("You're holding a POKéMON!"),  MSG_VAR_NONE},
+    [MSG_HOLDING_POKE]         = {COMPOUND_STRING("You're holding a Pokémon!"),  MSG_VAR_NONE},
     [MSG_WHICH_ONE_WILL_TAKE]  = {COMPOUND_STRING("Which one will you take?"),   MSG_VAR_NONE},
-    [MSG_CANT_RELEASE_EGG]     = {COMPOUND_STRING("You can't release an EGG."),  MSG_VAR_NONE},
-    [MSG_CONTINUE_BOX]         = {COMPOUND_STRING("Continue BOX operations?"),   MSG_VAR_NONE},
+    [MSG_CANT_RELEASE_EGG]     = {COMPOUND_STRING("You can't release an Egg."),  MSG_VAR_NONE},
+    [MSG_CONTINUE_BOX]         = {COMPOUND_STRING("Continue Box operations?"),   MSG_VAR_NONE},
     [MSG_CAME_BACK]            = {COMPOUND_STRING("{DYNAMIC 0} came back!"),     MSG_VAR_MON_NAME_1},
     [MSG_WORRIED]              = {COMPOUND_STRING("Was it worried about you?"),  MSG_VAR_NONE},
     [MSG_SURPRISE]             = {COMPOUND_STRING("… … … … !"),                  MSG_VAR_NONE},
-    [MSG_PLEASE_REMOVE_MAIL]   = {COMPOUND_STRING("Please remove the MAIL."),    MSG_VAR_NONE},
+    [MSG_PLEASE_REMOVE_MAIL]   = {COMPOUND_STRING("Please remove the Mail."),    MSG_VAR_NONE},
     [MSG_IS_SELECTED2]         = {gText_PkmnIsSelected,                          MSG_VAR_ITEM_NAME},
-    [MSG_GIVE_TO_MON]          = {COMPOUND_STRING("GIVE to a POKéMON?"),         MSG_VAR_NONE},
-    [MSG_PLACED_IN_BAG]        = {COMPOUND_STRING("Placed item in the BAG."),    MSG_VAR_ITEM_NAME},
-    [MSG_BAG_FULL]             = {COMPOUND_STRING("The BAG is full."),           MSG_VAR_NONE},
+    [MSG_GIVE_TO_MON]          = {COMPOUND_STRING("Give to a Pokémon?"),         MSG_VAR_NONE},
+    [MSG_PLACED_IN_BAG]        = {COMPOUND_STRING("Placed item in the Bag."),    MSG_VAR_ITEM_NAME},
+    [MSG_BAG_FULL]             = {COMPOUND_STRING("The Bag is full."),           MSG_VAR_NONE},
     [MSG_PUT_IN_BAG]           = {COMPOUND_STRING("Put this item in the BAG?"),  MSG_VAR_NONE},
     [MSG_ITEM_IS_HELD]         = {COMPOUND_STRING("{DYNAMIC 0} is now held."),   MSG_VAR_ITEM_NAME},
     [MSG_CHANGED_TO_ITEM]      = {COMPOUND_STRING("Changed to {DYNAMIC 0}."),    MSG_VAR_ITEM_NAME},
-    [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("MAIL can't be stored!"),      MSG_VAR_NONE},
+    [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("Mail can't be stored!"),      MSG_VAR_NONE},
 };
 
 static const struct WindowTemplate sYesNoWindowTemplate =
@@ -2687,6 +2692,11 @@ static void Task_OnSelectedMon(u8 taskId)
         case MENU_INFO:
             SetPokeStorageTask(Task_ShowItemInfo);
             break;
+        case MENU_TAKE_ALL_ITEMS:
+            PlaySE(SE_SELECT);
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_TakeAllItemsFromAllBoxes);
+            break;
         case MENU_SELECT:
             PlaySE(SE_SELECT);
             struct BoxPokemon *boxmon = GetCursorBoxMon();
@@ -3375,6 +3385,92 @@ static void Task_PrintCantStoreMail(u8 taskId)
     }
 }
 
+static const u8 sText_PlacedItemsInBag[] = _("Placed items in the BAG.");
+static const u8 sText_NoItemsToTake[] = _("There are no items to take.");
+
+static void Task_TakeAllItemsFromAllBoxes(u8 taskId)
+{
+    u32 boxId;
+    u32 boxPos;
+    u16 item;
+    bool8 itemTaken = FALSE;
+    bool8 bagFull = FALSE;
+
+    switch (sStorage->state)
+    {
+    case 0:
+        for (boxId = 0; boxId < TOTAL_BOXES_COUNT; boxId++)
+        {
+            for (boxPos = 0; boxPos < IN_BOX_COUNT; boxPos++)
+            {
+                struct BoxPokemon *boxMon = GetBoxedMonPtr(boxId, boxPos);
+                if (GetBoxMonData(boxMon, MON_DATA_SPECIES) != SPECIES_NONE && !GetBoxMonData(boxMon, MON_DATA_IS_EGG))
+                {
+                    item = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
+                    if (item != ITEM_NONE)
+                    {
+                        if (AddBagItem(item, 1) == TRUE)
+                        {
+                            item = ITEM_NONE;
+                            SetBoxMonData(boxMon, MON_DATA_HELD_ITEM, &item);
+                            if (boxId == StorageGetCurrentBox())
+                            {
+                                if (TryBoxMonFormChange(boxMon, FORM_CHANGE_ITEM_HOLD))
+                                {
+                                    DestroyBoxMonIconAtPosition(boxPos);
+                                    CreateBoxMonIconAtPos(boxPos);
+                                }
+                                if (sStorage->boxOption == OPTION_MOVE_ITEMS)
+                                {
+                                    TryHideItemIconAtPos(CURSOR_AREA_IN_BOX, boxPos);
+                                }
+                            }
+                            itemTaken = TRUE;
+                        }
+                        else
+                        {
+                            bagFull = TRUE;
+                        }
+                    }
+                }
+            }
+        }
+        if (itemTaken)
+            PlaySE(SE_SELECT);
+        else
+            PlaySE(SE_FAILURE);
+
+        if (bagFull)
+        {
+            PrintMessage(MSG_BAG_FULL);
+            sStorage->state = 1;
+        }
+        else
+        {
+            StringExpandPlaceholders(sStorage->messageText, itemTaken ? sText_PlacedItemsInBag : sText_NoItemsToTake);
+            FillWindowPixelBuffer(WIN_MESSAGE, PIXEL_FILL(1));
+            AddTextPrinterParameterized(WIN_MESSAGE, FONT_NORMAL, sStorage->messageText, 0, 1, TEXT_SKIP_DRAW, NULL);
+            DrawTextBorderOuter(WIN_MESSAGE, 2, 14);
+            PutWindowTilemap(WIN_MESSAGE);
+            CopyWindowToVram(WIN_MESSAGE, COPYWIN_GFX);
+            ScheduleBgCopyTilemapToVram(0);
+            sStorage->state = 1;
+        }
+        break;
+    case 1:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            RefreshDisplayMon();
+            PrintDisplayMonInfo();
+            if (IsCursorOnBoxTitle())
+                AnimateBoxScrollArrows(TRUE);
+            SetPokeStorageTask(Task_PokeStorageMain);
+        }
+        break;
+    }
+}
+
 // Handle options menu that shows when the box title bar is selected
 static void Task_HandleBoxOptions(u8 taskId)
 {
@@ -3411,6 +3507,11 @@ static void Task_HandleBoxOptions(u8 taskId)
             PlaySE(SE_SELECT);
             ClearBottomWindow();
             SetPokeStorageTask(Task_JumpBox);
+            break;
+        case MENU_TAKE_ALL_ITEMS:
+            PlaySE(SE_SELECT);
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_TakeAllItemsFromAllBoxes);
             break;
         }
         break;
@@ -5847,12 +5948,26 @@ static struct Sprite *CreateChooseBoxArrows(u16 x, u16 y, u8 animId, u8 priority
 
 static void InitCursor(void)
 {
-    if (sStorage->boxOption != OPTION_DEPOSIT)
-        sCursorArea = CURSOR_AREA_IN_BOX;
-    else
+    if (sStorage->boxOption == OPTION_DEPOSIT)
+    {
         sCursorArea = CURSOR_AREA_IN_PARTY;
+        sCursorPosition = 0;
+    }
+    else
+    {
+        if (sCursorArea == CURSOR_AREA_IN_PARTY)
+        {
+            sCursorArea = CURSOR_AREA_IN_BOX;
+            sCursorPosition = 0;
+        }
+        if (sCursorArea == CURSOR_AREA_IN_BOX && sCursorPosition >= IN_BOX_COUNT)
+            sCursorPosition = 0;
+        else if (sCursorArea == CURSOR_AREA_BOX_TITLE && sCursorPosition > 0)
+            sCursorPosition = 0;
+        else if (sCursorArea == CURSOR_AREA_BUTTONS && sCursorPosition > 1)
+            sCursorPosition = 0;
+    }
 
-    sCursorPosition = 0;
     sIsMonBeingMoved = FALSE;
     sMovingMonOrigBoxId = 0;
     sMovingMonOrigBoxPos = 0;
@@ -7777,10 +7892,20 @@ static bool8 SetMenuTexts_Mon(void)
         }
         break;
     case OPTION_SELECT_MON:
-        if (species != SPECIES_NONE && CanBoxMonBeSelected(GetCursorBoxMon()))
-            SetMenuText(MENU_SELECT);
+        if (species != SPECIES_NONE)
+        {
+            if (CanBoxMonBeSelected(GetCursorBoxMon()))
+                SetMenuText(MENU_SELECT);
+            SetMenuText(MENU_SUMMARY);
+            SetMenuText(MENU_TAKE_ALL_ITEMS);
+            SetMenuText(MENU_MARK);
+            SetMenuText(MENU_CANCEL);
+            return TRUE;
+        }
         else
+        {
             return FALSE;
+        }
         break;
     case OPTION_MOVE_ITEMS:
     default:
@@ -8099,6 +8224,8 @@ static const u8 *const sMenuTexts[] =
     [MENU_MACHINE]    = COMPOUND_STRING("MACHINE"),
     [MENU_SIMPLE]     = COMPOUND_STRING("SIMPLE"),
     [MENU_SELECT]     = COMPOUND_STRING("SELECT"),
+    [MENU_TAKE_ITEMS] = COMPOUND_STRING("TAKE ITEMS"),
+    [MENU_TAKE_ALL_ITEMS] = COMPOUND_STRING("TAKE ALL"),
 };
 
 static void SetMenuText(u8 textId)

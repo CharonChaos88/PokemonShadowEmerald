@@ -2353,9 +2353,9 @@ bool8 ScrCmd_checkfieldmove(struct ScriptContext *ctx)
     // Check for party Pokemon that can learn the move
     for (i = 0; i < gPlayerPartyCount; i++)
     {
-        if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+        if (!GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG))
         {
-            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
+            u16 species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES);
             if (CanLearnTeachableMove(species, move))
             {
                 if (IsFieldMoveUnlocked(fieldMove))

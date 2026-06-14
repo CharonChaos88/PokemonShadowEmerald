@@ -20,6 +20,11 @@
 #include "constants/party_menu.h"
 #include "constants/songs.h"
 #include "bw_summary_screen.h"
+#include "save.h"
+#include "text_window.h"
+#include "constants/rgb.h"
+extern const u8 gText_SavingDontTurnOffPower[];
+
 #define VALID_MON 0
 #define INVALID_MON 1
 
@@ -159,13 +164,43 @@ bool32 CanBoxMonBeSelected(struct BoxPokemon *boxmon)
     return !IsBoxMonExcluded(boxmon);
 }
 
+static void Task_ChooseBoxMonWaitSave(u8 taskId)
+{
+    struct Task *task = &gTasks[taskId];
+
+    if (++task->data[0] > 30)
+    {
+        TrySavingData(SAVE_NORMAL);
+        ClearDialogWindowAndFrame(0, TRUE);
+        CleanupOverworldWindowsAndTilemaps();
+        ChooseMonFromStorage();
+        DestroyTask(taskId);
+    }
+}
+
 static void Task_ChooseBoxMon(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        CleanupOverworldWindowsAndTilemaps();
-        ChooseMonFromStorage();
-        DestroyTask(taskId);
+        if (sSelectionType == SELECT_PC_MON_WONDER_TRADE)
+        {
+            LoadMessageBoxAndBorderGfx();
+            DrawDialogueFrame(0, FALSE);
+            AddTextPrinterParameterized(0, FONT_NORMAL, gText_SavingDontTurnOffPower, 0, 1, TEXT_SKIP_DRAW, NULL);
+            CopyWindowToVram(0, COPYWIN_FULL);
+
+            // Unfade the message box palettes so they are visible on the faded screen
+            BlendPalettes(0x0000E000, 0, RGB_BLACK);
+
+            gTasks[taskId].data[0] = 0;
+            gTasks[taskId].func = Task_ChooseBoxMonWaitSave;
+        }
+        else
+        {
+            CleanupOverworldWindowsAndTilemaps();
+            ChooseMonFromStorage();
+            DestroyTask(taskId);
+        }
     }
 }
 
@@ -235,7 +270,7 @@ enum LearnMoveState
     DID_NOT_LEARN_1,
 };
 
-static struct BoxPokemon *LearnMove_GetBoxMonFromTaskData(u8 partyIndex)
+static struct BoxPokemon *LearnMove_GetBoxMonFromTaskData(u16 partyIndex)
 {
     struct BoxPokemon *boxmon;
     if (partyIndex == PC_MON_CHOSEN)

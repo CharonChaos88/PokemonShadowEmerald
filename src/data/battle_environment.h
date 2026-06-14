@@ -239,9 +239,9 @@ const struct BattleEnvironment gBattleEnvironmentInfo[BATTLE_ENVIRONMENT_COUNT] 
         .secretPowerEffect = PLAIN_SECRET_POWER_EFFECT,
         .camouflageType = PLAIN_CAMOUFLAGE_TYPE,
         .camouflageBlend = PLAIN_CAMOUFLAGE_BLEND,
-        .entry = ENVIRONMENT_ENTRY(Building),
-        .background = ENVIRONMENT_BACKGROUND(Building),
-        .palette = gBattleEnvironmentPalette_Plain,
+        .entry = ENVIRONMENT_ENTRY(TallGrass),
+        .background = ENVIRONMENT_BACKGROUND(TallGrass),
+        .palette = gBattleEnvironmentPalette_TallGrass,
         .battleIntroSlide = PLAIN_BATTLE_INTRO_SLIDE,
     },
 
