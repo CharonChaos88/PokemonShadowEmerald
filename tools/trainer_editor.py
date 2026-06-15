@@ -579,9 +579,9 @@ class PartyRepository:
         if not trainer_id.startswith("TRAINER_"):
             trainer_id = "TRAINER_" + trainer_id
         if not re.fullmatch(r"TRAINER_[A-Z0-9_]+", trainer_id):
-            raise ValueError("Use um id como TRAINER_NOVO_TREINADOR.")
+            raise ValueError("Use an id like TRAINER_NEW_TRAINER.")
         if any(tr.trainer_id == trainer_id for tr in self.trainers):
-            raise ValueError(f"{trainer_id} ja existe.")
+            raise ValueError(f"{trainer_id} already exists.")
         trainer = TrainerBlock(
             trainer_id=trainer_id,
             start=len(self.text),
@@ -708,7 +708,7 @@ class PartyTab(ttk.Frame):
         basics.grid(row=1, column=0, sticky="nsew", padx=8, pady=6)
         basics.columnconfigure(2, weight=1)
         ttk.Label(basics, text="Sprite:").grid(row=0, column=0, sticky="w")
-        self.trainer_preview = ttk.Label(basics, text="Sem preview", anchor=tk.CENTER, width=12)
+        self.trainer_preview = ttk.Label(basics, text="No preview", anchor=tk.CENTER, width=12)
         self.trainer_preview.grid(row=1, column=0, rowspan=4, padx=(0, 10), sticky="n")
 
         for key in TRAINER_FIELDS:
@@ -772,7 +772,8 @@ class PartyTab(ttk.Frame):
 
         import_btn_frame = ttk.Frame(party_left)
         import_btn_frame.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(4, 0))
-        ttk.Button(import_btn_frame, text="Import Showdown", command=self.import_showdown).pack(fill=tk.X)
+        ttk.Button(import_btn_frame, text="Import Showdown", command=self.import_showdown).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 2))
+        ttk.Button(import_btn_frame, text="Export Showdown", command=self.export_showdown).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(2, 0))
 
         mon_right = ttk.LabelFrame(party_frame, text="Pokemon")
         mon_right.grid(row=0, column=1, rowspan=3, sticky="nsew", padx=(4, 8), pady=8)
@@ -785,7 +786,7 @@ class PartyTab(ttk.Frame):
         self.mon_title_combo = ttk.Combobox(mon_right, textvariable=self.mon_title, values=self.species_choices, width=16)
         self.mon_title_combo.grid(row=0, column=1, sticky="ew", padx=6, pady=3)
         self.mon_title_combo.bind("<<ComboboxSelected>>", lambda _event: self.update_mon_title_from_combo())
-        self.mon_preview = ttk.Label(mon_right, text="Sem preview", anchor=tk.CENTER, width=12)
+        self.mon_preview = ttk.Label(mon_right, text="No preview", anchor=tk.CENTER, width=12)
         self.mon_preview.grid(row=0, column=4, rowspan=5, padx=8, pady=3)
 
         ttk.Label(mon_right, text="Held Item:").grid(row=1, column=0, sticky="w", padx=6, pady=3)
@@ -852,7 +853,7 @@ class PartyTab(ttk.Frame):
             combo = ttk.Combobox(mon_right, textvariable=var, values=self.move_choices, width=12)
             combo.grid(row=5 + (index // 2), column=3 + (index % 2), sticky="ew", padx=4, pady=3)
             self.move_vars.append(var)
-        ttk.Button(mon_right, text="Aplicar edicao do Pokemon", command=self.apply_mon_edit).grid(row=8, column=4, sticky="e", padx=6, pady=6)
+        ttk.Button(mon_right, text="Apply Pokemon Edit", command=self.apply_mon_edit).grid(row=8, column=4, sticky="e", padx=6, pady=6)
 
     def refresh_diff_tabs(self) -> None:
         diffs = sorted(set(t.fields.get("Difficulty", "").strip() for t in self.repo.trainers))
@@ -919,7 +920,7 @@ class PartyTab(ttk.Frame):
         self.repo.load()
         self.refresh_diff_tabs()
         self.refresh_trainers()
-        messagebox.showinfo("Trainer Party Editor", "Arquivo recarregado.")
+        messagebox.showinfo("Trainer Party Editor", "File reloaded.")
 
     def on_trainer_select(self, _event: object | None = None) -> None:
         if not hasattr(self, 'diff_notebook') or not self.diff_notebook.tabs():
@@ -978,7 +979,7 @@ class PartyTab(ttk.Frame):
             var.set("")
         for var in self.move_vars:
             var.set("")
-        self.mon_preview.configure(image="", text="Sem preview")
+        self.mon_preview.configure(image="", text="No preview")
         self.loading_mon_form = False
 
     def on_mon_select(self, _event: object | None = None) -> None:
@@ -1037,7 +1038,7 @@ class PartyTab(ttk.Frame):
 
     def save_current(self) -> None:
         if self.current is None:
-            messagebox.showwarning("Trainer Party Editor", "Selecione um trainer primeiro.")
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
             return
         self.apply_mon_edit(show_warning=False)
         self.gather_trainer_fields()
@@ -1045,7 +1046,7 @@ class PartyTab(ttk.Frame):
         try:
             self.repo.save_trainer(self.current)
         except Exception as exc:
-            messagebox.showerror("Erro ao salvar", str(exc))
+            messagebox.showerror("Error saving", str(exc))
             return
         self.refresh_diff_tabs()
         self.refresh_trainers()
@@ -1063,16 +1064,16 @@ class PartyTab(ttk.Frame):
                     lst.see(index)
                     self.on_trainer_select()
                     break
-        messagebox.showinfo("Trainer Party Editor", "Trainer salvo com backup automatico.")
+        messagebox.showinfo("Trainer Party Editor", "Trainer saved with automatic backup.")
 
     def add_trainer(self) -> None:
-        trainer_id = simpledialog.askstring("Novo trainer", "ID do trainer:", parent=self)
+        trainer_id = simpledialog.askstring("New trainer", "Trainer ID:", parent=self)
         if not trainer_id:
             return
         try:
             trainer = self.repo.add_trainer(trainer_id)
         except Exception as exc:
-            messagebox.showerror("Erro ao criar trainer", str(exc))
+            messagebox.showerror("Error creating trainer", str(exc))
             return
         self.refresh_diff_tabs()
         self.refresh_trainers()
@@ -1092,11 +1093,11 @@ class PartyTab(ttk.Frame):
 
     def clone_opponent_header(self) -> None:
         if self.current is None:
-            messagebox.showwarning("Trainer Party Editor", "Selecione um trainer primeiro.")
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
             return
         new_header = simpledialog.askstring(
             "Clone",
-            f"Novo HEADER para clonar {self.current.trainer_id}:",
+            f"New HEADER to clone {self.current.trainer_id}:",
             parent=self,
         )
         if not new_header:
@@ -1105,12 +1106,12 @@ class PartyTab(ttk.Frame):
         if not new_header.startswith("TRAINER_"):
             new_header = "TRAINER_" + new_header
         if not re.fullmatch(r"TRAINER_[A-Z0-9_]+", new_header):
-            messagebox.showerror("Clone", "Use um header como TRAINER_MY_CUSTOM_TRAINER_NAME.")
+            messagebox.showerror("Clone", "Use a header like TRAINER_MY_CUSTOM_TRAINER_NAME.")
             return
 
         text = OPPONENTS_HEADER.read_text()
         if re.search(rf"^\s*#define\s+{re.escape(new_header)}\b", text, re.M):
-            messagebox.showerror("Clone", f"{new_header} ja existe em opponents.h.")
+            messagebox.showerror("Clone", f"{new_header} already exists in opponents.h.")
             return
 
         line = f"#define {new_header} {self.current.trainer_id}\n"
@@ -1121,11 +1122,11 @@ class PartyTab(ttk.Frame):
         else:
             text = text.rstrip() + "\n\n" + line
         OPPONENTS_HEADER.write_text(text)
-        messagebox.showinfo("Clone", f"Adicionado em opponents.h:\n{line.strip()}")
+        messagebox.showinfo("Clone", f"Added to opponents.h:\n{line.strip()}")
 
     def generate_poryscript(self) -> None:
         if self.current is None:
-            messagebox.showwarning("Trainer Party Editor", "Selecione um trainer primeiro.")
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
             return
 
         trainer_id = self.current.trainer_id
@@ -1243,9 +1244,9 @@ class PartyTab(ttk.Frame):
 
     def add_pokemon(self) -> None:
         if self.current is None:
-            messagebox.showwarning("Trainer Party Editor", "Selecione um trainer primeiro.")
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
             return
-        species = simpledialog.askstring("Adicionar Pokemon", "Especie:", parent=self) or "Poochyena"
+        species = simpledialog.askstring("Add Pokemon", "Species:", parent=self) or "Poochyena"
         self.current.pokemon.append(PokemonEntry(title=species, fields={"Level": "5"}, moves=[]))
         self.refresh_party()
         last = len(self.current.pokemon) - 1
@@ -1280,17 +1281,17 @@ class PartyTab(ttk.Frame):
         
     def import_showdown(self) -> None:
         if self.current is None:
-            messagebox.showwarning("Trainer Party Editor", "Selecione um trainer primeiro.")
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
             return
 
         dialog = tk.Toplevel(self)
         dialog.title("Import Showdown")
-        dialog.geometry("600x450")
+        dialog.geometry("800x600")
         dialog.transient(self)
         dialog.grab_set()
 
         def do_import() -> None:
-            content = text.get("1.0", tk.END).strip()
+            content = text.get("1.0", tk.END).replace("\r", "").replace("\u200b", "").replace("\t", " ").strip()
             if not content:
                 dialog.destroy()
                 return
@@ -1314,10 +1315,116 @@ class PartyTab(ttk.Frame):
         text = tk.Text(dialog, wrap=tk.WORD)
         text.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=8, pady=(8, 0))
 
+        def on_paste(event: tk.Event) -> str:
+            try:
+                clipboard = dialog.clipboard_get()
+                clean_text = clipboard.replace("\r", "").replace("\u200b", "").replace("\t", " ")
+                clean_text = clean_text.replace("♂", "(M)").replace("♀", "(F)")
+                clean_text = re.sub(r"[\x00-\x08\x0b-\x1f\x7f-\x9f\u200e\u200f\u202a-\u202e\u2060-\u206f\ufeff]", "", clean_text)
+                text.insert(tk.INSERT, clean_text)
+                return "break"
+            except tk.TclError:
+                pass
+            return ""
+
+        text.bind("<<Paste>>", on_paste)
+
+    def export_showdown(self) -> None:
+        if self.current is None:
+            messagebox.showwarning("Trainer Party Editor", "Select a trainer first.")
+            return
+
+        lines = []
+        for mon in self.current.pokemon:
+            title = mon.title.strip() or "Poochyena"
+            gender_field = get_field_case_insensitive(mon.fields, "Gender").strip()
+            
+            if gender_field in {"Male", "Female"}:
+                if not re.search(r"\([MF]\)", title):
+                    parts = title.split("@", 1)
+                    base_title = parts[0].strip()
+                    gender_str = " (M)" if gender_field == "Male" else " (F)"
+                    base_title += gender_str
+                    if len(parts) > 1:
+                        title = f"{base_title} @ {parts[1].strip()}"
+                    else:
+                        title = base_title
+                        
+            out_lines = [title]
+            
+            ability = get_field_case_insensitive(mon.fields, "Ability")
+            if ability:
+                out_lines.append(f"Ability: {ability}")
+            
+            level = get_field_case_insensitive(mon.fields, "Level")
+            if level:
+                out_lines.append(f"Level: {level}")
+                
+            shiny = get_field_case_insensitive(mon.fields, "Shiny")
+            if shiny == "Yes":
+                out_lines.append("Shiny: Yes")
+                
+            happiness = get_field_case_insensitive(mon.fields, "Happiness")
+            if happiness:
+                out_lines.append(f"Happiness: {happiness}")
+                
+            tera_type = get_field_case_insensitive(mon.fields, "Tera Type")
+            if tera_type:
+                out_lines.append(f"Tera Type: {tera_type}")
+                
+            evs = get_field_case_insensitive(mon.fields, "EVs")
+            if evs:
+                out_lines.append(f"EVs: {evs}")
+                
+            nature = get_field_case_insensitive(mon.fields, "Nature")
+            if nature:
+                out_lines.append(f"{nature} Nature")
+                
+            ivs = get_field_case_insensitive(mon.fields, "IVs")
+            if ivs:
+                out_lines.append(f"IVs: {ivs}")
+                
+            gigantamax = get_field_case_insensitive(mon.fields, "Gigantamax")
+            if gigantamax == "Yes":
+                out_lines.append("Gigantamax: Yes")
+
+            dynamax_level = get_field_case_insensitive(mon.fields, "Dynamax Level")
+            if dynamax_level:
+                out_lines.append(f"Dynamax Level: {dynamax_level}")
+
+            ball = get_field_case_insensitive(mon.fields, "Ball")
+            if ball:
+                out_lines.append(f"Pokeball: {ball.title()} Ball")
+                
+            for move in mon.moves:
+                out_lines.append(f"- {move}")
+                
+            lines.append("\n".join(out_lines))
+            
+        showdown_text = "\n\n".join(lines)
+        
+        dialog = tk.Toplevel(self)
+        dialog.title("Export Showdown")
+        dialog.geometry("800x600")
+        dialog.transient(self)
+        dialog.grab_set()
+        
+        text = tk.Text(dialog, wrap=tk.WORD)
+        
+        def copy_to_clipboard() -> None:
+            dialog.clipboard_clear()
+            dialog.clipboard_append(text.get("1.0", tk.END))
+            messagebox.showinfo("Copied", "Showdown format copied to clipboard!", parent=dialog)
+            
+        ttk.Button(dialog, text="Copy to Clipboard", command=copy_to_clipboard).pack(side=tk.BOTTOM, pady=8)
+
+        text.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=8, pady=(8, 0))
+        text.insert("1.0", showdown_text)
+
     def apply_mon_edit(self, show_warning: bool = True) -> None:
         if self.current is None or self.current_mon_index is None:
             if show_warning:
-                messagebox.showwarning("Trainer Party Editor", "Selecione um Pokemon primeiro.")
+                messagebox.showwarning("Trainer Party Editor", "Select a Pokemon first.")
             return
         self.update_current_mon_from_form()
 
@@ -1464,12 +1571,12 @@ class PartyTab(ttk.Frame):
         path = self.trainer_pics.get(normalize_name(pic)) or self.trainer_pics.get(snake_name(pic))
         if path is None:
             self.trainer_image = None
-            self.trainer_preview.configure(image="", text="Sem PNG")
+            self.trainer_preview.configure(image="", text="No PNG")
             return
         image = self.load_photo(path, 96)
         if image is None:
             self.trainer_image = None
-            self.trainer_preview.configure(image="", text="Erro")
+            self.trainer_preview.configure(image="", text="Error")
             return
         self.trainer_image = image
         self.trainer_preview.configure(image=self.trainer_image, text="")
@@ -1477,11 +1584,11 @@ class PartyTab(ttk.Frame):
     def update_mon_preview(self, mon: PokemonEntry) -> None:
         path = pokemon_preview_path(mon.species)
         if path is None:
-            self.mon_preview.configure(image="", text="Sem PNG")
+            self.mon_preview.configure(image="", text="No PNG")
             return
         frames = self.load_photo_frames(path, 96, crop_pokemon_frame=True, animate=True)
         if not frames:
-            self.mon_preview.configure(image="", text="Erro")
+            self.mon_preview.configure(image="", text="Error")
             return
         self.mon_current_frames = frames
         self.mon_preview.configure(image=frames[0], text="")
@@ -1521,11 +1628,11 @@ class PartyTab(ttk.Frame):
                     if len(frames) > 1:
                         self.animated_labels.append((label, frames))
                 else:
-                    label = ttk.Label(frame, text="Erro", width=5)
+                    label = ttk.Label(frame, text="Error", width=5)
                     label.pack()
                     label.bind("<Button-1>", lambda _event, idx=index: self.select_party_index(idx))
             else:
-                label = ttk.Label(frame, text="Sem PNG", width=5)
+                label = ttk.Label(frame, text="No PNG", width=5)
                 label.pack()
                 label.bind("<Button-1>", lambda _event, idx=index: self.select_party_index(idx))
             number = ttk.Label(frame, text=str(index + 1))

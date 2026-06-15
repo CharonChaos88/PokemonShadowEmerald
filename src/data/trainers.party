@@ -5470,17 +5470,37 @@ Level: 34
 IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
 
 === TRAINER_KAREN_1 ===
-Name: KAREN
-Class: School Kid
-Pic: School Kid F
+Name: Karen
+Class: Lass
+Pic: Lass
 Gender: Female
 Music: Girl
+Items: Hyper Potion / Hyper Potion / Hyper Potion / Hyper Potion
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Shroomish
-Level: 9
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Loudred @ Leftovers
+Ability: Soundproof
+Level: 29
+EVs: 0 HP / 252 Atk / 4 Def / 252 Spe
+Nature: Naughty
+Tera Type: Ghost
+- Return
+- Shadow Ball
+- Earthquake
+- Fire Blast
+
+Breloom @ Focus Sash
+Ability: Technician
+Level: 30
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Shiny: Yes
+Tera Type: Grass
+- Spore
+- Swords Dance
+- Mach Punch
+- Bullet Seed
 
 === TRAINER_GEORGIA ===
 Name: GEORGIA
@@ -5500,72 +5520,238 @@ Level: 16
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
 === TRAINER_KAREN_2 ===
-Name: KAREN
-Class: School Kid
-Pic: School Kid F
+Name: Karen
+Class: Lass
+Pic: Lass
 Gender: Female
 Music: Girl
+Items: Full Restore / Full Restore / Full Restore / Full Restore
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Shroomish
-Level: 26
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Exploud @ Leftovers
+Ability: Soundproof
+Level: 50
+EVs: 0 HP / 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Return
+- Shadow Ball
+- Substitute
+- Flamethrower
 
-Whismur
-Level: 26
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Breloom @ Focus Sash
+Ability: Technician
+Level: 50
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Shiny: Yes
+Tera Type: Grass
+- Spore
+- Swords Dance
+- Mach Punch
+- Bullet Seed
+
+Alakazam @ Alakazite
+Ability: Magic Guard
+Level: 50
+EVs: 4 Def / 252 SpA / 252 Spe
+Nature: Timid
+Shiny: Yes
+- Nasty Plot
+- Psychic
+- Focus Blast
+- Shadow Ball
 
 === TRAINER_KAREN_3 ===
-Name: KAREN
-Class: School Kid
-Pic: School Kid F
+Name: Karen
+Class: Lass
+Pic: Lass
 Gender: Female
 Music: Girl
+Items: Full Restore / Full Restore / Full Restore / Full Restore
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Shroomish
-Level: 29
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Exploud @ Leftovers
+Ability: Soundproof
+Level: 75
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Return
+- Shadow Ball
+- Substitute
+- Flamethrower
 
-Loudred
-Level: 29
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Blastoise @ Assault Vest
+Ability: Rain Dish
+Level: 75
+EVs: 252 SpA / 252 Spe
+Nature: Modest
+Dynamax Level: 10
+Gigantamax: Yes
+- Water Pulse
+- Dark Pulse
+- Aura Sphere
+- Ice Beam
+
+Breloom @ Focus Sash
+Ability: Technician
+Level: 75
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Shiny: Yes
+Tera Type: Grass
+- Spore
+- Swords Dance
+- Mach Punch
+- Bullet Seed
+
+Alakazam-Mega @ Life Orb
+Ability: Magic Guard
+Level: 75
+EVs: 4 Def / 252 SpA / 252 Spe
+Nature: Timid
+Shiny: Yes
+- Nasty Plot
+- Psychic
+- Focus Blast
+- Shadow Ball
 
 === TRAINER_KAREN_4 ===
-Name: KAREN
-Class: School Kid
-Pic: School Kid F
+Name: Karen
+Class: Lass
+Pic: Lass
 Gender: Female
 Music: Girl
+Items: Full Restore / Full Restore / Full Restore / Full Restore
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Breloom
-Level: 32
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Exploud @ Leftovers
+Ability: Soundproof
+Level: 95
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Return
+- Shadow Ball
+- Substitute
+- Flamethrower
 
-Loudred
-Level: 32
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Breloom @ Focus Sash
+Ability: Technician
+Level: 95
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Shiny: Yes
+Tera Type: Grass
+- Spore
+- Swords Dance
+- Mach Punch
+- Bullet Seed
+
+Mandibuzz @ Rocky Helmet
+Ability: Overcoat
+Level: 95
+EVs: 252 Def / 252 Spe
+Nature: Impish
+Dynamax Level: 10
+- Roost
+- Defog
+- Foul Play
+- U-turn
+
+Alakazam-Mega @ Life Orb
+Ability: Trace
+Level: 95
+EVs: 4 Def / 252 SpA / 252 Spe
+Nature: Timid
+Shiny: Yes
+- Nasty Plot
+- Psychic
+- Focus Blast
+- Shadow Ball
+
+Blastoise-Mega @ Assault Vest
+Ability: Mega Launcher
+Level: 95
+EVs: 252 SpA / 252 Spe
+Nature: Modest
+- Water Pulse
+- Dark Pulse
+- Aura Sphere
+- Ice Beam
 
 === TRAINER_KAREN_5 ===
-Name: KAREN
-Class: School Kid
-Pic: School Kid F
+Name: Karen
+Class: Lass
+Pic: Lass
 Gender: Female
 Music: Girl
-Double Battle: No
-AI: Check Bad Move
+Items: Full Restore / Full Restore / Full Restore / Full Restore
+Double Battle: Yes
+AI: Basic Trainer
 
-Breloom
-Level: 35
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Exploud @ Leftovers
+Ability: Soundproof
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Return
+- Shadow Ball
+- Substitute
+- Flamethrower
 
-Exploud
-Level: 35
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Breloom @ Focus Sash
+Ability: Technician
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Shiny: Yes
+Tera Type: Grass
+- Spore
+- Swords Dance
+- Mach Punch
+- Bullet Seed
+
+Mandibuzz @ Rocky Helmet
+Ability: Overcoat
+EVs: 252 Def / 252 Spe
+Nature: Impish
+- Roost
+- Defog
+- Foul Play
+- U-turn
+
+Pachirisu @ Sitrus Berry
+Ability: Volt Absorb
+EVs: 0 HP / 0 Atk / 252 Def / 0 SpA / 252 SpD / 0 Spe
+Nature: Impish
+Shiny: Yes
+- Follow Me
+- Nuzzle
+- Protect
+- Super Fang
+
+Alakazam-Mega @ Life Orb
+Ability: Trace
+EVs: 4 Def / 252 SpA / 252 Spe
+Nature: Timid
+Shiny: Yes
+- Nasty Plot
+- Psychic
+- Focus Blast
+- Shadow Ball
+
+Blastoise-Mega @ Assault Vest
+Ability: Mega Launcher
+EVs: 252 SpA / 252 Spe
+Nature: Modest
+- Water Pulse
+- Dark Pulse
+- Aura Sphere
+- Ice Beam
 
 === TRAINER_KATE_AND_JOY ===
 Name: KATE & JOY
@@ -6256,17 +6442,46 @@ Adamant Nature
 - Protect
 
 === TRAINER_JOEY ===
-Name: JOEY
+Name: Joey
 Class: Youngster
 Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Machop
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Pidgeotto @ Choice Band
+Ability: Keen Eye
+Level: 27
+EVs: 252 Atk / 4 SpD / 252 Spe
+Nature: Jolly
+Dynamax Level: 10
+- Double-Edge
+- Quick Attack
+- Aerial Ace
+- Steel Wing
+
+Raticate @ Flame Orb
+Ability: Guts
+Level: 30
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+Tera Type: Bug
+- Facade
+- Crunch
+- Stomping Tantrum
+- U-turn
+
+Machamp @ Flame Orb
+Ability: Guts
+Level: 35
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Tera Type: Normal
+- Close Combat
+- Knock Off
+- Facade
+- Bullet Punch
 
 === TRAINER_BEN ===
 Name: BEN
@@ -11961,7 +12176,7 @@ Level: 22
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_CLARK ===
-Name: CLARK
+Name: Clark
 Class: Hiker
 Pic: Hiker
 Gender: Male
@@ -11969,9 +12184,39 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Golem @ Weakness Policy
+Ability: Sturdy
+Level: 30
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Tera Type: Dark
+- Stealth Rock
+- Earthquake
+- Stone Edge
+- Sucker Punch
+
+Golem-Alola @ Choice Band
+Ability: Magnet Pull
+Level: 32
+EVs: 252 Atk / 4 SpA / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Stone Edge
+- Fire Punch
+- Earthquake
+- Volt Switch
+
+Rampardos @ Life Orb
+Ability: Sheer Force
+Level: 35
+EVs: 252 Atk / 4 SpA / 252 Spe
+Nature: Naive
+Shiny: Yes
+Tera Type: Ice
+- Rock Slide
+- Fire Punch
+- Ice Beam
+- Zen Headbutt
 
 === TRAINER_ERIC ===
 Name: ERIC
@@ -14322,7 +14567,7 @@ Level: 18
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_DEVAN ===
-Name: DEVAN
+Name: Devan
 Class: Hiker
 Pic: Hiker
 Gender: Male
@@ -14330,30 +14575,82 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Golem @ Weakness Policy
+Ability: Sturdy
+Level: 30
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Tera Type: Dark
+- Stealth Rock
+- Earthquake
+- Stone Edge
+- Sucker Punch
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Golem-Alola @ Choice Band
+Ability: Magnet Pull
+Level: 32
+EVs: 252 Atk / 4 SpA / 252 Spe
+Nature: Adamant
+Dynamax Level: 10
+- Stone Edge
+- Fire Punch
+- Earthquake
+- Volt Switch
+
+Gigalith @ Leftovers
+Ability: Sand Stream
+Level: 35
+EVs: 252 Atk / 4 Def / 252 SpD
+Nature: Careful
+Shiny: Yes
+Tera Type: Rock
+- Stealth Rock
+- Rock Blast
+- Earthquake
+- Protect
 
 === TRAINER_JOHNSON ===
-Name: JOHNSON
+Name: Johnson
 Class: Youngster
 Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Shroomish
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Ludicolo @ Life Orb
+Ability: Swift Swim
+Level: 27
+EVs: 252 SpA / 4 SpD / 252 Spe
+Nature: Modest
+Tera Type: Water
+- Hydro Pump
+- Giga Drain
+- Ice Beam
+- Rain Dance
 
-Lotad
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Swellow @ Choice Specs
+Ability: Scrappy
+Level: 29
+EVs: 4 Def / 252 SpA / 252 Spe
+Nature: Timid
+Tera Type: Fire
+- Boomburst
+- U-turn
+- Heat Wave
+- Air Slash
+
+Breloom @ Toxic Orb
+Ability: Poison Heal
+Level: 32
+EVs: 0 HP / 252 Atk / 4 Def / 252 Spe
+Nature: Adamant
+Shiny: Yes
+Tera Type: Steel
+- Close Combat
+- Seed Bomb
+- Facade
+- Protect
 
 === TRAINER_MELINA ===
 Name: MELINA
