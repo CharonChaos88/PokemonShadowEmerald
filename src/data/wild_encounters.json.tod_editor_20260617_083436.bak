@@ -3204,7 +3204,7 @@
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38629,7 +38629,7 @@
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38698,7 +38698,7 @@
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38767,7 +38767,7 @@
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,

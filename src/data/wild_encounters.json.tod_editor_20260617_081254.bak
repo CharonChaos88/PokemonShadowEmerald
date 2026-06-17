@@ -3169,42 +3169,42 @@
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_CATERPIE"
+                "species": "SPECIES_POOCHYENA"
               },
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_PINECO"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
+                "species": "SPECIES_SHROOMISH"
+              },
+              {
+                "min_level": 8,
+                "max_level": 12,
+                "species": "SPECIES_POOCHYENA"
+              },
+              {
+                "min_level": 8,
+                "max_level": 9,
                 "species": "SPECIES_SILCOON"
               },
               {
                 "min_level": 8,
-                "max_level": 12,
+                "max_level": 9,
                 "species": "SPECIES_CASCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_COMBEE"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_KARRABLAST"
               },
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38581,213 +38581,6 @@
                 "min_level": 7,
                 "max_level": 10,
                 "species": "SPECIES_HATENNA"
-              }
-            ]
-          }
-        },
-        {
-          "map": "MAP_PETALBURG_WOODS",
-          "base_label": "gPetalburgWoods_Day",
-          "land_mons": {
-            "encounter_rate": 20,
-            "mons": [
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_CATERPIE"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_PINECO"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SILCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_CASCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_COMBEE"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_SHELMET"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
-              }
-            ]
-          }
-        },
-        {
-          "map": "MAP_PETALBURG_WOODS",
-          "base_label": "gPetalburgWoods_Evening",
-          "land_mons": {
-            "encounter_rate": 20,
-            "mons": [
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_WEEDLE"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_SPINARAK"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SILCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_CASCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_COMBEE"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_VENIPEDE"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
-              }
-            ]
-          }
-        },
-        {
-          "map": "MAP_PETALBURG_WOODS",
-          "base_label": "gPetalburgWoods_Night",
-          "land_mons": {
-            "encounter_rate": 20,
-            "mons": [
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_WEEDLE"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_SPINARAK"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SILCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_CASCOON"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_COMBEE"
-              },
-              {
-                "min_level": 8,
-                "max_level": 9,
-                "species": "SPECIES_VENIPEDE"
-              },
-              {
-                "min_level": 6,
-                "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_TAILLOW"
-              },
-              {
-                "min_level": 8,
-                "max_level": 12,
-                "species": "SPECIES_SLAKOTH"
               }
             ]
           }

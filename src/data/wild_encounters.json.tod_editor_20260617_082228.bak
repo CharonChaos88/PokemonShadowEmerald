@@ -3194,17 +3194,17 @@
               {
                 "min_level": 8,
                 "max_level": 9,
-                "species": "SPECIES_KARRABLAST"
+                "species": "SPECIES_CASCOON"
               },
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38619,17 +38619,17 @@
               {
                 "min_level": 8,
                 "max_level": 9,
-                "species": "SPECIES_SHELMET"
+                "species": "SPECIES_CASCOON"
               },
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38693,12 +38693,12 @@
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
@@ -38757,17 +38757,17 @@
               {
                 "min_level": 8,
                 "max_level": 9,
-                "species": "SPECIES_VENIPEDE"
+                "species": "SPECIES_CASCOON"
               },
               {
                 "min_level": 6,
                 "max_level": 6,
-                "species": "SPECIES_SCATTERBUG"
+                "species": "SPECIES_WURMPLE"
               },
               {
                 "min_level": 8,
                 "max_level": 12,
-                "species": "SPECIES_DEWPIDER"
+                "species": "SPECIES_SHROOMISH"
               },
               {
                 "min_level": 8,
