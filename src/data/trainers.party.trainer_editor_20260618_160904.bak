@@ -11254,42 +11254,39 @@ Items: Super Potion / Super Potion / Super Potion / Super Potion
 Double Battle: No
 AI: Basic Trainer
 
-Machoke @ Expert Belt
-Ability: No Guard
-Level: 35
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Poison
-- Dynamic Punch
-- Poison Jab
-- Thunder Punch
-- Knock Off
+Machoke @ Expert Belt  
+Ability: No Guard  
+Level: 30 
+EVs: 252 Atk / 252 Def / 4 SpD  
+Adamant Nature  
+- Dynamic Punch  
+- Poison Jab  
+- Thunder Punch  
+- Knock Off 
 
-Heracross @ Leftovers
-Ability: Moxie
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Rock
-- Close Combat
-- Swords Dance
-- Rock Slide
+Heracross @ Leftovers  
+Ability: Moxie  
+Level: 30  
+EVs: 252 Atk / 4 Def / 252 Spe  
+Jolly Nature  
+- Close Combat  
+- Swords Dance  
+- Rock Slide  
 - Skitter Smack
 
-Gallade @ Galladite
-Ability: Sharpness
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Psychic
-- Psycho Cut
-- Leaf Blade
-- Night Slash
+Gallade @ Life Orb  
+Ability: Steadfast  
+Level: 33  
+Tera Type: Psychic  
+EVs: 252 Atk / 4 Def / 252 Spe  
+Jolly Nature  
+- Zen Headbutt  
+- Leaf Blade  
+- Night Slash  
 - Close Combat
 
 === TRAINER_LILITH ===
-Name: Lilith
+Name: LILITH
 Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
@@ -11297,39 +11294,9 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move
 
-Machoke @ Expert Belt
-Ability: Steadfast
-Level: 35
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Poison
-- Dynamic Punch
-- Poison Jab
-- Thunder Punch
-- Knock Off
-
-Medicham @ Leftovers
-Ability: Pure Power
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Fighting
-- Bullet Punch
-- Fake Out
-- Drain Punch
-- Pain Split
-
-Gallade @ Galladite
-Ability: Steadfast
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Psychic
-- Zen Headbutt
-- Leaf Blade
-- Night Slash
-- Close Combat
+Meditite
+Level: 13
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN

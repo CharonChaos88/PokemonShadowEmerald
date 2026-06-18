@@ -466,7 +466,7 @@ struct BattleGimmickData
     u8 toActivate;                                       // stores whether a battler should transform at start of turn as bitfield
     u8 activeGimmick[MAX_BATTLE_TRAINERS][PARTY_SIZE];   // stores the active gimmick for each party member
     bool8 activated[MAX_BATTLERS_COUNT][GIMMICKS_COUNT]; // stores whether a trainer has used gimmick
-    bool8 pokemonUsedGimmick[2][6]; // Tracks usage for 2 sides, 6 party members
+    bool8 pokemonUsedGimmick[MAX_BATTLE_TRAINERS][6]; // Tracks usage for 2 sides, 6 party members
 };
 
 struct LostItem
@@ -732,7 +732,7 @@ struct BattleStruct
     u8 intimidateActivated:1;
     u8 allowPartingShot:1;
     u8 adrenalineOrbActivated:1; // prevents looping after an adrenaline stat changed
-    bool8 pokemonUsedGimmick[2][6];
+    bool8 pokemonUsedGimmick[MAX_BATTLE_TRAINERS][6];
 };
 
 struct AiBattleData

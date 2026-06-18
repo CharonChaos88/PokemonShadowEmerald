@@ -110,20 +110,26 @@ bool32 ShouldTrainerBattlerUseGimmick(enum BattlerId battler, enum Gimmick gimmi
 // Returns whether a trainer has used a gimmick during a battle.
 bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
 {
-    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX)
-    {
-        // Block the gimmick ONLY if this specific Pokemon has already transformed
-        u32 side = GetBattlerSide(battler);
-        u32 partyIndex = gBattlerPartyIndexes[battler];
-        return gBattleStruct->gimmick.pokemonUsedGimmick[side][partyIndex];
-    }
-
-    // Keep default engine behavior for Mega Evolution and Z-Moves
-    if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || (gimmick == GIMMICK_DYNAMAX)))
+    if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
     {
         enum BattlerId partner = BATTLE_PARTNER(battler);
-        if (gBattleStruct->gimmick.activated[partner][gimmick]
-         || ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick))
+        if ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick)
+            return TRUE;
+    }
+
+    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_MEGA || gimmick == GIMMICK_ULTRA_BURST)
+    {
+        // Block the gimmick ONLY if this specific Pokemon has already transformed
+        u32 trainer = GetBattlerTrainer(battler);
+        u32 partyIndex = gBattlerPartyIndexes[battler];
+        return gBattleStruct->gimmick.pokemonUsedGimmick[trainer][partyIndex];
+    }
+
+    // Keep default engine behavior for Z-Moves
+    if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
+    {
+        enum BattlerId partner = BATTLE_PARTNER(battler);
+        if (gBattleStruct->gimmick.activated[partner][gimmick])
             return TRUE;
     }
 
@@ -133,12 +139,12 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
 // Sets a gimmick as used by a trainer with checks for Multi Battles.
 void SetGimmickAsActivated(enum BattlerId battler, enum Gimmick gimmick)
 {
-    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX)
+    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_MEGA || gimmick == GIMMICK_ULTRA_BURST)
     {
         // Mark this specific Pokemon as having used its gimmick
-        u32 side = GetBattlerSide(battler);
+        u32 trainer = GetBattlerTrainer(battler);
         u32 partyIndex = gBattlerPartyIndexes[battler];
-        gBattleStruct->gimmick.pokemonUsedGimmick[side][partyIndex] = TRUE;
+        gBattleStruct->gimmick.pokemonUsedGimmick[trainer][partyIndex] = TRUE;
     }
     else
     {

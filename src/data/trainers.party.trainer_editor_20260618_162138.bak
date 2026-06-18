@@ -11276,7 +11276,7 @@ Tera Type: Rock
 - Rock Slide
 - Skitter Smack
 
-Gallade @ Galladite
+Gallade @ Life Orb
 Ability: Sharpness
 Level: 40
 EVs: 252 Atk / 4 Def / 252 Spe
@@ -11294,42 +11294,41 @@ Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
 Music: Intense
+Items: Super Potion / Super Potion / Super Potion / Super Potion
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Machoke @ Expert Belt
-Ability: Steadfast
-Level: 35
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Poison
-- Dynamic Punch
-- Poison Jab
-- Thunder Punch
+Machoke @ Expert Belt  
+Ability: Steadfast  
+Level: 30
+EVs: 252 Atk / 252 Def / 4 SpD  
+Adamant Nature  
+- Dynamic Punch  
+- Poison Jab  
+- Thunder Punch  
 - Knock Off
 
-Medicham @ Leftovers
-Ability: Pure Power
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Fighting
-- Bullet Punch
-- Fake Out
-- Drain Punch
-- Pain Split
-
-Gallade @ Galladite
-Ability: Steadfast
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Psychic
-- Zen Headbutt
-- Leaf Blade
-- Night Slash
+Gallade @ Life Orb  
+Ability: Steadfast  
+Level: 30  
+Tera Type: Psychic  
+EVs: 252 Atk / 4 Def / 252 Spe  
+Jolly Nature  
+- Zen Headbutt  
+- Leaf Blade  
+- Night Slash  
 - Close Combat
+
+Meditite @ Eviolite  
+Ability: Pure Power  
+Level: 33  
+Tera Type: Fighting  
+EVs: 252 Atk / 4 Def / 252 Spe  
+Jolly Nature  
+- Bullet Punch  
+- Fake Out  
+- Drain Punch  
+- Pain Split
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN

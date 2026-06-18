@@ -11276,7 +11276,7 @@ Tera Type: Rock
 - Rock Slide
 - Skitter Smack
 
-Gallade @ Galladite
+Gallade @ Life Orb
 Ability: Sharpness
 Level: 40
 EVs: 252 Atk / 4 Def / 252 Spe
@@ -11289,7 +11289,7 @@ Tera Type: Psychic
 - Close Combat
 
 === TRAINER_LILITH ===
-Name: Lilith
+Name: LILITH
 Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
@@ -11308,9 +11308,9 @@ Tera Type: Poison
 - Thunder Punch
 - Knock Off
 
-Medicham @ Leftovers
+Meditite @ Eviolite
 Ability: Pure Power
-Level: 37
+Level: 36
 EVs: 252 Atk / 4 Def / 252 Spe
 Nature: Jolly
 Tera Type: Fighting
@@ -11319,9 +11319,9 @@ Tera Type: Fighting
 - Drain Punch
 - Pain Split
 
-Gallade @ Galladite
+Gallade @ Life Orb
 Ability: Steadfast
-Level: 40
+Level: 37
 EVs: 252 Atk / 4 Def / 252 Spe
 Nature: Jolly
 Shiny: Yes

@@ -6919,7 +6919,7 @@ Level: 18
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_ELLIOT_1 ===
-Name: Elliot
+Name: ELLIOT
 Class: Fisherman
 Pic: Fisherman
 Gender: Male
@@ -6927,40 +6927,20 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Lumineon @ Leftovers
-Ability: Storm Drain
-Level: 35
-EVs: 248 Def / 252 Spe
-Nature: Bold
-- Defog
-- Scald
-- U-turn
-- Toxic
+Magikarp
+Level: 10
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Tentacruel @ Assault Vest
-Ability: Clear Body
-Level: 37
-EVs: 252 Def / 252 SpD
-Nature: Calm
-Tera Type: Poison
-- Acid Spray
-- Surf
-- Mirror Coat
-- Sludge Wave
+Tentacool
+Level: 7
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Gyarados @ Gyaradosite
-Ability: Intimidate
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Adamant
-Shiny: Yes
-- Crunch
-- Earthquake
-- Taunt
-- Dragon Dance
+Magikarp
+Level: 10
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_NED ===
-Name: Ned
+Name: NED
 Class: Fisherman
 Pic: Fisherman
 Gender: Male
@@ -6968,38 +6948,9 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move
 
-Tentacruel @ Assault Vest
-Ability: Clear Body
-Level: 35
-EVs: 252 Def / 252 SpD
-Nature: Calm
-Tera Type: Poison
-- Acid Spray
-- Surf
-- Mirror Coat
-- Sludge Wave
-
-Jellicent @ Choice Specs
-Ability: Water Absorb
-Level: 37
-EVs: 252 SpA / 4 SpD / 252 Spe
-Nature: Modest
-Tera Type: Water
-- Water Spout
-- Shadow Ball
-- Trick
-- Surf
-
-Gyarados @ Gyaradosite
-Ability: Intimidate
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Adamant
-Shiny: Yes
-- Crunch
-- Earthquake
-- Taunt
-- Dragon Dance
+Tentacool
+Level: 11
+IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
 === TRAINER_DALE ===
 Name: DALE
@@ -8450,57 +8401,17 @@ Level: 13
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 === TRAINER_LAURA ===
-Name: Laura
+Name: LAURA
 Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Basic Trainer
+AI: Check Bad Move
 
-Breloom @ Toxic Orb
-Ability: Poison Heal
-Level: 35
-EVs: 252 Atk / 100 Def / 150 SpD
-Nature: Adamant
-Tera Type: Fighting
-- Leech Seed
-- Bulk Up
-- Drain Punch
-- Protect
-
-Meditite @ Eviolite
-Ability: Pure Power
-Level: 36
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Psychic
-- Bullet Punch
-- Fake Out
-- Drain Punch
-- Pain Split
-
-Heracross @ Leftovers
-Ability: Moxie
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Fighting
-- Close Combat
-- Swords Dance
-- Rock Slide
-- Skitter Smack
-
-Machoke @ Flame Orb
-Ability: Guts
-Level: 38
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Fighting
-- Close Combat
-- Poison Jab
-- Thunder Punch
-- Knock Off
+Meditite
+Level: 13
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 
 === TRAINER_CYNDY_1 ===
 Name: CYNDY
@@ -11244,52 +11155,8 @@ Impish Nature
 - Block  
 - Stealth Rock
 
-=== TRAINER_BRENDEN ===
-Name: Brenden
-Class: Sailor
-Pic: Sailor
-Gender: Male
-Music: Male
-Items: Super Potion / Super Potion / Super Potion / Super Potion
-Double Battle: No
-AI: Basic Trainer
-
-Machoke @ Expert Belt
-Ability: No Guard
-Level: 35
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Poison
-- Dynamic Punch
-- Poison Jab
-- Thunder Punch
-- Knock Off
-
-Heracross @ Leftovers
-Ability: Moxie
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Rock
-- Close Combat
-- Swords Dance
-- Rock Slide
-- Skitter Smack
-
-Gallade @ Galladite
-Ability: Sharpness
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Psychic
-- Psycho Cut
-- Leaf Blade
-- Night Slash
-- Close Combat
-
 === TRAINER_LILITH ===
-Name: Lilith
+Name: LILITH
 Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
@@ -11297,39 +11164,9 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move
 
-Machoke @ Expert Belt
-Ability: Steadfast
-Level: 35
-EVs: 252 Atk / 252 Def / 4 SpD
-Nature: Adamant
-Tera Type: Poison
-- Dynamic Punch
-- Poison Jab
-- Thunder Punch
-- Knock Off
-
-Medicham @ Leftovers
-Ability: Pure Power
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Fighting
-- Bullet Punch
-- Fake Out
-- Drain Punch
-- Pain Split
-
-Gallade @ Galladite
-Ability: Steadfast
-Level: 40
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Psychic
-- Zen Headbutt
-- Leaf Blade
-- Night Slash
-- Close Combat
+Meditite
+Level: 13
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN
@@ -13872,7 +13709,7 @@ Level: 23
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_DAWSON ===
-Name: Dawson
+Name: DAWSON
 Class: Rich Boy
 Pic: Rich Boy
 Gender: Male
@@ -13880,38 +13717,13 @@ Music: Rich
 Double Battle: No
 AI: Check Bad Move
 
-Linoone @ Figy Berry
-Ability: Gluttony
-Level: 30
-EVs: 252 Atk / 50 Def / 100 SpD / 16 Spe
-Nature: Adamant
-Tera Type: Normal
-- Belly Drum
-- Extreme Speed
-- Stomping Tantrum
-- Seed Bomb
+Zigzagoon @ Nugget
+Level: 8
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-Mightyena @ Life Orb
-Ability: Moxie
-Level: 33
-EVs: 252 Atk / 4 SpD / 252 Spe
-Nature: Adamant
-Tera Type: Fairy
-- Crunch
-- Sucker Punch
-- Play Rough
-- Iron Tail
-
-Nidoqueen @ Life Orb
-Ability: Sheer Force
-Level: 35
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Modest
-Shiny: Yes
-- Stealth Rock
-- Earth Power
-- Sludge Wave
-- Fire Blast
+Poochyena
+Level: 8
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_SARAH ===
 Name: Sarah
@@ -13921,41 +13733,17 @@ Gender: Female
 Music: Female
 Items: Full Restore
 Double Battle: No
-AI: Basic Trainer
+AI: Check Bad Move
 
 Ludicolo @ Life Orb
 Ability: Swift Swim
 Level: 30
 EVs: 252 SpA / 4 SpD / 252 Spe
 Nature: Modest
-Tera Type: Water
 - Hydro Pump
 - Giga Drain
 - Ice Beam
 - Rain Dance
-
-Linoone @ Figy Berry
-Ability: Gluttony
-Level: 33
-EVs: 252 Atk / 50 Def / 100 SpD / 16 Spe
-Nature: Adamant
-Tera Type: Normal
-- Belly Drum
-- Extreme Speed
-- Stomping Tantrum
-- Seed Bomb
-
-Nidoking @ Life Orb
-Ability: Sheer Force
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Shiny: Yes
-Tera Type: Poison
-- Sludge Wave
-- Earth Power
-- Ice Beam
-- Substitute
 
 === TRAINER_DARIAN ===
 Name: DARIAN
