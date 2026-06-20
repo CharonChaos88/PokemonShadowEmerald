@@ -69,7 +69,7 @@
     },
     {
       "local_id": "LOCALID_RUSTURF_TUNNEL_BRINEY",
-      "graphics_id": "OBJ_EVENT_GFX_EXPERT_M",
+      "graphics_id": "OBJ_EVENT_GFX_DRAKE",
       "x": 5,
       "y": 4,
       "elevation": 3,
@@ -97,7 +97,7 @@
     },
     {
       "local_id": "LOCALID_RUSTURF_TUNNEL_PEEKO",
-      "graphics_id": "OBJ_EVENT_GFX_WINGULL",
+      "graphics_id": "OBJ_EVENT_GFX_SPECIES(BAGON)",
       "x": 14,
       "y": 4,
       "elevation": 3,

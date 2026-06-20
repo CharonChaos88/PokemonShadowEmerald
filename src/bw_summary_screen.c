@@ -55,6 +55,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "palette_editor.h"
+#include "bad_egg_virus.h"
 #if BW_SUMMARY_SCREEN == TRUE
 enum BWPSSEffect
 {
@@ -1744,6 +1745,19 @@ static const u8 sVirusTextColor[] = {TEXT_COLOR_TRANSPARENT, 1, 2};
 static const u8 sVirusNoneTextColor[] = {TEXT_COLOR_TRANSPARENT, 1, 2};
 
 
+// --- VIRUS UI TEXT DEFINITIONS ---
+static const u8 sText_BevActive[] = _("Strain {STR_VAR_1}: Active\nStage {STR_VAR_3}: {STR_VAR_2}%");
+static const u8 sText_BevCured[]  = _("Strain {STR_VAR_1}: Cured");
+static const u8 sText_BevCuredMulti[] = _("Antibodies:\n{STR_VAR_1}");
+static const u8 sText_BevImmune[] = _("Strain: None\nGranted Immunity");
+static const u8 sText_BevNone[]   = _("Strain: None");
+static const u8 sText_BevStrainX[]   = _("X");
+static const u8 sText_BevStrainY[]   = _("Y");
+static const u8 sText_BevStrainZ[]   = _("Z");
+static const u8 sText_BevStrainXY[]  = _("X & Y");
+static const u8 sText_BevStrainXZ[]  = _("X & Z");
+static const u8 sText_BevStrainYZ[]  = _("Y & Z");
+
 // A standalone, guaranteed-safe window template for the Virus warning
 static const struct WindowTemplate sVirusWindowTemplate = {
     .bg = 0,                // MUST BE 0 to prevent breaking the Move Select background
@@ -1755,116 +1769,105 @@ static const struct WindowTemplate sVirusWindowTemplate = {
     .baseBlock = 650,       
 };
 
-// static void PrintBadEggVirusStatus(void)
-// {
-//     u8 bevData = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_BAD_EGG_VIRUS);
-//     u8 windowId = sMonSummaryScreen->windowIds[2]; 
-//     u8 currentStrain = bevData & BEV_STRAIN_MASK;
+static void PrintBadEggVirusStatus(void)
+{
+    u8 bevData = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_BAD_EGG_VIRUS);
+    u8 windowId = sMonSummaryScreen->windowIds[2]; 
+    u8 currentStrain = bevData & BEV_STRAIN_MASK;
 
-//     // --- UI DEFINITIONS ---
-//     const u8 gText_BevActive[] = _("Strain {STR_VAR_1}: Active\nStage {STR_VAR_3}: {STR_VAR_2}%");
-//     const u8 gText_BevCured[]  = _("Strain {STR_VAR_1}: Cured");
-//     const u8 gText_BevCuredMulti[] = _("Antibodies:\n{STR_VAR_1}");
-//     const u8 gText_BevImmune[] = _("Strain: None\nGranted Immunity");
-//     const u8 gText_BevNone[]   = _("Strain: None");
-//     const u8 sText_StrainX[]   = _("X");
-//     const u8 sText_StrainY[]   = _("Y");
-//     const u8 sText_StrainZ[]   = _("Z");
-//     const u8 sText_StrainXY[]  = _("X & Y");
-//     const u8 sText_StrainXZ[]  = _("X & Z");
-//     const u8 sText_StrainYZ[]  = _("Y & Z");
-//     const u8 sVirusTextColor[] = {TEXT_COLOR_TRANSPARENT, 1, 2};
-//     const u8 sVirusNoneTextColor[] = {TEXT_COLOR_TRANSPARENT, 1, 2}; 
+    // --- UI DEFINITIONS ---
+    const u8 sVirusTextColor[] = {TEXT_COLOR_TRANSPARENT, 3, 1};
+    const u8 sVirusNoneTextColor[] = {TEXT_COLOR_TRANSPARENT, 3, 1}; 
 
-//     // 1. HIDE the virus window completely during move selection/swapping
-//     if (sMonSummaryScreen->mode == SUMMARY_MODE_SELECT_MOVE 
-//         || sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_MOVE_SELECTOR1] != SPRITE_NONE)
-//     {
-//         if (windowId != WINDOW_NONE)
-//         {
-//             FillWindowPixelBuffer(windowId, PIXEL_FILL(0));
-//             CopyWindowToVram(windowId, COPYWIN_GFX); 
-//             RemoveWindowByIndex(2); 
-//         }
-//         return;
-//     }
+    // 1. HIDE the virus window completely during move selection/swapping
+    if (sMonSummaryScreen->mode == SUMMARY_MODE_SELECT_MOVE 
+        || sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_MOVE_SELECTOR1] != SPRITE_NONE)
+    {
+        if (windowId != WINDOW_NONE)
+        {
+            FillWindowPixelBuffer(windowId, PIXEL_FILL(0));
+            CopyWindowToVram(windowId, COPYWIN_GFX); 
+            RemoveWindowByIndex(2); 
+        }
+        return;
+    }
 
-//     // 2. Create window if missing
-//     if (windowId == WINDOW_NONE)
-//     {
-//         windowId = AddWindow(&sVirusWindowTemplate);
-//         sMonSummaryScreen->windowIds[2] = windowId;
-//     }
+    // 2. Create window if missing
+    if (windowId == WINDOW_NONE)
+    {
+        windowId = AddWindow(&sVirusWindowTemplate);
+        sMonSummaryScreen->windowIds[2] = windowId;
+    }
 
-//     FillWindowPixelBuffer(windowId, PIXEL_FILL(0));
+    FillWindowPixelBuffer(windowId, PIXEL_FILL(0));
 
-//     // 3. DETERMINE VIRUS STATE AND PRINT TEXT
-//     if (currentStrain != 0) 
-//     {
-//         // --- STATE 1: ACTIVE VIRUS ---
-//         u8 stage = (bevData & BEV_STAGE_MASK) >> 2;
-//         u8 percent = GetVirusProgressionPercentage(&sMonSummaryScreen->currentMon, currentStrain, stage);
+    // 3. DETERMINE VIRUS STATE AND PRINT TEXT
+    if (currentStrain != 0) 
+    {
+        // --- STATE 1: ACTIVE VIRUS ---
+        u8 stage = (bevData & BEV_STAGE_MASK) >> 2;
+        u8 percent = GetVirusProgressionPercentage(&sMonSummaryScreen->currentMon, currentStrain, stage);
 
-//         if (currentStrain == STRAIN_X) StringCopy(gStringVar1, sText_StrainX);
-//         else if (currentStrain == STRAIN_Y) StringCopy(gStringVar1, sText_StrainY);
-//         else if (currentStrain == STRAIN_Z) StringCopy(gStringVar1, sText_StrainZ);
+        if (currentStrain == STRAIN_X) StringCopy(gStringVar1, sText_BevStrainX);
+        else if (currentStrain == STRAIN_Y) StringCopy(gStringVar1, sText_BevStrainY);
+        else if (currentStrain == STRAIN_Z) StringCopy(gStringVar1, sText_BevStrainZ);
 
-//         ConvertIntToDecimalStringN(gStringVar2, percent, STR_CONV_MODE_LEFT_ALIGN, 3);
-//         ConvertIntToDecimalStringN(gStringVar3, stage, STR_CONV_MODE_LEFT_ALIGN, 1);
+        ConvertIntToDecimalStringN(gStringVar2, percent, STR_CONV_MODE_LEFT_ALIGN, 3);
+        ConvertIntToDecimalStringN(gStringVar3, stage, STR_CONV_MODE_LEFT_ALIGN, 1);
         
-//         StringExpandPlaceholders(gStringVar4, gText_BevActive);
-//         AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusTextColor, 0, gStringVar4);
-//     }
-//     else if (bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
-//     {
-//         // --- STATE 2: CURED OR IMMUNE ---
-//         u8 antibodies = bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z);
-//         bool8 isMulti = FALSE;
-//         bool8 isImmune = FALSE;
+        StringExpandPlaceholders(gStringVar4, sText_BevActive);
+        AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusTextColor, 0, gStringVar4);
+    }
+    else if (bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
+    {
+        // --- STATE 2: CURED OR IMMUNE ---
+        u8 antibodies = bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z);
+        bool8 isMulti = FALSE;
+        bool8 isImmune = FALSE;
 
-//         if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
-//             isImmune = TRUE; // Total Immunity Achieved!
-//         else if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Y))
-//         {
-//             StringCopy(gStringVar1, sText_StrainXY);
-//             isMulti = TRUE;
-//         }
-//         else if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Z))
-//         {
-//             StringCopy(gStringVar1, sText_StrainXZ);
-//             isMulti = TRUE;
-//         }
-//         else if (antibodies == (BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
-//         {
-//             StringCopy(gStringVar1, sText_StrainYZ);
-//             isMulti = TRUE;
-//         }
-//         else if (antibodies == BEV_ANTIBODY_Z)
-//             StringCopy(gStringVar1, sText_StrainZ);
-//         else if (antibodies == BEV_ANTIBODY_Y)
-//             StringCopy(gStringVar1, sText_StrainY);
-//         else 
-//             StringCopy(gStringVar1, sText_StrainX);
+        if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
+            isImmune = TRUE; // Total Immunity Achieved!
+        else if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Y))
+        {
+            StringCopy(gStringVar1, sText_BevStrainXY);
+            isMulti = TRUE;
+        }
+        else if (antibodies == (BEV_ANTIBODY_X | BEV_ANTIBODY_Z))
+        {
+            StringCopy(gStringVar1, sText_BevStrainXZ);
+            isMulti = TRUE;
+        }
+        else if (antibodies == (BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
+        {
+            StringCopy(gStringVar1, sText_BevStrainYZ);
+            isMulti = TRUE;
+        }
+        else if (antibodies == BEV_ANTIBODY_Z)
+            StringCopy(gStringVar1, sText_BevStrainZ);
+        else if (antibodies == BEV_ANTIBODY_Y)
+            StringCopy(gStringVar1, sText_BevStrainY);
+        else 
+            StringCopy(gStringVar1, sText_BevStrainX);
 
-//         if (isImmune)
-//             StringCopy(gStringVar4, gText_BevImmune);
-//         else if (isMulti)
-//             StringExpandPlaceholders(gStringVar4, gText_BevCuredMulti);
-//         else
-//             StringExpandPlaceholders(gStringVar4, gText_BevCured);
+        if (isImmune)
+            StringCopy(gStringVar4, sText_BevImmune);
+        else if (isMulti)
+            StringExpandPlaceholders(gStringVar4, sText_BevCuredMulti);
+        else
+            StringExpandPlaceholders(gStringVar4, sText_BevCured);
             
-//         AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusNoneTextColor, 0, gStringVar4);
-//     }
-//     else
-//     {
-//         // --- STATE 3: COMPLETELY CLEAN ---
-//         StringCopy(gStringVar4, gText_BevNone);
-//         AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusNoneTextColor, 0, gStringVar4);
-//     }
+        AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusNoneTextColor, 0, gStringVar4);
+    }
+    else
+    {
+        // --- STATE 3: COMPLETELY CLEAN ---
+        StringCopy(gStringVar4, sText_BevNone);
+        AddTextPrinterParameterized3(windowId, FONT_SHORT_NARROW, 0, 0, sVirusNoneTextColor, 0, gStringVar4);
+    }
 
-//     PutWindowTilemap(windowId);
-//     CopyWindowToVram(windowId, COPYWIN_GFX);
-// }
+    PutWindowTilemap(windowId);
+    CopyWindowToVram(windowId, COPYWIN_GFX);
+}
 
 
 // code
@@ -3223,7 +3226,7 @@ static void SwitchToMoveSelection(u8 taskId)
     gTasks[taskId].func = Task_HandleInput_MoveSelect;
     
     // --- FIX: Force the virus window to hide ---
-    // PrintBadEggVirusStatus(); 
+    PrintBadEggVirusStatus(); 
 }
 
 static void Task_HandleInput_MoveSelect(u8 taskId)
@@ -3701,7 +3704,7 @@ static void Task_HideEffectTilemap(u8 taskId)
         SetGpuReg(REG_OFFSET_MOSAIC, 0);
         ClearGpuRegBits(REG_OFFSET_BG1CNT, BGCNT_MOSAIC);
         // --- FIX: Redraw the virus window now that move details are gone ---
-        // PrintBadEggVirusStatus();
+        PrintBadEggVirusStatus();
 
         DestroyTask(taskId);
     }
@@ -4234,7 +4237,7 @@ static void PrintPageSpecificText(u8 pageIndex)
     // Refresh the virus text when scrolling through the party
     if (pageIndex == PSS_PAGE_BATTLE_MOVES || pageIndex == PSS_PAGE_CONTEST_MOVES)
     {
-        // PrintBadEggVirusStatus();
+        PrintBadEggVirusStatus();
     }
     // --- END VIRUS UI REFRESH ---
 }
@@ -4865,7 +4868,7 @@ static void PrintBattleMoves(void)
         else
         {
             PrintMoveDetails(sMonSummaryScreen->summary.moves[sMonSummaryScreen->firstMoveIndex]);
-            // PrintBadEggVirusStatus();
+            PrintBadEggVirusStatus();
         }
     }
 }
@@ -4909,7 +4912,7 @@ static void Task_PrintBattleMoves(u8 taskId)
         }
         break;
     case 8:
-        // PrintBadEggVirusStatus();
+        PrintBadEggVirusStatus();
         DestroyTask(taskId);
         return;
     }

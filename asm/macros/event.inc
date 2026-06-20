@@ -1304,6 +1304,16 @@
 	pokemart \products, NEW_SHOP_PRICE_TYPE_POINTS
 	.endm
 
+	@ Pokemart using bottle caps for currency
+	.macro bottlecapmart products:req
+	pokemart \products, NEW_SHOP_PRICE_TYPE_BOTTLE_CAP
+	.endm
+
+	@ Pokemart using gold bottle caps for currency
+	.macro goldbottlecapmart products:req
+	pokemart \products, NEW_SHOP_PRICE_TYPE_GOLD_BOTTLE_CAP
+	.endm
+
 	@ Used as the endpoint for a Pokemart item list
 	.macro pokemartlistend
 	.2byte ITEM_NONE

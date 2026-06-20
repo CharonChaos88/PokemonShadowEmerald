@@ -137,6 +137,20 @@
       "elevation": 0,
       "dest_map": "MAP_LITTLEROOT_TOWN_PROFESSOR_BIRCHS_LAB",
       "dest_warp_id": "0"
+    },
+    {
+      "x": 28,
+      "y": 19,
+      "elevation": 0,
+      "dest_map": "MAP_LITTLEROOT_FARMS",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 29,
+      "y": 19,
+      "elevation": 0,
+      "dest_map": "MAP_LITTLEROOT_FARMS",
+      "dest_warp_id": "1"
     }
   ],
   "coord_events": [],

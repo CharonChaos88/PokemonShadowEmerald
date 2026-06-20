@@ -3315,34 +3315,58 @@ Level: 39
 IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 
 === TRAINER_TAKAO ===
-Name: TAKAO
+Name: Takao
 Class: Black Belt
 Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Machop
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Machamp @ Expert Belt
+Ability: No Guard
+Level: 35
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Tera Type: Poison
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
 
-=== TRAINER_HITOSHI ===
-Name: HITOSHI
-Class: Black Belt
-Pic: Black Belt
-Gender: Male
-Music: Intense
-Double Battle: No
-AI: Check Bad Move
+Machamp @ Expert Belt
+Ability: No Guard
+Level: 36
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Tera Type: Dark
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
 
-Machop
-Level: 32
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Machamp @ Expert Belt
+Ability: No Guard
+Level: 37
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Tera Type: Fighting
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
 
-Machoke
-Level: 32
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+Machamp @ Expert Belt
+Ability: No Guard
+Level: 40
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Shiny: Yes
+Tera Type: Electric
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
 
 === TRAINER_KIYO ===
 Name: KIYO
@@ -5033,6 +5057,17 @@ Tera Type: Fairy
 - Zen Headbutt
 - Taunt
 - Rock Slide
+
+Gallade @ Galladite
+Ability: Justified
+Level: 45
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+Shiny: Yes
+- Swords Dance
+- Close Combat
+- Zen Headbutt
+- Knock Off
 
 === TRAINER_WATTSON_1 ===
 Name: Ohm
@@ -8437,17 +8472,57 @@ IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 - Sludge
 
 === TRAINER_JOCELYN ===
-Name: JOCELYN
+Name: Jocelyn
 Class: Battle Girl
 Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Meditite
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Heracross @ Leftovers
+Ability: Moxie
+Level: 35
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+Tera Type: Fighting
+- Close Combat
+- Swords Dance
+- Rock Slide
+- Skitter Smack
+
+Machoke @ Expert Belt
+Ability: No Guard
+Level: 36
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Tera Type: Fighting
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
+
+Breloom @ Toxic Orb
+Ability: Poison Heal
+Level: 37
+EVs: 252 Atk / 100 Def / 150 SpD
+Nature: Adamant
+Tera Type: Fighting
+- Leech Seed
+- Bulk Up
+- Drain Punch
+- Protect
+
+Gallade @ Galladite
+Ability: Steadfast
+Level: 40
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+Shiny: Yes
+- Zen Headbutt
+- Leaf Blade
+- Night Slash
+- Close Combat
 
 === TRAINER_LAURA ===
 Name: Laura
@@ -8480,20 +8555,9 @@ Tera Type: Psychic
 - Drain Punch
 - Pain Split
 
-Heracross @ Leftovers
-Ability: Moxie
-Level: 37
-EVs: 252 Atk / 4 Def / 252 Spe
-Nature: Jolly
-Tera Type: Fighting
-- Close Combat
-- Swords Dance
-- Rock Slide
-- Skitter Smack
-
 Machoke @ Flame Orb
 Ability: Guts
-Level: 38
+Level: 37
 EVs: 252 Atk / 252 Def / 4 SpD
 Nature: Adamant
 Tera Type: Fighting
@@ -8501,6 +8565,17 @@ Tera Type: Fighting
 - Poison Jab
 - Thunder Punch
 - Knock Off
+
+Heracross @ Heracronite
+Ability: Moxie
+Level: 40
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+Tera Type: Fighting
+- Close Combat
+- Swords Dance
+- Rock Slide
+- Skitter Smack
 
 === TRAINER_CYNDY_1 ===
 Name: CYNDY
@@ -11332,30 +11407,56 @@ Tera Type: Psychic
 - Close Combat
 
 === TRAINER_CRISTIAN ===
-Name: CRISTIAN
+Name: Cristian
 Class: Black Belt
 Pic: Black Belt
 Gender: Male
 Music: Intense
+Items: Super Potion / Super Potion / Super Potion / Super Potion
 Double Battle: No
-AI: Check Bad Move
+AI: Basic Trainer
 
-Makuhita
-Level: 13
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+Breloom @ Toxic Orb
+Ability: Poison Heal
+Level: 35
+EVs: 252 Atk / 100 Def / 150 SpD
+Nature: Adamant
+- Leech Seed
+- Bulk Up
+- Drain Punch
+- Protect
 
-=== TRAINER_SYLVIA ===
-Name: SYLVIA
-Class: Hex Maniac
-Pic: Hex Maniac
-Gender: Female
-Music: Suspicious
-Double Battle: No
-AI: Check Bad Move
+Heracross @ Leftovers
+Ability: Moxie
+Level: 37
+EVs: 252 Atk / 4 Def / 252 Spe
+Nature: Jolly
+- Close Combat
+- Swords Dance
+- Rock Slide
+- Skitter Smack
 
-Meditite
-Level: 36
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Machoke @ Expert Belt
+Ability: No Guard
+Level: 39
+EVs: 252 Atk / 252 Def / 4 SpD
+Nature: Adamant
+Tera Type: Fighting
+- Dynamic Punch
+- Poison Jab
+- Thunder Punch
+- Knock Off
+
+Hariyama @ Sitrus Berry
+Ability: Sheer Force
+Level: 40
+EVs: 252 HP / 252 Atk / 4 SpD
+Nature: Adamant
+Shiny: Yes
+- Close Combat
+- Bulk Up
+- Thunder Punch
+- Belly Drum
 
 === TRAINER_LEONARDO ===
 Name: LEONARDO

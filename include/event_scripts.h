@@ -792,5 +792,9 @@ extern const u8 EventScript_Indigo_HighestAuthority[];
 extern const u8 EventScript_DisableAutoRun[];
 extern const u8 EventScript_EnableAutoRun[];
 extern const u8 Craft_EventScript_OpenCraftMenu[];
-
+extern const u8 IntroCheck[];
+extern const u8 EventScript_VirusAlert_ApplyEffects[];
+extern const u8 EventScript_VirusAlert[];
+extern const u8 EventScript_VirusAlert_Explicit[];
+extern const u8 EventScript_VirusAlert_Cryptic[];
 #endif // GUARD_EVENT_SCRIPTS_H

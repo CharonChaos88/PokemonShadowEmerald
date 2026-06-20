@@ -2112,3 +2112,21 @@ const u16 gItemIconPalette_SwapSnack[] = INCGFX_U16("graphics/items/icon_palette
 
 const u32 gItemIcon_TwiceSpicedRadish[] = INCGFX_U32("graphics/items/icons/twice_spiced_radish.png", ".4bpp.smol");
 const u16 gItemIconPalette_TwiceSpicedRadish[] = INCGFX_U16("graphics/items/icon_palettes/twice_spiced_radish.pal", ".gbapal");
+
+const u32 gItemIcon_Workbench[] = INCGFX_U32("graphics/items/icons/workbench.png", ".4bpp.smol");
+const u16 gItemIconPalette_Workbench[] = INCGFX_U16("graphics/items/icon_palettes/workbench.pal", ".gbapal");
+
+// Buff Key Items
+
+const u32 gItemIcon_Zigzagmerang[] = INCGFX_U32("graphics/items/icons/zigzagmerang.png", ".4bpp.smol");
+const u16 gItemIconPalette_Zigzagmerang[] = INCGFX_U16("graphics/items/icon_palettes/zigzagmerang.pal", ".gbapal");
+
+const u32 gItemIcon_Linoonmerang[] = INCGFX_U32("graphics/items/icons/linoonmerang.png", ".4bpp.smol");
+const u16 gItemIconPalette_Linoonmerang[] = INCGFX_U16("graphics/items/icon_palettes/linoonmerang.pal", ".gbapal");
+
+
+const u32 gItemIcon_SpoonOfWisdom[] = INCGFX_U32("graphics/items/icons/wisdom_spoon.png", ".4bpp.smol");
+const u16 gItemIconPalette_SpoonOfWisdom[] = INCGFX_U16("graphics/items/icon_palettes/wisdom_spoon.pal", ".gbapal");
+
+const u32 gItemIcon_CasicoonVaccine[] = INCGFX_U32("graphics/items/icons/casilcoon_vaccine.png", ".4bpp.smol");
+const u16 gItemIconPalette_CasicoonVaccine[] = INCGFX_U16("graphics/items/icon_palettes/casilcoon_vaccine.pal", ".gbapal");

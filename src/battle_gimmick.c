@@ -73,13 +73,13 @@ bool32 IsGimmickSelected(enum BattlerId battler, enum Gimmick gimmick)
 // Sets a battler as having a gimmick active using their party index.
 void SetActiveGimmick(enum BattlerId battler, enum Gimmick gimmick)
 {
-    gBattleStruct->gimmick.activeGimmick[GetBattlerSide(battler)][gBattlerPartyIndexes[battler]] = gimmick;
+    gBattleStruct->gimmick.activeGimmick[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]] = gimmick;
 }
 
 // Returns a battler's active gimmick, if any.
 enum Gimmick GetActiveGimmick(enum BattlerId battler)
 {
-    return gBattleStruct->gimmick.activeGimmick[GetBattlerSide(battler)][gBattlerPartyIndexes[battler]];
+    return gBattleStruct->gimmick.activeGimmick[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]];
 }
 
 // Returns whether a trainer mon is intended to use an unrestrictive gimmick via .useGimmick (i.e Tera).
@@ -110,6 +110,9 @@ bool32 ShouldTrainerBattlerUseGimmick(enum BattlerId battler, enum Gimmick gimmi
 // Returns whether a trainer has used a gimmick during a battle.
 bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
 {
+    if (gimmick == GIMMICK_MEGA)
+        return FALSE; // No restrictions for Mega Evolution
+
     if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
     {
         enum BattlerId partner = BATTLE_PARTNER(battler);
@@ -117,7 +120,7 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
             return TRUE;
     }
 
-    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_MEGA || gimmick == GIMMICK_ULTRA_BURST)
+    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_ULTRA_BURST)
     {
         // Block the gimmick ONLY if this specific Pokemon has already transformed
         u32 trainer = GetBattlerTrainer(battler);
@@ -126,7 +129,7 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
     }
 
     // Keep default engine behavior for Z-Moves
-    if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
+    if (IsDoubleBattle() && IsPartnerMonFromSameTrainer(battler))
     {
         enum BattlerId partner = BATTLE_PARTNER(battler);
         if (gBattleStruct->gimmick.activated[partner][gimmick])
@@ -148,9 +151,9 @@ void SetGimmickAsActivated(enum BattlerId battler, enum Gimmick gimmick)
     }
     else
     {
-        // Keep default engine behavior for Mega Evolution and Z-Moves
+        // Keep default engine behavior for Z-Moves
         gBattleStruct->gimmick.activated[battler][gimmick] = TRUE;
-        if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || (gimmick == GIMMICK_DYNAMAX)))
+        if (IsDoubleBattle() && IsPartnerMonFromSameTrainer(battler))
             gBattleStruct->gimmick.activated[BATTLE_PARTNER(battler)][gimmick] = TRUE;
     }
 }

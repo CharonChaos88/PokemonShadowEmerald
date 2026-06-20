@@ -2,7 +2,8 @@
 #include "play_time.h"
 #include "fake_rtc.h"
 #include "field_player_avatar.h"
-
+#include "bad_egg_virus.h"
+#include "main.h"
 enum
 {
     STOPPED,
@@ -58,6 +59,14 @@ void PlayTimeCounter_Update(void)
 
     if (gSaveBlock2Ptr->playTimeMinutes < 60)
         return;
+
+    // --- BAD EGG VIRUS REAL-TIME PROGRESSION ---
+        // Progresses the virus every minute, but pauses the clock while in a battle!
+        if (!gMain.inBattle)
+        {
+            IncrementVirusTime();
+        }
+        // -------------------------------------------
 
     gSaveBlock2Ptr->playTimeMinutes = 0;
     gSaveBlock2Ptr->playTimeHours++;

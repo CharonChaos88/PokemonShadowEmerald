@@ -209,6 +209,12 @@ static const u8 sText_HereYouGoThankYou[] = _("Here you go!\nThank you very much
 static const u8 sText_ThankYouIllSendItHome[] = _("Thank you!\nI'll send it to\nyour home PC.");
 static const u8 sText_ThanksIllSendItHome[] = _("Thanks!\nI'll send it to your\nPC at home.");
 static const u8 sText_YouDontHaveMoney[] = _("You don't have\nenough money.");
+static const u8 sText_YouDontHaveBottleCaps[] = _("You don't have enough\nBottle Caps.");
+static const u8 sText_YouDontHaveGoldBottleCaps[] = _("You don't have enough\nGold Bottle Caps.");
+static const u8 sText_YouWantedVar1ThatllBeVar2BC[] = _("You wanted the\n{STR_VAR_1}?\nThat'll be {STR_VAR_2} BC.");
+static const u8 sText_YouWantedVar1ThatllBeVar2GBC[] = _("You wanted the\n{STR_VAR_1}?\nThat'll be {STR_VAR_2} GBC.");
+static const u8 sText_Var1AndYouWantedVar2BC[] = _("So you wanted\n{STR_VAR_2} {STR_VAR_1}?\nThat'll be {STR_VAR_3} BC.");
+static const u8 sText_Var1AndYouWantedVar2GBC[] = _("So you wanted\n{STR_VAR_2} {STR_VAR_1}?\nThat'll be {STR_VAR_3} GBC.");
 static const u8 sText_YouDontHaveCoins[] = _("You don't have\nenough Coins.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_YouDontHaveBP[] = _("You don't have\nenough Battle Points.{PAUSE_UNTIL_PRESS}");
 static const u8 sText_NoMoreRoomForThis[] = _("You have no more\nroom for this\nitem.");
@@ -545,14 +551,24 @@ static inline bool32 IsMartTypeCoin(u8 martType)
     return martType == NEW_SHOP_TYPE_COINS;
 }
 
+static inline bool32 IsMartTypeBottleCap(u8 martType)
+{
+    return martType == NEW_SHOP_TYPE_BOTTLE_CAP;
+}
+
+static inline bool32 IsMartTypeGoldBottleCap(u8 martType)
+{
+    return martType == NEW_SHOP_TYPE_GOLD_BOTTLE_CAP;
+}
+
 static inline bool32 IsMartTypeMoney(u8 martType)
 {
-    return !IsMartTypePoints(martType) && !IsMartTypeCoin(martType);
+    return !IsMartTypePoints(martType) && !IsMartTypeCoin(martType) && !IsMartTypeBottleCap(martType) && !IsMartTypeGoldBottleCap(martType);
 }
 
 static inline bool32 IsMartTypeItem(u8 martType)
 {
-    return martType <= NEW_SHOP_TYPE_POINTS;
+    return martType <= NEW_SHOP_TYPE_POINTS || martType == NEW_SHOP_TYPE_BOTTLE_CAP || martType == NEW_SHOP_TYPE_GOLD_BOTTLE_CAP;
 }
 
 #ifdef MUDSKIP_OUTFIT_SYSTEM
@@ -684,6 +700,8 @@ static u32 SearchItemListForPrice(u32 itemId)
 
     return 0;
 }
+
+
 
 void SetShopSellerId(void)
 {
@@ -935,8 +953,6 @@ static void BuyMenuFreeMemory(void)
 {
     GridMenu_Destroy(sShopData->gridItems);
     Free(sShopData);
-    // they're better freed here since
-    // this is only used in the buy menu
     Free(sMartInfo.itemPriceList);
     Free(sMartInfo.itemList);
     FreeAllWindowBuffers();
@@ -1171,6 +1187,10 @@ static inline u32 BuyMenuGetItemPrice(u32 id)
         // custom
         case NEW_SHOP_TYPE_VARIABLE:
             return SearchItemListForPrice(sMartInfo.itemList[id]);
+        case NEW_SHOP_TYPE_BOTTLE_CAP:
+            return GetItemBottleCapPrice(sMartInfo.itemList[id]);
+        case NEW_SHOP_TYPE_GOLD_BOTTLE_CAP:
+            return GetItemGoldBottleCapPrice(sMartInfo.itemList[id]);
         case NEW_SHOP_TYPE_COINS:
             return GetItemCoinPrice(sMartInfo.itemList[id]);
         case NEW_SHOP_TYPE_POINTS:
@@ -1337,11 +1357,22 @@ static void PrintMoneyLocal(u8 windowId, u32 x, u32 y, u32 amount, u8 colorIdx, 
         StringExpandPlaceholders(gStringVar4, sText_CoinsVar1);
     else if (IsMartTypePoints(sMartInfo.martType))
         StringExpandPlaceholders(gStringVar4, sText_BattlePointsVar1);
+    else if (IsMartTypeBottleCap(sMartInfo.martType))
+    {
+        const u8 sText_BC[] = _(" BC");
+        StringCopy(gStringVar4, gStringVar1);
+        StringAppend(gStringVar4, sText_BC);
+    }
+    else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+    {
+        const u8 sText_GBC[] = _(" GBC");
+        StringCopy(gStringVar4, gStringVar1);
+        StringAppend(gStringVar4, sText_GBC);
+    }
     else
         StringExpandPlaceholders(gStringVar4, sText_PokedollarVar1);
 
-    if (numDigits > 7)
-        PrependFontIdToFit(gStringVar4, gStringVar4 + 1 + numDigits, FONT_SMALL, width);
+    PrependFontIdToFit(gStringVar4, gStringVar4 + StringLength(gStringVar4), FONT_SMALL, width);
 
     if (x == RIGHT_ALIGNED_X)
         x = GetStringRightAlignXOffset(GetFontIdToFit(gStringVar4, FONT_SMALL, 0, width), gStringVar4, width);
@@ -1358,6 +1389,10 @@ static void BuyMenuDrawGraphics(void)
         PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, GetCoins(), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
     else if (IsMartTypePoints(sMartInfo.martType))
         PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, GetBattlePoints(), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
+    else if (IsMartTypeBottleCap(sMartInfo.martType))
+        PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, CountTotalItemQuantityInBag(ITEM_BOTTLE_CAP), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
+    else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+        PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, CountTotalItemQuantityInBag(ITEM_GOLD_BOTTLE_CAP), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
     else // if (IsMartTypeMoney(sMartInfo.martType))
         PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, GetMoney(&gSaveBlock1Ptr->money), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
 
@@ -1372,6 +1407,9 @@ static void UpdateItemData(void)
     const u8 strip[] = _("-");
     if (GridMenu_SelectedIndex(sShopData->gridItems) >= sMartInfo.itemCount)
         return;
+
+    if (IsMartTypeBottleCap(sMartInfo.martType) || IsMartTypeGoldBottleCap(sMartInfo.martType))
+        BuyMenuDrawGraphics();
 
     FillWindowPixelRect(WIN_MULTI, PIXEL_FILL(0), 0,  ITEM_NAME_Y, 84, 16);
     FillWindowPixelRect(WIN_MULTI, PIXEL_FILL(0), 24, ITEM_PRICE_Y, 84, 16);
@@ -1517,12 +1555,28 @@ static void Task_BuyMenuTryBuyingItem(u8 taskId)
         str = Shop_GetSellerMessage(SELLER_MSG_BUY_FAIL_NO_POINTS);
         BuyMenuDisplayMessage(taskId, str, Task_ReturnToItemListWaitMsg);
     }
+    else if (IsMartTypeBottleCap(sMartInfo.martType) && !CheckBagHasItem(ITEM_BOTTLE_CAP, sShopData->totalCost))
+    {
+        PlaySE(SE_BOO);
+        str = sText_YouDontHaveBottleCaps;
+        BuyMenuDisplayMessage(taskId, str, Task_ReturnToItemListWaitMsg);
+    }
+    else if (IsMartTypeGoldBottleCap(sMartInfo.martType) && !CheckBagHasItem(ITEM_GOLD_BOTTLE_CAP, sShopData->totalCost))
+    {
+        PlaySE(SE_BOO);
+        str = sText_YouDontHaveGoldBottleCaps;
+        BuyMenuDisplayMessage(taskId, str, Task_ReturnToItemListWaitMsg);
+    }
     else
     {
         if (IsMartTypeCoin(sMartInfo.martType))
             str = Shop_GetSellerMessage(SELLER_MSG_BUY_COIN_PROMPT);
         else if (IsMartTypePoints(sMartInfo.martType))
             str = Shop_GetSellerMessage(SELLER_MSG_BUY_BP_PROMPT);
+        else if (IsMartTypeBottleCap(sMartInfo.martType))
+            str = sText_YouWantedVar1ThatllBeVar2BC;
+        else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+            str = sText_YouWantedVar1ThatllBeVar2GBC;
         else // if (IsMartTypeMoney(sMartInfo.martType))
             str = Shop_GetSellerMessage(SELLER_MSG_BUY_PROMPT);
         PlaySE(SE_SELECT);
@@ -1623,6 +1677,10 @@ static void Task_BuyHowManyDialogueInit(u8 taskId)
         maxQuantity = GetCoins() / sShopData->totalCost;
     else if (IsMartTypePoints(sMartInfo.martType))
         maxQuantity = GetBattlePoints() / sShopData->totalCost;
+    else if (IsMartTypeBottleCap(sMartInfo.martType))
+        maxQuantity = CountTotalItemQuantityInBag(ITEM_BOTTLE_CAP) / sShopData->totalCost;
+    else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+        maxQuantity = CountTotalItemQuantityInBag(ITEM_GOLD_BOTTLE_CAP) / sShopData->totalCost;
     else // if (IsMartTypeMoney(sMartInfo.martType))
         maxQuantity = GetMoney(&gSaveBlock1Ptr->money) / sShopData->totalCost;
 
@@ -1666,6 +1724,10 @@ static void Task_BuyHowManyDialogueHandleInput(u8 taskId)
                 BuyMenuDisplayMessage(taskId, Shop_GetSellerMessage(SELLER_MSG_BUY_COIN_CONFIRM), BuyMenuConfirmPurchase);
             else if (IsMartTypePoints(sMartInfo.martType))
                 BuyMenuDisplayMessage(taskId, Shop_GetSellerMessage(SELLER_MSG_BUY_POINT_CONFIRM), BuyMenuConfirmPurchase);
+            else if (IsMartTypeBottleCap(sMartInfo.martType))
+                BuyMenuDisplayMessage(taskId, sText_Var1AndYouWantedVar2BC, BuyMenuConfirmPurchase);
+            else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+                BuyMenuDisplayMessage(taskId, sText_Var1AndYouWantedVar2GBC, BuyMenuConfirmPurchase);
             else // if (IsMartTypeMoney(sMartInfo.martType))
                 BuyMenuDisplayMessage(taskId, Shop_GetSellerMessage(SELLER_MSG_BUY_CONFIRM), BuyMenuConfirmPurchase);
         }
@@ -1753,6 +1815,20 @@ static void BuyMenuSubtractMoney(u8 taskId)
         PlaySE(SE_SHOP);
         FillWindowPixelBuffer(WIN_MONEY, PIXEL_FILL(0));
         PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, GetBattlePoints(), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
+    }
+    else if (IsMartTypeBottleCap(sMartInfo.martType))
+    {
+        RemoveBagItem(ITEM_BOTTLE_CAP, sShopData->totalCost);
+        PlaySE(SE_SHOP);
+        FillWindowPixelBuffer(WIN_MONEY, PIXEL_FILL(0));
+        PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, CountTotalItemQuantityInBag(ITEM_BOTTLE_CAP), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
+    }
+    else if (IsMartTypeGoldBottleCap(sMartInfo.martType))
+    {
+        RemoveBagItem(ITEM_GOLD_BOTTLE_CAP, sShopData->totalCost);
+        PlaySE(SE_SHOP);
+        FillWindowPixelBuffer(WIN_MONEY, PIXEL_FILL(0));
+        PrintMoneyLocal(WIN_MONEY, RIGHT_ALIGNED_X, 0, CountTotalItemQuantityInBag(ITEM_GOLD_BOTTLE_CAP), COLORID_BLACK, STR_CONV_MODE_RIGHT_ALIGN, TRUE);
     }
     else //if (IsMartTypeMoney(sMartInfo.martType))
     {
@@ -1965,6 +2041,22 @@ void NewShop_CreateCoinPokemartMenu(const u16 *itemsForSale)
 void NewShop_CreatePointsPokemartMenu(const u16 *itemsForSale)
 {
     CreateShopMenu(NEW_SHOP_TYPE_POINTS);
+    SetShopItemsForSale(itemsForSale);
+    ClearItemPurchases();
+    SetShopMenuCallback(ScriptContext_Enable);
+}
+
+void NewShop_CreateBottleCapPokemartMenu(const u16 *itemsForSale)
+{
+    CreateShopMenu(NEW_SHOP_TYPE_BOTTLE_CAP);
+    SetShopItemsForSale(itemsForSale);
+    ClearItemPurchases();
+    SetShopMenuCallback(ScriptContext_Enable);
+}
+
+void NewShop_CreateGoldBottleCapPokemartMenu(const u16 *itemsForSale)
+{
+    CreateShopMenu(NEW_SHOP_TYPE_GOLD_BOTTLE_CAP);
     SetShopItemsForSale(itemsForSale);
     ClearItemPurchases();
     SetShopMenuCallback(ScriptContext_Enable);

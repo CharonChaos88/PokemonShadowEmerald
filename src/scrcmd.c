@@ -2351,7 +2351,7 @@ bool8 ScrCmd_checkfieldmove(struct ScriptContext *ctx)
     u32 i;
 
     // Check for party Pokemon that can learn the move
-    for (i = 0; i < gPlayerPartyCount; i++)
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
     {
         if (!GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG))
         {
@@ -2620,6 +2620,12 @@ bool8 ScrCmd_pokemart(struct ScriptContext *ctx)
         break;
     case NEW_SHOP_PRICE_TYPE_POINTS:
         NewShop_CreatePointsPokemartMenu(ptr);
+        break;
+    case NEW_SHOP_PRICE_TYPE_BOTTLE_CAP:
+        NewShop_CreateBottleCapPokemartMenu(ptr);
+        break;
+    case NEW_SHOP_PRICE_TYPE_GOLD_BOTTLE_CAP:
+        NewShop_CreateGoldBottleCapPokemartMenu(ptr);
         break;
     default:
         NewShop_CreatePokemartMenu(ptr);
@@ -3741,8 +3747,9 @@ void Cmd_giveterashards_battle(void)
     u16 amount = 5;
     bool8 giveStellar = FALSE;
     u16 trainerId = TRAINER_BATTLE_PARAM.opponentA;
-    u16 trainerClass = gTrainers[trainerId]->trainerClass;
-    u8 trainerPic = gTrainers[trainerId]->trainerPic;
+    const struct Trainer *trainer = GetTrainerStructFromId(trainerId);
+    u16 trainerClass = trainer->trainerClass;
+    u8 trainerPic = trainer->trainerPic;
 
     bool8 isFrontierBrain = (trainerPic == TRAINER_PIC_SALON_MAIDEN_ANABEL
                           || trainerPic == TRAINER_PIC_DOME_ACE_TUCKER

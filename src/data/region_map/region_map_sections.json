@@ -2,7 +2,7 @@
   "map_sections": [
     {
       "id": "MAPSEC_LITTLEROOT_TOWN",
-      "name": "LITTLEROOT TOWN",
+      "name": "Littleroot Town",
       "x": 4,
       "y": 11,
       "width": 1,
@@ -1628,7 +1628,8 @@
       "height": 1
     },
     {
-      "id": "MAPSEC_LITTLEROOT_FARMS"
+      "id": "MAPSEC_LITTLEROOT_FARMS",
+      "name": "Littleroot Farms"
     }
   ]
 }

@@ -1930,4 +1930,25 @@ void ItemUseOutOfBattle_Zigzagmerang(u8 taskId)
     FlagToggle(FLAG_ZIGZAGMERANG_ENABLED);
 }
 
+extern const u8 IntroCheck[];
+
+static void ItemUseOnFieldCB_WisdomSpoon(u8 taskId)
+{
+    LockPlayerFieldControls();
+    ScriptContext_SetupScript(IntroCheck);
+    DestroyTask(taskId);
+}
+
+void ItemUseOutOfBattle_WisdomSpoon(u8 taskId)
+{
+    sItemUseOnFieldCB = ItemUseOnFieldCB_WisdomSpoon;
+    SetUpItemUseOnFieldCallback(taskId);
+}
+
+void ItemUseOutOfBattle_CasilcoonVaccine(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_Medicine;
+    SetUpItemUseCallback(taskId);
+}
+
 #undef tUsingRegisteredKeyItem

@@ -84,6 +84,7 @@
 #include "constants/songs.h"
 #include "config/pokemon.h"
 #include "ui_stat_editor.h"
+#include "bad_egg_virus.h"
 #if __has_include("config/party_menu.h")
 #include "config/party_menu.h"
 #endif
@@ -4847,33 +4848,33 @@ static bool32 IsHPRecoveryItem(enum Item item)
 }
 
 // // --- CUSTOM VACCINE TEXT STRINGS ---
-// static const u8 sText_StrainX[] = _("X");
-// static const u8 sText_StrainY[] = _("Y");
-// static const u8 sText_StrainZ[] = _("Z");
-// static const u8 sText_StrainUnknown[] = _("?");
-// static const u8 sText_CuredOfStrain[] = _("{STR_VAR_1} was cured of the\nStrain: {STR_VAR_2} Virus!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_StrainX[] = _("X");
+static const u8 sText_StrainY[] = _("Y");
+static const u8 sText_StrainZ[] = _("Z");
+static const u8 sText_StrainUnknown[] = _("?");
+static const u8 sText_CuredOfStrain[] = _("{STR_VAR_1} was cured of the\nStrain: {STR_VAR_2} Virus!{PAUSE_UNTIL_PRESS}");
 // -----------------------------------
 
 static void GetMedicineItemEffectMessage(enum Item item, u32 statusCured)
 {
     // --- ADD YOUR CUSTOM VACCINE TEXT HERE ---
-    //if (item == ITEM_CASILCOON_VACCINE)
-    //{
-    //    u8 bevData = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_BAD_EGG_VIRUS);
-    //    
-    //    // Check Z, then Y, then X to ensure we get the most recent one
-    //    if (bevData & BEV_ANTIBODY_Z) 
-    //        StringCopy(gStringVar2, sText_StrainZ);
-    //    else if (bevData & BEV_ANTIBODY_Y) 
-    //        StringCopy(gStringVar2, sText_StrainY);
-    //    else if (bevData & BEV_ANTIBODY_X) 
-    //        StringCopy(gStringVar2, sText_StrainX);
-    //    else 
-    //        StringCopy(gStringVar2, sText_StrainUnknown);
+    if (item == ITEM_CASILCOON_VACCINE)
+    {
+       u8 bevData = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_BAD_EGG_VIRUS);
+       
+       // Check Z, then Y, then X to ensure we get the most recent one
+       if (bevData & BEV_ANTIBODY_Z) 
+           StringCopy(gStringVar2, sText_StrainZ);
+       else if (bevData & BEV_ANTIBODY_Y) 
+           StringCopy(gStringVar2, sText_StrainY);
+       else if (bevData & BEV_ANTIBODY_X) 
+           StringCopy(gStringVar2, sText_StrainX);
+       else 
+           StringCopy(gStringVar2, sText_StrainUnknown);
 
-    //    StringExpandPlaceholders(gStringVar4, sText_CuredOfStrain);
-    //    return;
-    //}
+       StringExpandPlaceholders(gStringVar4, sText_CuredOfStrain);
+       return;
+    }
 
     switch (GetItemEffectType(item))
     {

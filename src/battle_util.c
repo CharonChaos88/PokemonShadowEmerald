@@ -5632,7 +5632,7 @@ enum Obedience GetAttackerObedienceForAction(void)
     if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_Z_MOVE)
     {
         gBattleStruct->gimmick.activated[gBattlerAttacker][GIMMICK_Z_MOVE] = FALSE;
-        gBattleStruct->gimmick.activeGimmick[GetBattlerSide(gBattlerAttacker)][gBattlerPartyIndexes[gBattlerAttacker]] = GIMMICK_NONE;
+        gBattleStruct->gimmick.activeGimmick[GetBattlerTrainer(gBattlerAttacker)][gBattlerPartyIndexes[gBattlerAttacker]] = GIMMICK_NONE;
     }
 
     // is not obedient

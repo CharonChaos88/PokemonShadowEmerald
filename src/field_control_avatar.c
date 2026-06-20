@@ -45,7 +45,7 @@
 #include "constants/metatile_behaviors.h"
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
-
+#include "bad_egg_virus.h" 
 #include "rotom_start_menu.h"
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
@@ -170,6 +170,11 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     gSpecialVar_LastTalked = LOCALID_NONE;
     gSelectedObjectEvent = 0;
 
+    // --- ADD THIS RIGHT HERE AT THE START ---
+    // Safely triggers any virus alerts that happened during battle or while walking!
+    if (TryTriggerPendingVirusAlerts() == TRUE)
+        return TRUE;
+
     gMsgIsSignPost = FALSE;
     playerDirection = GetPlayerFacingDirection();
     GetPlayerPosition(&position);
@@ -186,6 +191,7 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     if (input->tookStep)
     {
         IncrementGameStat(GAME_STAT_STEPS);
+        IncrementVirusSteps();
         IncrementBirthIslandRockStepCount();
         DespawnAllOverworldWildEncounters(OWE_GENERATED, WILD_CHECK_REPEL);
         if (FindTaskIdByFunc(Task_FollowerNPCOutOfDoor) == TASK_NONE && TryStartStepBasedScript(&position, metatileBehavior, playerDirection) == TRUE)
@@ -771,6 +777,8 @@ static bool8 TryStartStepCountScript(u16 metatileBehavior)
     UpdateFriendshipStepCounter();
     UpdateFarawayIslandStepCounter();
     UpdateFollowerStepCounter();
+    
+    IncrementVirusSteps();
 
     if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_FORCED_MOVE) && !MetatileBehavior_IsForcedMovementTile(metatileBehavior))
     {

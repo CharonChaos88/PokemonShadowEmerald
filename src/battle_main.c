@@ -79,7 +79,7 @@
 #include "constants/trainers.h"
 #include "constants/weather.h"
 #include "cable_club.h"
-
+#include "bad_egg_virus.h"
 extern const struct BgTemplate gBattleBgTemplates[];
 extern const struct WindowTemplate *const gBattleWindowTemplates[];
 
@@ -5106,6 +5106,11 @@ static void TurnValuesCleanUp(bool8 var0)
             gBattleStruct->battlerState[i].canPickupItem = FALSE;
             gBattleStruct->battlerState[i].wasAboveHalfHp = FALSE;
         }
+        
+            // --- BAD EGG VIRUS HOOK ---
+            // Applies silent stat decays and incurable confusion at the end of the turn
+            ApplyBadEggVirusBattleEffects(i);
+            // --- END VIRUS HOOK ---
 
         if (gBattleMons[i].volatiles.substituteHP == 0)
             gBattleMons[i].volatiles.substitute = FALSE;

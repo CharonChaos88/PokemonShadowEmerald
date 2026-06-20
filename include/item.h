@@ -86,6 +86,8 @@ struct ItemInfo
     u8 flingPower;
     u16 coinPrice;
     u16 bpPrice;
+    u16 bottleCapPrice;
+    u16 goldBottleCapPrice;
     const u32 *iconPic;
     const u16 *iconPalette;
     ShopCriteriaFunc shopCriteriaFunc;
@@ -285,5 +287,7 @@ ShopCriteriaFunc GetItemShopCriteriaFunc(u32 itemId);
 bool32 IsItemShopCriteriaFulfilled(u32 itemId);
 u32 GetItemCoinPrice(u16 itemId);
 u32 GetItemBpPrice(u16 itemId);
+u32 GetItemBottleCapPrice(u16 itemId);
+u32 GetItemGoldBottleCapPrice(u16 itemId);
 
 #endif // GUARD_ITEM_H

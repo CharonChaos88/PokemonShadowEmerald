@@ -1004,3 +1004,13 @@ u32 GetItemBpPrice(u16 itemId)
 {
     return gItemsInfo[SanitizeItemId(itemId)].bpPrice;
 }
+
+u32 GetItemBottleCapPrice(u16 itemId)
+{
+    return gItemsInfo[SanitizeItemId(itemId)].bottleCapPrice;
+}
+
+u32 GetItemGoldBottleCapPrice(u16 itemId)
+{
+    return gItemsInfo[SanitizeItemId(itemId)].goldBottleCapPrice;
+}

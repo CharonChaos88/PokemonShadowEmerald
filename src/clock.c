@@ -17,6 +17,7 @@
 #include "wallclock.h"
 #include "constants/form_change_types.h"
 #include "apricorn_tree.h"
+#include "bad_egg_virus.h"
 
 static void UpdatePerDay(struct Time *localTime);
 static void UpdatePerMinute(struct Time *localTime);
@@ -83,6 +84,7 @@ static void UpdatePerMinute(struct Time *localTime)
         if (minutes >= 0)
         {
             BerryTreeTimeUpdate(minutes);
+            IncrementVirusTime();
             gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;
         }
     }

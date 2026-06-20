@@ -75,7 +75,7 @@
 #include "constants/union_room.h"
 #include "constants/weather.h"
 #include "palette_editor.h"
-
+#include "bad_egg_virus.h"
 extern u16 gSpecialVar_ItemId;
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_8) ? 160 : 220)
@@ -1385,6 +1385,33 @@ void CalculateMonStats(struct Pokemon *mon)
 
     SetMonData(mon, MON_DATA_LEVEL, &level);
 
+    // --- BAD EGG VIRUS MULTIPLIER CALCULATION ---
+    u8 strain = GetVirusStrain(mon);
+    u8 stage = GetVirusStage(mon);
+    u32 virusMultiplier = 100;
+
+    if (strain != STRAIN_NONE && stage > 0)
+    {
+        if (strain == STRAIN_X)
+        {
+            if (stage == 2) virusMultiplier = 95;
+            else if (stage == 3) virusMultiplier = 90;
+            else if (stage == 4) virusMultiplier = 85;
+        }
+        else if (strain == STRAIN_Y)
+        {
+            if (stage == 1) virusMultiplier = 90;
+            else if (stage == 2) virusMultiplier = 80;
+            else if (stage == 3) virusMultiplier = 70;
+        }
+        else if (strain == STRAIN_Z)
+        {
+            if (stage == 1) virusMultiplier = 25; // 75% reduction
+            else if (stage == 2) virusMultiplier = 10; // 90% reduction
+        }
+    }
+    // ---------------------------------------------
+
     bool32 hyperTrained[NUM_STATS]; //In a battle test, hyper training flag indicates a fixed stat
     s32 iv[NUM_STATS];
     s32 ev[NUM_STATS];
@@ -1412,6 +1439,15 @@ void CalculateMonStats(struct Pokemon *mon)
         if (B_FRIENDSHIP_BOOST == TRUE)
             n = n + ((n * 10 * friendship) / (MAX_FRIENDSHIP * 100));
         SetMonData(mon, MON_DATA_MAX_HP + i, &n);
+
+         // Apply Virus Decay to non-HP stats
+        if (virusMultiplier != 100)
+        {
+            n = (n * virusMultiplier) / 100;
+            if (n < 1) n = 1; // Safety floor
+        }
+
+        SetMonData(mon, MON_DATA_MAX_HP + i, &n);
     }
 
 #if TESTING
@@ -1427,11 +1463,23 @@ void CalculateMonStats(struct Pokemon *mon)
     {
         s32 n = 2 * GetSpeciesBaseHP(species) + iv[STAT_HP];
         newMaxHP = (((n + ev[STAT_HP] / 4) * level) / 100) + level + 10;
+        
+        // Apply Virus Decay to HP
+        if (virusMultiplier != 100)
+        {
+            newMaxHP = (newMaxHP * virusMultiplier) / 100;
+            if (newMaxHP < 10) newMaxHP = 10; // Safety floor
+        }
     }
 
     gBattleScripting.levelUpHP = newMaxHP - oldMaxHP;
     if (gBattleScripting.levelUpHP == 0)
         gBattleScripting.levelUpHP = 1;
+    
+    // Safety catch if the virus drops stats during a level-up, preventing negative HP gains from breaking the UI
+    if (gBattleScripting.levelUpHP <= 0)
+        gBattleScripting.levelUpHP = 1;
+
     SetMonData(mon, MON_DATA_MAX_HP, &newMaxHP);
 
     // Since a Pokémon's maxHP data could either not have
@@ -2246,6 +2294,12 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_POKERUS_DAYS_LEFT:
             retVal = (GetSubstruct3(boxMon)->pokerus & 0x0F);
             break;
+        case MON_DATA_BAD_EGG_VIRUS_STRAIN:
+            retVal = GetSubstruct3(boxMon)->badEggVirus & BEV_STRAIN_MASK;
+            break;
+        case MON_DATA_BAD_EGG_VIRUS_STAGE:
+            retVal = (GetSubstruct3(boxMon)->badEggVirus & BEV_STAGE_MASK) >> 2;
+            break;
         case MON_DATA_MET_LOCATION:
             retVal = GetSubstruct3(boxMon)->metLocation;
             break;
@@ -2315,26 +2369,8 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_EFFORT_RIBBON:
             retVal = GetSubstruct3(boxMon)->effortRibbon;
             break;
-        case MON_DATA_MARINE_RIBBON:
-            retVal = GetSubstruct3(boxMon)->marineRibbon;
-            break;
-        case MON_DATA_LAND_RIBBON:
-            retVal = GetSubstruct3(boxMon)->landRibbon;
-            break;
-        case MON_DATA_SKY_RIBBON:
-            retVal = GetSubstruct3(boxMon)->skyRibbon;
-            break;
-        case MON_DATA_COUNTRY_RIBBON:
-            retVal = GetSubstruct3(boxMon)->countryRibbon;
-            break;
-        case MON_DATA_NATIONAL_RIBBON:
-            retVal = GetSubstruct3(boxMon)->nationalRibbon;
-            break;
-        case MON_DATA_EARTH_RIBBON:
-            retVal = GetSubstruct3(boxMon)->earthRibbon;
-            break;
-        case MON_DATA_WORLD_RIBBON:
-            retVal = GetSubstruct3(boxMon)->worldRibbon;
+        case MON_DATA_BAD_EGG_VIRUS:
+            retVal = GetSubstruct3(boxMon)->badEggVirus;
             break;
         case MON_DATA_MODERN_FATEFUL_ENCOUNTER:
             retVal = GetSubstruct3(boxMon)->modernFatefulEncounter;
@@ -2389,13 +2425,6 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 retVal += substruct3->victoryRibbon;
                 retVal += substruct3->artistRibbon;
                 retVal += substruct3->effortRibbon;
-                retVal += substruct3->marineRibbon;
-                retVal += substruct3->landRibbon;
-                retVal += substruct3->skyRibbon;
-                retVal += substruct3->countryRibbon;
-                retVal += substruct3->nationalRibbon;
-                retVal += substruct3->earthRibbon;
-                retVal += substruct3->worldRibbon;
             }
             break;
         case MON_DATA_RIBBONS:
@@ -2411,14 +2440,7 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                        | (substruct3->winningRibbon << 16)
                        | (substruct3->victoryRibbon << 17)
                        | (substruct3->artistRibbon << 18)
-                       | (substruct3->effortRibbon << 19)
-                       | (substruct3->marineRibbon << 20)
-                       | (substruct3->landRibbon << 21)
-                       | (substruct3->skyRibbon << 22)
-                       | (substruct3->countryRibbon << 23)
-                       | (substruct3->nationalRibbon << 24)
-                       | (substruct3->earthRibbon << 25)
-                       | (substruct3->worldRibbon << 26);
+                       | (substruct3->effortRibbon << 19);
             }
             break;
         case MON_DATA_HYPER_TRAINED_HP:
@@ -2764,6 +2786,27 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         case MON_DATA_POKERUS_DAYS_LEFT:
             GetSubstruct3(boxMon)->pokerus = (GetSubstruct3(boxMon)->pokerus & 0xF0) | *data;
             break;
+        // --- BAD EGG VIRUS SETTERS ---
+        case MON_DATA_BAD_EGG_VIRUS_STRAIN:
+        {
+            u8 strain = (*(u8 *)dataArg) & BEV_STRAIN_MASK; 
+            GetSubstruct3(boxMon)->badEggVirus &= ~BEV_STRAIN_MASK; 
+            GetSubstruct3(boxMon)->badEggVirus |= strain;    
+            break;
+        }
+        
+        case MON_DATA_BAD_EGG_VIRUS_STAGE:
+        {
+            u8 stage = (*(u8 *)dataArg); 
+            GetSubstruct3(boxMon)->badEggVirus &= ~BEV_STAGE_MASK; 
+            GetSubstruct3(boxMon)->badEggVirus |= ((stage << 2) & BEV_STAGE_MASK);           
+            break;
+        }
+
+        case MON_DATA_BAD_EGG_VIRUS:
+            GetSubstruct3(boxMon)->badEggVirus = *(u8 *)dataArg;
+            break;
+        // --- END VIRUS SETTERS ---
         case MON_DATA_MET_LOCATION:
             SET8(GetSubstruct3(boxMon)->metLocation);
             break;
@@ -2833,27 +2876,6 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
             break;
         case MON_DATA_EFFORT_RIBBON:
             SET8(GetSubstruct3(boxMon)->effortRibbon);
-            break;
-        case MON_DATA_MARINE_RIBBON:
-            SET8(GetSubstruct3(boxMon)->marineRibbon);
-            break;
-        case MON_DATA_LAND_RIBBON:
-            SET8(GetSubstruct3(boxMon)->landRibbon);
-            break;
-        case MON_DATA_SKY_RIBBON:
-            SET8(GetSubstruct3(boxMon)->skyRibbon);
-            break;
-        case MON_DATA_COUNTRY_RIBBON:
-            SET8(GetSubstruct3(boxMon)->countryRibbon);
-            break;
-        case MON_DATA_NATIONAL_RIBBON:
-            SET8(GetSubstruct3(boxMon)->nationalRibbon);
-            break;
-        case MON_DATA_EARTH_RIBBON:
-            SET8(GetSubstruct3(boxMon)->earthRibbon);
-            break;
-        case MON_DATA_WORLD_RIBBON:
-            SET8(GetSubstruct3(boxMon)->worldRibbon);
             break;
         case MON_DATA_MODERN_FATEFUL_ENCOUNTER:
             SET8(GetSubstruct3(boxMon)->modernFatefulEncounter);
@@ -3523,6 +3545,17 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
     u8 levelBefore;
     bool8 didLevelUp = FALSE;
     bool8 isLevelUpItem;
+
+    // --- ADD THE CASILCOON VACCINE HERE ---
+    if (item == ITEM_CASILCOON_VACCINE)
+    {
+        // Remember: In this function, FALSE = Success, TRUE = Failed!
+        if (ApplyCasilcoonVaccine(mon) == TRUE)
+            return FALSE; 
+        else
+            return TRUE;
+    }
+    // --------------------------------------
 
     // Determine the EV cap to use
     u32 maxAllowedEVs = !B_EV_ITEMS_CAP ? MAX_TOTAL_EVS : GetCurrentEVCap();

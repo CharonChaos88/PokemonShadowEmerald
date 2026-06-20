@@ -1705,6 +1705,184 @@ EventScript_DoWonderTrade::
 	copyvar VAR_0x8005, VAR_0x8004
 	special CreateWonderTradePokemon
 	special DoInGameTradeScene
+
+EventScript_BadEggVirusAlert::
+    lockall
+    playse SE_PC_OFF
+    waitse
+    
+    @ Buffer the infected Pokémon's nickname into {STR_VAR_1}
+    bufferpartymonnick 0, VAR_TEMP_1 
+    
+    @ --- NEW INFECTION CHECKS ---
+    @ 1 = Caught Bad Egg Virus
+    compare VAR_TEMP_5, 1
+    goto_if_eq EventScript_CaughtBEV
+
+    @ 2 = Caught Normal Pokerus
+    compare VAR_TEMP_5, 2
+    goto_if_eq EventScript_CaughtNormalPokerus
+
+    @ 3 = Lost Immunity (Fainting Trauma)
+    compare VAR_TEMP_5, 3
+    goto_if_eq EventScript_LostImmunity
+
+    @ --- STAGE INCREASE CHECKS (VAR_TEMP_5 = 0) ---
+    @ Check if the virus just hit the final stage
+    compare VAR_TEMP_4, TRUE
+    goto_if_eq EventScript_BadEggVirus_Terminal
+
+    @ --- THE MISSING MESSAGE ---
+    @ If it didn't trigger any of the above, it's a normal Stage Up!
+    msgbox Text_BadEggVirus_StageUp, MSGBOX_DEFAULT
+    releaseall
+    end
+
+Text_BadEggVirus_StageUp:
+    .string "{STR_VAR_1}'s Bad Egg Virus Strain {STR_VAR_2}\n"
+    .string "advanced to Stage {STR_VAR_3}!$"
+@ --- FAINTING TRAUMA SCRIPT ---
+EventScript_LostImmunity::
+    msgbox Text_LostImmunity, MSGBOX_DEFAULT
+    releaseall
+    end
+
+Text_LostImmunity:
+    .string "{STR_VAR_1} fainted and its body weakened...\n"
+    .string "It completely lost its Virus Antibodies!$"
+
+
+@ --- Bad Egg Virus Text Pointers ---
+
+Text_BadEggVirus_Explicit:
+    .string "SYSTEM ALERT: Code corruption detected.\n"
+    .string "{STR_VAR_1} has contracted Strain {STR_VAR_2}.\p"
+    .string "The virus has advanced to Stage {STR_VAR_3}.$"
+
+Text_BadEggVirus_Cryptic:
+    .string "WARNING: Anomalous data reading.\n"
+    .string "System integrity dropping...\p"
+    .string "{STR_VAR_1} is behaving erratically.$"
+
+Text_BadEggVirus_Terminal:
+    .string "FATAL ERROR: System integrity lost.\n"
+    .string "Data recovery for {STR_VAR_1} failed.\p"
+    .string "Code collapse imminent...$"
+    
+EventScript_BadEggVirus_Explicit::
+    @ The C code already buffered Strain into {STR_VAR_2} and Stage into {STR_VAR_3}!
+    msgbox Text_BadEggVirus_Explicit, MSGBOX_DEFAULT
+    goto EventScript_BadEggVirus_ApplyStage
+    
+EventScript_BadEggVirus_Cryptic::
+    msgbox Text_BadEggVirus_Cryptic, MSGBOX_DEFAULT
+    goto EventScript_BadEggVirus_ApplyStage
+
+EventScript_BadEggVirus_ApplyStage::
+    closemessage
+    callnative ApplyBadEggVirusStageEffects
+    releaseall
+    end
+
+EventScript_BadEggVirus_Terminal::
+    msgbox Text_BadEggVirus_Terminal, MSGBOX_DEFAULT
+    closemessage
+    callnative ConvertMonToBadEgg
+    releaseall
+    end
+
+@ --- NEW INFECTION EVENTS ---
+EventScript_CaughtBEV::
+    msgbox Text_CaughtBEV, MSGBOX_DEFAULT
+    releaseall
+    end
+
+EventScript_CaughtNormalPokerus::
+    msgbox Text_CaughtNormalPokerus, MSGBOX_DEFAULT
+    releaseall
+    end
+
+@ --- TEXT DEFINITIONS ---
+Text_CaughtBEV:
+    .string "{STR_VAR_1} caught the\nBad Egg Virus (Strain {STR_VAR_2})!$"
+
+Text_CaughtNormalPokerus:
+    .string "{STR_VAR_1} caught the Pokérus!\nThankfully, it's not the Bad Egg Virus.$"
+
+EventScript_VirusRitual::
+    lock
+    msgbox Text_SelectTarget, MSGBOX_DEFAULT
+    
+    @ 1. Select the infected TARGET
+    chooseboxmon SELECT_PC_MON_REDUCE_BEV_PERCENTAGE
+    waitstate
+    
+    @ Check if the player cancelled (255)
+    goto_if_eq VAR_0x8004, 255, EventScript_End 
+    
+    @ Store Target location details safely
+    copyvar VAR_0x8007, VAR_0x8004  @ Result (0-5 for Party, or 254 for PC)
+    copyvar VAR_0x8008, VAR_0x8005  @ Box ID (Updated by ChooseBoxMon)
+    copyvar VAR_0x8009, VAR_0x8006  @ Box Slot (Updated by ChooseBoxMon)
+
+    msgbox Text_SelectSacrifice, MSGBOX_DEFAULT
+
+    @ 2. Select the cocoon SACRIFICE
+    chooseboxmon SELECT_PC_MON_RITUAL
+    waitstate
+    
+    goto_if_eq VAR_0x8004, 255, EventScript_End
+
+    @ Note: Sacrifice data is now in 0x8004, 0x8005, and 0x8006
+    @ and Target data is safely in 0x8007, 0x8008, and 0x8009
+    callnative PerformCocoonRitual
+    
+    goto_if_eq VAR_RESULT, FALSE, EventScript_RitualFailed
+    playfanfare MUS_LEVEL_UP
+    msgbox Text_RitualSuccess, MSGBOX_DEFAULT
+    waitfanfare
+    release
+    end
+
+EventScript_RitualCancelled::
+    msgbox Text_RitualCancelled, MSGBOX_DEFAULT
+    release
+    end
+
+EventScript_RitualFailed::
+    msgbox Text_RitualFailed, MSGBOX_DEFAULT
+    release
+    end
+
+EventScript_VirusRitual_Text_0:
+	.string "Select the Pokémon to be cleansed.$"
+
+EventScript_VirusRitual_Text_1:
+	.string "Where is the cocoon for the ritual?$"
+
+EventScript_VirusRitual_Text_2:
+	.string "The ritual is complete. The cocoon\nhas been consumed.$"
+
+EventScript_VirusRitual_Text_3:
+	.string "The ritual failed. You must sacrifice\na Cascoon or Silcoon.$"
+
+EventScript_RitualCancelled_Text_0:
+	.string "The ritual is postponed.$"
+
+Text_SelectTarget:
+    .string "Select the Pokémon to be cleansed.$"
+
+Text_SelectSacrifice:
+    .string "Select the cocoon for the ritual.$"
+
+Text_RitualSuccess:
+    .string "The ritual is complete. The cocoon\nhas been consumed.$"
+
+Text_RitualCancelled:
+    .string "The ritual is postponed.$"
+
+Text_RitualFailed:
+    .string "The ritual failed. Ensure the target\nis truly infected.$"
 	
 EventScript_End:
 	release

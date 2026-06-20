@@ -633,6 +633,8 @@ const struct ItemInfo gItemsInfo[] =
     {
         .name = ITEM_NAME("Potion"),
         .price = (I_PRICE >= GEN_7) ? 200 : 300,
+        .bottleCapPrice = 5,       // Costs 5 Bottle Caps
+        .goldBottleCapPrice = 1,   // Costs 1 Gold Bottle Cap
         .holdEffectParam = 20,
         .description = COMPOUND_STRING(
             "Restores the HP of\n"
@@ -775,6 +777,8 @@ const struct ItemInfo gItemsInfo[] =
     {
         .name = ITEM_NAME("Fresh Water"),
         .price = 200,
+        .bottleCapPrice = 5,       // Costs 5 Bottle Caps
+        .goldBottleCapPrice = 1,   // Costs 1 Gold Bottle Cap.
         .holdEffectParam = 30,
         .description = COMPOUND_STRING(
             "A mineral water\n"
@@ -2036,6 +2040,8 @@ const struct ItemInfo gItemsInfo[] =
         .name = ITEM_NAME("Rare Candy"),
         .pluralName = ITEM_PLURAL_NAME("Rare Candies"),
         .price = (I_PRICE >= GEN_7) ? 10000 : 4800,
+        .bottleCapPrice = 10,       // Costs 5 Bottle Caps
+        .goldBottleCapPrice = 5,   // Costs 1 Gold Bottle Cap
         .description = COMPOUND_STRING(
             "Raises the level\n"
             "of a Pokémon by\n"
@@ -16003,7 +16009,37 @@ const struct ItemInfo gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_Linoonmerang,
         .iconPic = gItemIcon_Linoonmerang,
         .iconPalette = gItemIconPalette_Linoonmerang,
-    }
+    },
+    [ITEM_WISDOM_SPOON] =
+    {
+        .name = ITEM_NAME("Spoon of Wisdom"),
+        .price = 0,
+        .importance = 1,
+        .description = COMPOUND_STRING(
+            "Conjures Wisdom's\n"
+            "services outside\n"
+            "of PokeCenter"),
+        .pocket = POCKET_KEY_ITEMS,
+        .type = ITEM_USE_FIELD,
+        .fieldUseFunc = ItemUseOutOfBattle_WisdomSpoon,
+        .iconPic = gItemIcon_SpoonOfWisdom,
+        .iconPalette = gItemIconPalette_SpoonOfWisdom,
+    },
+    [ITEM_CASILCOON_VACCINE] =
+    {
+        .name = ITEM_NAME("Casilcoon Vaccine"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A vaccine that\n"
+            "cures a strain of\n"
+            "the Bad Egg Virus."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_CasilcoonVaccine,
+        .iconPic = gItemIcon_CasicoonVaccine,
+        .iconPalette = gItemIconPalette_CasicoonVaccine,
+    },
 };
 
 #undef ITEM_NAME

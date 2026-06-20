@@ -3457,5 +3457,8 @@ extern const u16 gItemIconPalette_Zigzagmerang[];
 extern const u32 gItemIcon_Linoonmerang[];
 extern const u16 gItemIconPalette_Linoonmerang[];
 extern const u16 gItemIconPalette_Workbench[];
-
+extern const u32 gItemIcon_SpoonOfWisdom[];
+extern const u16 gItemIconPalette_SpoonOfWisdom[];
+extern const u32 gItemIcon_CasicoonVaccine[];
+extern const u16 gItemIconPalette_CasicoonVaccine[];
 #endif //GUARD_GRAPHICS_H

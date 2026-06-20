@@ -1,0 +1,19 @@
+mart MyBottleCapShop {
+    ITEM_RARE_CANDY
+    5
+    ITEM_BOTTLE_CAP
+    ITEM_MASTER_BALL
+    1
+    ITEM_GOLD_BOTTLE_CAP
+}
+
+script EventScript_MyShop {
+    lock
+    faceplayer
+    message("Welcome to my cap shop!")
+    waitmessage
+    capsmart(MyBottleCapShop)
+    msgbox("Please come again.")
+    release
+    end
+}

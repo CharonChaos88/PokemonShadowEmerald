@@ -14,6 +14,8 @@ void NewShop_CreateOutfitShopMenu(const u16 *);
 void NewShop_CreateVariablePokemartMenu(const u16 *);
 void NewShop_CreateCoinPokemartMenu(const u16 *);
 void NewShop_CreatePointsPokemartMenu(const u16 *);
+void NewShop_CreateBottleCapPokemartMenu(const u16 *);
+void NewShop_CreateGoldBottleCapPokemartMenu(const u16 *);
 
 #endif // MUDSKIP_SHOP_UI
 

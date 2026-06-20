@@ -62,6 +62,18 @@ OldaleTown_PokemonCenter_1F_Text_TradedInWirelessClub:
 
 `
 
+script IntroCheck {
+
+if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == FALSE) {
+	goto(MegaAlakazamIntro)
+} else { 
+	if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == TRUE) {
+		goto(PokemonCompendium)
+	}
+	
+}
+}
+
 script MegaAlakazamIntro {
     setspeaker(SP_NAME_UNKNOWN)
     msgbox("Greetings, trainer.")
@@ -92,6 +104,8 @@ script MegaAlakazamTalkingtoPlayer1 {
 	setspeaker(SP_NAME_WISDOM)
 	msgbox(format("{PLAYER}, I can talk to humans."))
 	msgbox(format("Here at the Pokémon Compendium you can unlock features that will help you in your journey."))
+    msgbox(format("Take this item."))
+    giveitem(ITEM_WISDOM_SPOON, 1)
 	setvar(VAR_MEGA_ALAKAZAM_INTRO, 1)
 	setvar(VAR_MEGA_ALAKAZAM_MOVE_TUTOR, 1)
 	setvar(VAR_MEGA_ALAKAZAM_ITEM_SHOP, 1)
@@ -136,7 +150,7 @@ switch (var(VAR_RESULT)) {
   case 2:
     goto(Wonder_Trade)
   case 3:
-	goto(WisdomExitScript)
+	goto(Cacoon_Ritual)
   case 4:
 	goto(TeraTypeChangerMenu)
   case 5:
@@ -158,18 +172,7 @@ script MoveTutorMenu {
 	
 }
 
-script IntroCheck {
 
-if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == FALSE) {
-	goto(MegaAlakazamIntro)
-} else { 
-	if(flag(FLAG_MEGA_ALAKAZAM_INTRO) == TRUE) {
-		goto(PokemonCompendium)
-	}
-	
-}
-
-}
 
 script OtherServices {
 	msgbox("Would you like to use another service?", MSGBOX_YESNO)
@@ -232,7 +235,7 @@ switch (var(VAR_RESULT)) {
   case 2:
     goto(Wonder_Trade)
   case 3:
-	goto(WisdomExitScript)
+	goto(Cacoon_Ritual)
   case 4:
     goto(TeraTypeChangerMenu)
   case 5:
@@ -267,7 +270,7 @@ switch (var(VAR_RESULT)) {
   case 2:
     goto(Wonder_Trade)
   case 3:
-	goto(WisdomExitScript)
+	goto(Cacoon_Ritual)
   case 4:
 	goto(TeraTypeChangerMenu)
   case 5:
@@ -1814,57 +1817,182 @@ script WonderTradeAgain {
     }
 }
 
+script TeraTypeChangerMenu {
+    lock 
+    faceplayer
+    
+    // --- PARTY SELECTION ---
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Which Pokémon's Tera Type would you like to change?"))
+    special(ChoosePartyMon)
+    if(var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
+        goto(PokemonCompendium2)
+    }
 
-// script Cacoon_Ritual {
-//   lockall
-//   setspeaker(SP_NAME_WISDOM)
-//   msgbox(format("Select the Pokémon to be cleansed."))
-//   chooseboxmon(SELECT_PC_MON_REDUCE_BEV_PERCENTAGE)
-//   waitstate
-//   goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
+    specialvar(VAR_RESULT, ScriptGetPartyMonSpecies)
+    if(var(VAR_RESULT) == SPECIES_EGG) {
+        setspeaker(SP_NAME_WISDOM)
+        msgbox(format("I cannot change the Tera Type of an Egg!"))
+        goto(TeraTypeChangerMenu)
+    }
+
+    // --- DYNAMIC MULTICHOICE MENU FOR ALL TERA TYPES ---
+    dynmultipush("Normal", TYPE_NORMAL)
+    dynmultipush("Fighting", TYPE_FIGHTING)
+    dynmultipush("Flying", TYPE_FLYING)
+    dynmultipush("Poison", TYPE_POISON)
+    dynmultipush("Ground", TYPE_GROUND)
+    dynmultipush("Rock", TYPE_ROCK)
+    dynmultipush("Bug", TYPE_BUG)
+    dynmultipush("Ghost", TYPE_GHOST)
+    dynmultipush("Steel", TYPE_STEEL)
+    dynmultipush("Fire", TYPE_FIRE)
+    dynmultipush("Water", TYPE_WATER)
+    dynmultipush("Grass", TYPE_GRASS)
+    dynmultipush("Electric", TYPE_ELECTRIC)
+    dynmultipush("Psychic", TYPE_PSYCHIC)
+    dynmultipush("Ice", TYPE_ICE)
+    dynmultipush("Dragon", TYPE_DRAGON)
+    dynmultipush("Dark", TYPE_DARK)
+    dynmultipush("Fairy", TYPE_FAIRY)
+
+    // --- DYNAMIC MULTICHOICE STACK ---
+    dynmultistack(19, 0, FALSE, 6, FALSE, VAR_0x800A, 0)
+
+    // Handle exiting the menu safely if they press B
+    if (var(VAR_RESULT) == MULTI_B_PRESSED) {
+        goto(PokemonCompendium2)
+    }
+
+    copyvar(VAR_0x8005, VAR_RESULT) // Store chosen Tera Type in VAR_0x8005
+
+    // --- SET VAR/BUFFER FOR ALL TERA SHARDS ---
+    if(var(VAR_0x8005) == TYPE_NORMAL)       { setvar(VAR_0x8006, ITEM_NORMAL_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setvar(VAR_0x8006, ITEM_FIGHTING_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FLYING)     { setvar(VAR_0x8006, ITEM_FLYING_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_POISON)     { setvar(VAR_0x8006, ITEM_POISON_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GROUND)     { setvar(VAR_0x8006, ITEM_GROUND_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ROCK)       { setvar(VAR_0x8006, ITEM_ROCK_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_BUG)        { setvar(VAR_0x8006, ITEM_BUG_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GHOST)      { setvar(VAR_0x8006, ITEM_GHOST_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_STEEL)      { setvar(VAR_0x8006, ITEM_STEEL_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FIRE)       { setvar(VAR_0x8006, ITEM_FIRE_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_WATER)      { setvar(VAR_0x8006, ITEM_WATER_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_GRASS)      { setvar(VAR_0x8006, ITEM_GRASS_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setvar(VAR_0x8006, ITEM_ELECTRIC_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setvar(VAR_0x8006, ITEM_PSYCHIC_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_ICE)        { setvar(VAR_0x8006, ITEM_ICE_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_DRAGON)     { setvar(VAR_0x8006, ITEM_DRAGON_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_DARK)       { setvar(VAR_0x8006, ITEM_DARK_TERA_SHARD) }
+    elif(var(VAR_0x8005) == TYPE_FAIRY)      { setvar(VAR_0x8006, ITEM_FAIRY_TERA_SHARD) }
+
+    // Buffer the matched Shard Item into STR_VAR_1
+    bufferitemname(STR_VAR_1, VAR_0x8006)
+
+    // --- LOGIC CHECK TRANSACTION ---
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Are you sure you want to change to this Tera Type?\nIt will cost 100 {STR_VAR_1}s."), MSGBOX_YESNO)
+    
+    if(var(VAR_RESULT) == YES) {
+        if(checkitem(VAR_0x8006, 100) == FALSE) {
+            setspeaker(SP_NAME_WISDOM)
+            msgbox(format("You don't have 100 {STR_VAR_1}s."))  
+            goto(TeraTypeChangerMenu)
+        }
+        
+        msgbox(format("Thank you! Your Pokémon's Tera Type was changed."))
+        removeitem(VAR_0x8006, 100)
+        
+        // --- APPLY TERA TYPE ---
+        if(var(VAR_0x8005) == TYPE_NORMAL)       { setteratype(TYPE_NORMAL, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setteratype(TYPE_FIGHTING, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FLYING)     { setteratype(TYPE_FLYING, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_POISON)     { setteratype(TYPE_POISON, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GROUND)     { setteratype(TYPE_GROUND, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ROCK)       { setteratype(TYPE_ROCK, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_BUG)        { setteratype(TYPE_BUG, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GHOST)      { setteratype(TYPE_GHOST, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_STEEL)      { setteratype(TYPE_STEEL, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FIRE)       { setteratype(TYPE_FIRE, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_WATER)      { setteratype(TYPE_WATER, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_GRASS)      { setteratype(TYPE_GRASS, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setteratype(TYPE_ELECTRIC, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setteratype(TYPE_PSYCHIC, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_ICE)        { setteratype(TYPE_ICE, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_DRAGON)     { setteratype(TYPE_DRAGON, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_DARK)       { setteratype(TYPE_DARK, VAR_0x8004) }
+        elif(var(VAR_0x8005) == TYPE_FAIRY)      { setteratype(TYPE_FAIRY, VAR_0x8004) }
+
+        playse(SE_SUCCESS)
+        waitse
+        goto(TeraVerifyMenu)
+        
+    } else {
+        goto(TeraTypeChangerMenu)
+    }
+}
+
+script TeraVerifyMenu {
+    setspeaker(SP_NAME_WISDOM)
+    msgbox(format("Would you like to change another Pokémon's Tera Type?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == YES) {
+        goto(TeraTypeChangerMenu)
+    } else {
+        goto(PokemonCompendium2)
+    } 
+}
+
+
+script Cacoon_Ritual {
+  lockall
+  setspeaker(SP_NAME_WISDOM)
+  msgbox(format("Select the Pokémon to be cleansed."))
+  chooseboxmon(SELECT_PC_MON_REDUCE_BEV_PERCENTAGE)
+  waitstate
+  goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
   
-//   // 1. STORE THE TARGET'S VARIABLES
-//   copyvar(VAR_0x8007, VAR_0x8004)       // Target Choice
-//   copyvar(VAR_0x8008, VAR_MON_BOX_ID)   // Target Box Number
-//   copyvar(VAR_0x8009, VAR_MON_BOX_POS)  // Target Box Slot
+  // 1. STORE THE TARGET'S VARIABLES
+  copyvar(VAR_0x8007, VAR_0x8004)       // Target Choice
+  copyvar(VAR_0x8008, VAR_MON_BOX_ID)   // Target Box Number
+  copyvar(VAR_0x8009, VAR_MON_BOX_POS)  // Target Box Slot
 
-//   msgbox(format("Select a Cascoon or Silcoon to sacrifice."))
-//   chooseboxmon(SELECT_PC_MON_RITUAL)
-//   waitstate
-//   goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
+  msgbox(format("Select a Cascoon or Silcoon to sacrifice."))
+  chooseboxmon(SELECT_PC_MON_RITUAL)
+  waitstate
+  goto_if_eq(VAR_0x8004, 255, PokemonCompendium2)
   
-//   // 2. STORE THE SACRIFICE'S VARIABLES 
-//   // (VAR_0x8004 is already automatically set to the Sacrifice Choice by chooseboxmon!)
-//   copyvar(VAR_0x8005, VAR_MON_BOX_ID)   // Sacrifice Box Number
-//   copyvar(VAR_0x8006, VAR_MON_BOX_POS)  // Sacrifice Box Slot
+  // 2. STORE THE SACRIFICE'S VARIABLES 
+  // (VAR_0x8004 is already automatically set to the Sacrifice Choice by chooseboxmon!)
+  copyvar(VAR_0x8005, VAR_MON_BOX_ID)   // Sacrifice Box Number
+  copyvar(VAR_0x8006, VAR_MON_BOX_POS)  // Sacrifice Box Slot
 
-//   // 3. EXECUTE THE RITUAL
-//   callnative(PerformCocoonRitual)
-//   goto_if_eq(VAR_RESULT, FALSE, Ritual_Failed)
+  // 3. EXECUTE THE RITUAL
+  callnative(PerformCocoonRitual)
+  goto_if_eq(VAR_RESULT, FALSE, Ritual_Failed)
   
-//   playfanfare(MUS_LEVEL_UP)
-//   setspeaker(SP_NAME_WISDOM)
-//   msgbox(format("The ritual is complete. The cocoon\nhas been consumed."))
-//   waitfanfare
-//   goto(RitualAgain)
-// }
+  playfanfare(MUS_LEVEL_UP)
+  setspeaker(SP_NAME_WISDOM)
+  msgbox(format("The ritual is complete. The cocoon\nhas been consumed."))
+  waitfanfare
+  goto(RitualAgain)
+}
 
-// script RitualAgain {
-//   lockall
-//   msgbox(format("Would you like to perform another ritual?"), MSGBOX_YESNO)
-//     if(var(VAR_RESULT) == YES) {
-//       goto(Cacoon_Ritual)
-//     }else {
-//       goto(PokemonCompendium2)
-//     }
-// }
+script RitualAgain {
+  lockall
+  msgbox(format("Would you like to perform another ritual?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == YES) {
+      goto(Cacoon_Ritual)
+    }else {
+      goto(PokemonCompendium2)
+    }
+}
 
-// script Ritual_Failed {
-//   lockall
-//   setspeaker(SP_NAME_WISDOM)
-//   msgbox(format("The ritual failed. You must sacrifice\na Cascoon or Silcoon."))
+script Ritual_Failed {
+  lockall
+  setspeaker(SP_NAME_WISDOM)
+  msgbox(format("The ritual failed. You must sacrifice\na Cascoon or Silcoon."))
   
-// }
+}
 
 
 // script MysteryGift_Code_Script {
@@ -2591,130 +2719,7 @@ script NicknamePartyMon2{
 	}
 
 
-script TeraTypeChangerMenu {
-    lock 
-    faceplayer
-    
-    // --- PARTY SELECTION ---
-    setspeaker(SP_NAME_WISDOM)
-    msgbox(format("Which Pokémon's Tera Type would you like to change?"))
-    special(ChoosePartyMon)
-    if(var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
-        goto(PokemonCompendium2)
-    }
 
-    specialvar(VAR_RESULT, ScriptGetPartyMonSpecies)
-    if(var(VAR_RESULT) == SPECIES_EGG) {
-        setspeaker(SP_NAME_WISDOM)
-        msgbox(format("I cannot change the Tera Type of an Egg!"))
-        goto(TeraTypeChangerMenu)
-    }
-
-    // --- DYNAMIC MULTICHOICE MENU FOR ALL TERA TYPES ---
-    dynmultipush("Normal", TYPE_NORMAL)
-    dynmultipush("Fighting", TYPE_FIGHTING)
-    dynmultipush("Flying", TYPE_FLYING)
-    dynmultipush("Poison", TYPE_POISON)
-    dynmultipush("Ground", TYPE_GROUND)
-    dynmultipush("Rock", TYPE_ROCK)
-    dynmultipush("Bug", TYPE_BUG)
-    dynmultipush("Ghost", TYPE_GHOST)
-    dynmultipush("Steel", TYPE_STEEL)
-    dynmultipush("Fire", TYPE_FIRE)
-    dynmultipush("Water", TYPE_WATER)
-    dynmultipush("Grass", TYPE_GRASS)
-    dynmultipush("Electric", TYPE_ELECTRIC)
-    dynmultipush("Psychic", TYPE_PSYCHIC)
-    dynmultipush("Ice", TYPE_ICE)
-    dynmultipush("Dragon", TYPE_DRAGON)
-    dynmultipush("Dark", TYPE_DARK)
-    dynmultipush("Fairy", TYPE_FAIRY)
-
-    // --- DYNAMIC MULTICHOICE STACK ---
-    dynmultistack(19, 0, FALSE, 6, FALSE, VAR_0x800A, 0)
-
-    // Handle exiting the menu safely if they press B
-    if (var(VAR_RESULT) == MULTI_B_PRESSED) {
-        goto(PokemonCompendium2)
-    }
-
-    copyvar(VAR_0x8005, VAR_RESULT) // Store chosen Tera Type in VAR_0x8005
-
-    // --- SET VAR/BUFFER FOR ALL TERA SHARDS ---
-    if(var(VAR_0x8005) == TYPE_NORMAL)       { setvar(VAR_0x8006, ITEM_NORMAL_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setvar(VAR_0x8006, ITEM_FIGHTING_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_FLYING)     { setvar(VAR_0x8006, ITEM_FLYING_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_POISON)     { setvar(VAR_0x8006, ITEM_POISON_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_GROUND)     { setvar(VAR_0x8006, ITEM_GROUND_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_ROCK)       { setvar(VAR_0x8006, ITEM_ROCK_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_BUG)        { setvar(VAR_0x8006, ITEM_BUG_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_GHOST)      { setvar(VAR_0x8006, ITEM_GHOST_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_STEEL)      { setvar(VAR_0x8006, ITEM_STEEL_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_FIRE)       { setvar(VAR_0x8006, ITEM_FIRE_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_WATER)      { setvar(VAR_0x8006, ITEM_WATER_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_GRASS)      { setvar(VAR_0x8006, ITEM_GRASS_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setvar(VAR_0x8006, ITEM_ELECTRIC_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setvar(VAR_0x8006, ITEM_PSYCHIC_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_ICE)        { setvar(VAR_0x8006, ITEM_ICE_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_DRAGON)     { setvar(VAR_0x8006, ITEM_DRAGON_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_DARK)       { setvar(VAR_0x8006, ITEM_DARK_TERA_SHARD) }
-    elif(var(VAR_0x8005) == TYPE_FAIRY)      { setvar(VAR_0x8006, ITEM_FAIRY_TERA_SHARD) }
-
-    // Buffer the matched Shard Item into STR_VAR_1
-    bufferitemname(STR_VAR_1, VAR_0x8006)
-
-    // --- LOGIC CHECK TRANSACTION ---
-    setspeaker(SP_NAME_WISDOM)
-    msgbox(format("Are you sure you want to change to this Tera Type?\nIt will cost 100 {STR_VAR_1}s."), MSGBOX_YESNO)
-    
-    if(var(VAR_RESULT) == YES) {
-        if(checkitem(VAR_0x8006, 100) == FALSE) {
-            setspeaker(SP_NAME_WISDOM)
-            msgbox(format("You don't have 100 {STR_VAR_1}s."))  
-            goto(TeraTypeChangerMenu)
-        }
-        
-        msgbox(format("Thank you! Your Pokémon's Tera Type was changed."))
-        removeitem(VAR_0x8006, 100)
-        
-        // --- APPLY TERA TYPE ---
-        if(var(VAR_0x8005) == TYPE_NORMAL)       { setteratype(TYPE_NORMAL, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_FIGHTING)   { setteratype(TYPE_FIGHTING, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_FLYING)     { setteratype(TYPE_FLYING, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_POISON)     { setteratype(TYPE_POISON, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_GROUND)     { setteratype(TYPE_GROUND, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_ROCK)       { setteratype(TYPE_ROCK, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_BUG)        { setteratype(TYPE_BUG, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_GHOST)      { setteratype(TYPE_GHOST, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_STEEL)      { setteratype(TYPE_STEEL, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_FIRE)       { setteratype(TYPE_FIRE, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_WATER)      { setteratype(TYPE_WATER, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_GRASS)      { setteratype(TYPE_GRASS, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_ELECTRIC)   { setteratype(TYPE_ELECTRIC, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_PSYCHIC)    { setteratype(TYPE_PSYCHIC, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_ICE)        { setteratype(TYPE_ICE, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_DRAGON)     { setteratype(TYPE_DRAGON, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_DARK)       { setteratype(TYPE_DARK, VAR_0x8004) }
-        elif(var(VAR_0x8005) == TYPE_FAIRY)      { setteratype(TYPE_FAIRY, VAR_0x8004) }
-
-        playse(SE_SUCCESS)
-        waitse
-        goto(TeraVerifyMenu)
-        
-    } else {
-        goto(TeraTypeChangerMenu)
-    }
-}
-
-script TeraVerifyMenu {
-    setspeaker(SP_NAME_WISDOM)
-    msgbox(format("Would you like to change another Pokémon's Tera Type?"), MSGBOX_YESNO)
-    if(var(VAR_RESULT) == YES) {
-        goto(TeraTypeChangerMenu)
-    } else {
-        goto(PokemonCompendium2)
-    } 
-}
 
 script EventScript_MichaelMysteryGift {
     trainerbattle_single(TRAINER_MICHAEL_MYSTERY_GIFT, MichaelMysteryGift_Text_Intro, MichaelMysteryGift_Text_Defeat)
