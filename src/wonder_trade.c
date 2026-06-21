@@ -1666,7 +1666,7 @@ static bool8 CanReceiveLegendaries(void)
         FlagGet(FLAG_BADGE06_GET) &&
         FlagGet(FLAG_BADGE07_GET) && 
         FlagGet(FLAG_BADGE08_GET) &&
-        FlagGet(FLAG_IS_CHAMPION))
+        (FlagGet(FLAG_IS_CHAMPION) || FlagGet(FLAG_SYS_GAME_CLEAR)))
     {
         return TRUE;
     }
