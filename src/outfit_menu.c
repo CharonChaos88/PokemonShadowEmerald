@@ -462,8 +462,8 @@ static bool32 SetupOutfitMenu_Graphics(void)
     case 1:
         if (FreeTempTileDataBuffersIfPossible() != TRUE)
         {
-            LZDecompressWram(sTilemap, sOutfitMenu->tilemapBuffers[0]);
-            LZDecompressWram(sScrollingBG_Tilemap, sOutfitMenu->tilemapBuffers[1]);
+            LZ77UnCompWram(sTilemap, sOutfitMenu->tilemapBuffers[0]);
+            LZ77UnCompWram(sScrollingBG_Tilemap, sOutfitMenu->tilemapBuffers[1]);
             sOutfitMenu->gfxState++;
         }
         break;
@@ -519,8 +519,8 @@ static inline void SetupOutfitMenu_Sprites_DrawTrainerSprite(bool32 update, bool
 
     sOutfitMenu->spriteIds[GFX_FTS] = CreateTrainerPicSprite(frontSpriteId, TRUE, 32+27, 32+32, frontPalSlot, TAG_NONE);
     sOutfitMenu->spriteIds[GFX_BTS] = CreateTrainerPicSprite(backSpriteId, FALSE, 32+117, 32+32, backPalSlot, TAG_NONE);
-    LoadPalette(gTrainerBacksprites[backSpriteId].palette.data, OBJ_PLTT_ID(backPalSlot), PLTT_SIZE_4BPP);
-    gSprites[sOutfitMenu->spriteIds[GFX_BTS]].anims = gTrainerBacksprites[backSpriteId].animation;
+    LoadPalette(GetTrainerBackPicPalette(backSpriteId), OBJ_PLTT_ID(backPalSlot), PLTT_SIZE_4BPP);
+    gSprites[sOutfitMenu->spriteIds[GFX_BTS]].anims = GetTrainerBackPicAnims(backSpriteId);
     StartSpriteAnim(&gSprites[sOutfitMenu->spriteIds[GFX_BTS]], 0);
     if (!unlocked)
     {
@@ -648,7 +648,7 @@ static void ForEachCB_PopulateOutfitOverworlds(u32 idx, u32 col, u32 row)
     if (i >= OUTFIT_COUNT || idx >= sOutfitMenu->listCount)
         return;
 
-    gfx = GetPlayerAvatarGraphicsIdByOutfitStateIdAndGender(i, PLAYER_AVATAR_STATE_NORMAL, gSaveBlock2Ptr->playerGender);
+    gfx = gOutfits[i].avatarGfxIds[gSaveBlock2Ptr->playerGender][PLAYER_AVATAR_STATE_NORMAL];
     x = ((col % GRID_COLS) < ARRAY_COUNT(sGridPosX)) ? sGridPosX[col] : sGridPosX[0];
     y = ((row % GRID_ROWS) < ARRAY_COUNT(sGridPosY)) ? sGridPosY[row] : sGridPosY[0];
 
@@ -778,7 +778,7 @@ static void Task_WaitFadeInOutfitMenu(u8 taskId)
 
 static void Task_WaitMessage(u8 taskId)
 {
-    if (!IsTextPrinterActive(WIN_MSGBOX) && (JOY_NEW(A_BUTTON | B_BUTTON) || --gTasks[taskId].data[0] == 0))
+    if (!IsTextPrinterActiveOnWindow(WIN_MSGBOX) && (JOY_NEW(A_BUTTON | B_BUTTON) || --gTasks[taskId].data[0] == 0))
     {
         ClearDialogWindowAndFrame(WIN_MSGBOX, TRUE);
         UpdateOutfitInfo();
@@ -942,7 +942,7 @@ const void *GetPlayerHeadGfxOrPal(u8 which, bool32 isFP)
         u32 tag = GetObjectEventGraphicsInfo(
             GetPlayerAvatarGraphicsIdByStateId(PLAYER_AVATAR_STATE_NORMAL))->paletteTag;
 
-        return GetObjectEventPaletteFromTag(tag)->data;
+        return GetObjectEventPaletteByTag(tag)->data;
     }
     else
     {
@@ -1002,11 +1002,6 @@ bool8 GetOutfitStatus(u16 id)
     if (!ptr)
         return FALSE;
 
-    // return false if flag is not set
-    if (!(((*ptr) >> (id & 7)) & 1))
-        return FALSE;
-
-    // rest
     return TRUE;
 }
 
@@ -1027,8 +1022,7 @@ void SetCurrentOutfitGfxIntoVar(struct ScriptContext *ctx)
 {
     u32 varId = ScriptReadHalfword(ctx);
     u32 state = ScriptReadHalfword(ctx);
-    u32 gfxId = GetPlayerAvatarGraphicsIdByOutfitStateIdAndGender(
-        gSaveBlock2Ptr->currOutfitId, state, gSaveBlock2Ptr->playerGender);
+    u32 gfxId = gOutfits[gSaveBlock2Ptr->currOutfitId].avatarGfxIds[gSaveBlock2Ptr->playerGender][state];
 
     VarSet(varId, gfxId);
 }

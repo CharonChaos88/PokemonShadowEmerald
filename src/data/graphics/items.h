@@ -2129,4 +2129,6 @@ const u32 gItemIcon_SpoonOfWisdom[] = INCGFX_U32("graphics/items/icons/wisdom_sp
 const u16 gItemIconPalette_SpoonOfWisdom[] = INCGFX_U16("graphics/items/icon_palettes/wisdom_spoon.pal", ".gbapal");
 
 const u32 gItemIcon_CasicoonVaccine[] = INCGFX_U32("graphics/items/icons/casilcoon_vaccine.png", ".4bpp.smol");
+const u32 gItemIcon_OutfitBox[] = INCGFX_U32("graphics/items/icons/outfit_box.png", ".4bpp.lz");
 const u16 gItemIconPalette_CasicoonVaccine[] = INCGFX_U16("graphics/items/icon_palettes/casilcoon_vaccine.pal", ".gbapal");
+const u16 gItemIconPalette_OutfitBox[] = INCGFX_U16("graphics/items/icon_palettes/outfit_box.pal", ".gbapal");

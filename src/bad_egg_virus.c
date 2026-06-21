@@ -164,6 +164,9 @@ void InfectMonWithVirus(struct Pokemon *mon, u8 strain, u8 stage)
     if (strain == STRAIN_Y && (bevData & BEV_ANTIBODY_Y)) return;
     if (strain == STRAIN_Z && (bevData & BEV_ANTIBODY_Z)) return;
 
+    if (oldStrain == 0 && (strain == STRAIN_Y || strain == STRAIN_Z) && stage < 2)
+        stage = 2;
+
     // 5. APPLY INFECTION (Preserving Antibodies)
     bevData &= ~(BEV_STRAIN_MASK | BEV_STAGE_MASK); 
     bevData |= (strain & BEV_STRAIN_MASK);

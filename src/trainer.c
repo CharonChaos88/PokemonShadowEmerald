@@ -1,9 +1,14 @@
 #include "global.h"
 #include "constants/trainers.h"
+#include "outfit_menu.h"
 
 static enum TrainerPicID GetEmeraldTrainerPic(enum Gender gender)
 {
+#ifdef MUDSKIP_OUTFIT_SYSTEM
+    return GetPlayerTrainerPicIdByOutfitGenderType(gSaveBlock2Ptr->currOutfitId, gender, 0);
+#else
     return gender == MALE ? TRAINER_PIC_MAGMA_GRUNT_M_PLAYER : TRAINER_PIC_MAGMA_GRUNT_F_PLAYER;
+#endif
 }
 static enum TrainerPicID GetRSTrainerPic(enum Gender gender)
 {

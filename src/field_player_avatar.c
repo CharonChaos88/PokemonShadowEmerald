@@ -1,4 +1,5 @@
 #include "global.h"
+#include "data.h"
 #include "main.h"
 #include "bike.h"
 #include "event_data.h"
@@ -26,7 +27,6 @@
 #include "task.h"
 #include "tv.h"
 #include "wild_encounter.h"
-#include "constants/abilities.h"
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
 #include "constants/field_effects.h"
@@ -35,6 +35,9 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainer_types.h"
+#include "constants/abilities.h"
+#include "constants/outfits.h"
+#include "outfit_menu.h"
 
 #define NUM_FORCED_MOVEMENTS 22
 #define NUM_ACRO_BIKE_COLLISIONS 5
@@ -1612,7 +1615,17 @@ u16 GetRivalAvatarGraphicsIdByStateIdAndGender(u8 state, enum Gender gender)
 
 u16 GetPlayerAvatarGraphicsIdByStateIdAndGender(u8 state, enum Gender gender)
 {
+#ifdef MUDSKIP_OUTFIT_SYSTEM
+    u8 outfitId = (gSaveBlock2Ptr->currOutfitId > OUTFIT_NONE && gSaveBlock2Ptr->currOutfitId < OUTFIT_COUNT) ? gSaveBlock2Ptr->currOutfitId : DEFAULT_OUTFIT;
+    if (state >= PLAYER_AVATAR_STATE_FIELD_MOVE)
+    {
+        u8 animState = state - PLAYER_AVATAR_STATE_FIELD_MOVE;
+        return gOutfits[outfitId].animGfxIds[gender][animState];
+    }
+    return gOutfits[outfitId].avatarGfxIds[gender][state];
+#else
     return sPlayerAvatarGfxIds[state][gender];
+#endif
 }
 
 u16 GetFRLGAvatarGraphicsIdByGender(enum Gender gender)
@@ -1632,6 +1645,21 @@ u16 GetPlayerAvatarGraphicsIdByStateId(u8 state)
 
 enum Gender GetPlayerAvatarGenderByGraphicsId(u16 gfxId)
 {
+#ifdef MUDSKIP_OUTFIT_SYSTEM
+    u8 outfitId = (gSaveBlock2Ptr->currOutfitId > OUTFIT_NONE && gSaveBlock2Ptr->currOutfitId < OUTFIT_COUNT) ? gSaveBlock2Ptr->currOutfitId : DEFAULT_OUTFIT;
+    u8 i;
+    for (i = 0; i < PLAYER_AVATAR_STATE_COUNT; i++)
+    {
+        if (gfxId == gOutfits[outfitId].avatarGfxIds[FEMALE][i])
+            return FEMALE;
+    }
+    for (i = 0; i < PLAYER_AVATAR_GFX_COUNT; i++)
+    {
+        if (gfxId == gOutfits[outfitId].animGfxIds[FEMALE][i])
+            return FEMALE;
+    }
+    return MALE;
+#else
     switch (gfxId)
     {
     case OBJ_EVENT_GFX_MAY_NORMAL:
@@ -1662,6 +1690,7 @@ enum Gender GetPlayerAvatarGenderByGraphicsId(u16 gfxId)
     default:
         return MALE;
     }
+#endif
 }
 
 bool8 PartyHasMonWithSurf(void)
@@ -1735,7 +1764,13 @@ u16 GetPlayerAvatarGraphicsIdByCurrentState(void)
     for (i = 0; i < ARRAY_COUNT(sPlayerAvatarGfxToStateFlag[0]); i++)
     {
         if (sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i].playerFlag & flags)
+        {
+#ifdef MUDSKIP_OUTFIT_SYSTEM
+            return GetPlayerAvatarGraphicsIdByStateIdAndGender(i, gPlayerAvatar.gender);
+#else
             return sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i].graphicsId;
+#endif
+        }
     }
     return 0;
 }

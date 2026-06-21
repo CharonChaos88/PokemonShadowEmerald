@@ -3403,6 +3403,14 @@ static u8 FindObjectEventPaletteIndexByTag(u16 tag)
     return 0xFF;
 }
 
+const struct SpritePalette *GetObjectEventPaletteByTag(u16 tag)
+{
+    u8 i = FindObjectEventPaletteIndexByTag(tag);
+    if (i != 0xFF)
+        return &sObjectEventSpritePalettes[i];
+    return NULL;
+}
+
 void LoadPlayerObjectReflectionPalette(u16 tag, u8 slot)
 {
     u8 i;

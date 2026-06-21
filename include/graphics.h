@@ -1261,6 +1261,10 @@ extern const u32 gItemIcon_LuminousMoss[];
 extern const u16 gItemIconPalette_LuminousMoss[];
 extern const u32 gItemIcon_Snowball[];
 extern const u16 gItemIconPalette_Snowball[];
+extern const u32 gItemIcon_TerastalDagger[];
+extern const u16 gItemIconPalette_TerastalDagger[];
+extern const u32 gItemIcon_OutfitBox[];
+extern const u16 gItemIconPalette_OutfitBox[];
 // Misc. Held Items
 extern const u32 gItemIcon_BrightPowder[];
 extern const u16 gItemIconPalette_BrightPowder[];

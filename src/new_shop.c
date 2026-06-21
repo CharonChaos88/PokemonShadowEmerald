@@ -1009,7 +1009,7 @@ static void ForEachCB_PopulateItemIcons(u32 idx, u32 col, u32 row)
         case NEW_SHOP_TYPE_OUTFIT:
         {
             //! TODO: Fix coord of this
-            u16 gfxId = GetPlayerAvatarGraphicsIdByOutfitStateIdAndGender(sMartInfo.itemList[i], PLAYER_AVATAR_STATE_NORMAL, gSaveBlock2Ptr->playerGender);
+            u16 gfxId = gOutfits[sMartInfo.itemList[i]].avatarGfxIds[gSaveBlock2Ptr->playerGender][PLAYER_AVATAR_STATE_NORMAL];
 
             if (sMartInfo.itemList[i] == OUTFIT_NONE) // is 0 as DECOR/ITEM_NONE
             {
@@ -1150,13 +1150,12 @@ static inline const u8 *BuyMenuGetItemName(u32 id)
     {
         case NEW_SHOP_TYPE_DECOR ... NEW_SHOP_TYPE_DECOR2:
             return gDecorations[sMartInfo.itemList[id]].name;
-        default:
-            return GetItemName(sMartInfo.itemList[id]);
-        // custom
     #ifdef MUDSKIP_OUTFIT_SYSTEM
         case NEW_SHOP_TYPE_OUTFIT:
             return gOutfits[sMartInfo.itemList[id]].name;
     #endif // MUDSKIP_OUTFIT_SYSTEM
+        default:
+            return GetItemName(sMartInfo.itemList[id]);
     }
 }
 
@@ -1166,13 +1165,12 @@ static inline const u8 *BuyMenuGetItemDesc(u32 id)
     {
         case NEW_SHOP_TYPE_DECOR ... NEW_SHOP_TYPE_DECOR2:
             return gDecorations[sMartInfo.itemList[id]].description;
-        default:
-            return GetItemDescription(sMartInfo.itemList[id]);
-        // custom
     #ifdef MUDSKIP_OUTFIT_SYSTEM
         case NEW_SHOP_TYPE_OUTFIT:
             return gOutfits[sMartInfo.itemList[id]].desc;
     #endif // MUDSKIP_OUTFIT_SYSTEM
+        default:
+            return GetItemDescription(sMartInfo.itemList[id]);
     }
 }
 
@@ -1792,7 +1790,7 @@ static void BuyMenuTryMakePurchase(u8 taskId)
         case NEW_SHOP_TYPE_OUTFIT:
         {
             UnlockOutfit(sShopData->currentItemId);
-            BuyMenuDisplayMessage(taskId, gText_HereIsTheOutfitThankYou, BuyMenuSubtractMoney);
+            BuyMenuDisplayMessage(taskId, gText_HereYouGoThankYou, BuyMenuSubtractMoney);
             break;
         }
     #endif // MUDSKIP_OUTFIT_SYSTEM

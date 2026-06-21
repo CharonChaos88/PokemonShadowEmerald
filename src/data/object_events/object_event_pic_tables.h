@@ -1342,12 +1342,84 @@ static const struct SpriteFrameImage sPicTable_RubySapphireBrendan[] = {
     overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanNormal, 2, 4),
 };
 
+static const struct SpriteFrameImage sPicTable_RubySapphireLinkBrendan[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanNormalRunning, 2, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanFieldMove[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanFieldMove, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanSurfing[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanSurfing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanMachBike[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanMachBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanAcroBike[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanAcroBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanFishing[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanFishing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanWatering[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanWatering, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanDecorating[] = {
+    obj_frame_tiles(gObjectEventPic_RubySapphireBrendanDecorating),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireBrendanUnderwater[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireBrendanUnderwater, 4, 4),
+};
+
 static const struct SpriteFrameImage sPicTable_KirliaOld[] = {
     overworld_ascending_frames(gObjectEventPic_KirliaOld, 2, 4),
 };
 
 static const struct SpriteFrameImage sPicTable_RubySapphireMay[] = {
     overworld_ascending_frames(gObjectEventPic_RubySapphireMayNormal, 2, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireLinkMay[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayNormalRunning, 2, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayFieldMove[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayFieldMove, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMaySurfing[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMaySurfing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayMachBike[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayMachBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayAcroBike[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayAcroBike, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayFishing[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayFishing, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayWatering[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayWatering, 4, 4),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayDecorating[] = {
+    obj_frame_tiles(gObjectEventPic_RubySapphireMayDecorating),
+};
+
+static const struct SpriteFrameImage sPicTable_RubySapphireMayUnderwater[] = {
+    overworld_ascending_frames(gObjectEventPic_RubySapphireMayUnderwater, 4, 4),
 };
 
 static const struct SpriteFrameImage sPicTable_ApricornTree[] = {

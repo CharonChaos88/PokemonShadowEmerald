@@ -67,6 +67,7 @@ void ItemUseOutOfBattle_Zigzagmerang(u8 taskId);
 void ItemUseOutOfBattle_Linoonmerang(u8 taskId);
 void ItemUseOutOfBattle_WisdomSpoon(u8 taskId);
 void ItemUseOutOfBattle_CasilcoonVaccine(u8 taskId);
+void ItemUseOutOfBattle_OutfitBox(u8 taskId);
 enum {
     BALL_THROW_UNABLE_TWO_MONS,
     BALL_THROW_UNABLE_NO_ROOM,

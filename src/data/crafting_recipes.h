@@ -339,6 +339,126 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         },
         .count = 1,
     },
+    [ITEM_HEAL_POWDER] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_LUM_BERRY, ITEM_LUM_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_ENERGY_POWDER] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_SITRUS_BERRY, ITEM_SITRUS_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_ENERGY_ROOT] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_ENERGY_POWDER, ITEM_ENERGY_POWDER } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_REVIVAL_HERB] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_ENERGY_ROOT, ITEM_ENERGY_ROOT } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_MOOMOO_MILK] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_FRESH_WATER }, { ITEM_ORAN_BERRY }, { ITEM_PECHA_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_LEMONADE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_FRESH_WATER }, { ITEM_ASPEAR_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_SODA_POP] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_FRESH_WATER }, { ITEM_RAWST_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_BERRY_JUICE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_FRESH_WATER }, { ITEM_ORAN_BERRY } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_HP_UP] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_POMEG_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_PROTEIN] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_KELPSY_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_IRON] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_QUALOT_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_CALCIUM] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HONDEW_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_ZINC] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_GREPA_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_CARBOS] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_TAMATO_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_RARE_CANDY] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_NUGGET }, { ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_PP_UP] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_LEPPA_BERRY, ITEM_BERRY_JUICE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_PP_MAX] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_PP_UP, ITEM_PP_UP, ITEM_PP_UP } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_SACRED_ASH] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_REVIVAL_HERB, ITEM_REVIVAL_HERB }, { ITEM_REVIVAL_HERB, ITEM_REVIVAL_HERB } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_HEART_SCALE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_PEARL, ITEM_PEARL } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_SUN_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_FIRE_STONE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_MOON_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_WATER_STONE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_FIRE_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_CHARCOAL } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_THUNDER_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MAGNET } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_WATER_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MYSTIC_WATER } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
 };
 
 static const u16 gCraftRecipeCount = ARRAY_COUNT(gCraftRecipes);
