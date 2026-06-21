@@ -87,6 +87,6 @@ const u32 gBattleEnvironmentAnimTilemap_Building[] = INCGFX_U32("graphics/battle
 const u32 gBattleEnvironmentAnimTiles_Rayquaza[] = INCGFX_U32("graphics/battle_environment/sky/anim_tiles.png", ".4bpp.smol");
 const u32 gBattleEnvironmentAnimTilemap_Rayquaza[] = INCGFX_U32("graphics/battle_environment/sky/anim_map.bin", ".smolTM");
 
-const u32 gBattleEnvironmentTiles_Lava[] = INCBIN_U32("graphics/battle_environment/lava/tiles.4bpp.lz");
+const u32 gBattleEnvironmentTiles_Lava[] = INCBIN_U32("graphics/battle_environment/lava/tiles.4bpp.smol");
 const u16 gBattleEnvironmentPalette_Lava[] = INCBIN_U16("graphics/battle_environment/lava/palette.gbapal");
-const u32 gBattleEnvironmentTilemap_Lava[] = INCBIN_U32("graphics/battle_environment/lava/map.bin.lz");
+const u32 gBattleEnvironmentTilemap_Lava[] = INCBIN_U32("graphics/battle_environment/lava/map.bin.smolTM");
