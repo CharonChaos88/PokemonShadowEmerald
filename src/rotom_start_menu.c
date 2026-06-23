@@ -36,10 +36,13 @@
 #include "start_menu.h"
 #include "string_util.h"
 #include "task.h"
+#include "text.h"
 #include "text_window.h"
 #include "trainer_card.h"
 #include "trig.h"
 #include "union_room.h"
+#include "window.h"
+#include "quests.h"
 #include "wallclock.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -207,7 +210,7 @@ static void RotomPhone_StartMenu_SelectedFunc_RotomReality(void);
 static void RotomPhone_StartMenu_SelectedFunc_DexNav(void);
 static void RotomPhone_StartMenu_SelectedFunc_Clock(void);
 static void RotomPhone_StartMenu_SelectedFunc_Daycare(void);
-
+static void RotomPhone_StartMenu_SelectedFunc_Quest(void);
 
 // Init Rotom Start Menu
 void RotomPhone_StartMenu_Open(bool32 firstInit)
@@ -510,6 +513,7 @@ enum RotomPhone_MenuItems
     RP_MENU_TRAINER_CARD,
     RP_MENU_SAVE,
     RP_MENU_OPTIONS,
+    RP_MENU_QUEST,
     RP_MENU_COUNT,
 };
 #define RP_MENU_FIRST_OPTION RP_MENU_COUNT - RP_MENU_COUNT
@@ -1343,6 +1347,15 @@ static const struct RotomPhone_MenuOptions sRotomPhoneOptions[RP_MENU_COUNT] =
         .selectedFunc = RotomPhone_StartMenu_SelectedFunc_Daycare,
         .rotomRealityPanel = TRUE,
         .rrAnim = RP_ICON_ANIM_NINE,
+        .rrSpriteTemplate = &sSpriteTemplate_RotomRealityIcons_One,
+    },
+    [RP_MENU_QUEST] =
+    {
+        .menuName = COMPOUND_STRING("Quests"),
+        .rotomSpeech = COMPOUND_STRING("to check your Quests?"),
+        .unlockedFunc = RotomPhone_StartMenu_UnlockedFunc_Unlocked_RotomReality,
+        .selectedFunc = RotomPhone_StartMenu_SelectedFunc_Quest,
+        .rrAnim = RP_ICON_ANIM_FIVE,
         .rrSpriteTemplate = &sSpriteTemplate_RotomRealityIcons_One,
     },
 };
@@ -4028,6 +4041,11 @@ static void RotomPhone_StartMenu_SelectedFunc_Clock(void)
     {
         RotomPhone_StartMenu_DoCleanUpAndChangeCallback(CB2_ViewWallClock);
     }
+}
+
+static void RotomPhone_StartMenu_SelectedFunc_Quest(void)
+{
+    RotomPhone_StartMenu_DoCleanUpAndCreateTask(Task_QuestMenu_OpenFromStartMenu, 0);
 }
 
 static void RotomPhone_StartMenu_SelectedFunc_Daycare(void)

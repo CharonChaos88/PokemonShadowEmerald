@@ -33,7 +33,7 @@
 #include "constants/event_objects.h"
 #include "event_object_movement.h"
 #include "pokemon_icon.h"
-
+#include "text.h"
 #include "random.h"
 
 #define tPageItems      data[4]
@@ -201,11 +201,11 @@ static void Task_QuestMenuTurnOff2(u8 taskId);
 
 // Tiles, palettes and tilemaps for the Quest Menu
 static const u32 sQuestMenuTiles[] =
-        INCBIN_U32("graphics/quest_menu/menu.4bpp.lz");
+        INCBIN_U32("graphics/quest_menu/menu.4bpp.smol");
 static const u32 sQuestMenuBgPals[] =
-        INCBIN_U32("graphics/quest_menu/menu.gbapal.lz");
+        INCBIN_U32("graphics/quest_menu/menu.gbapal");
 static const u32 sQuestMenuTilemap[] =
-        INCBIN_U32("graphics/quest_menu/menu.bin.lz");
+        INCBIN_U32("graphics/quest_menu/menu.bin.smolTM");
 
 //Strings used for the Quest Menu
 static const u8 sText_Empty[] = _("");
@@ -926,7 +926,7 @@ static const u8 sQuestMenuWindowFontColors[][4] =
 	{
 		//Header of Quest Menu
 		TEXT_COLOR_TRANSPARENT,
-		TEXT_COLOR_DARK_GRAY,
+		TEXT_COLOR_WHITE,
 		TEXT_COLOR_TRANSPARENT
 	},
 	{
@@ -950,7 +950,7 @@ static const u8 sQuestMenuWindowFontColors[][4] =
 	{
 		//Footer flavor text
 		TEXT_COLOR_TRANSPARENT,
-		TEXT_COLOR_WHITE,
+		TEXT_COLOR_DARK_GRAY,
 		TEXT_COLOR_TRANSPARENT
 	},
 };
@@ -1159,12 +1159,12 @@ static bool8 LoadGraphics(void)
 		case 1:
 			if (FreeTempTileDataBuffersIfPossible() != TRUE)
 			{
-				LZDecompressWram(sQuestMenuTilemap, sBg1TilemapBuffer);
+				DecompressDataWithHeaderWram(sQuestMenuTilemap, sBg1TilemapBuffer);
 				sStateDataPtr->data[0]++;
 			}
 			break;
 		case 2:
-			LoadCompressedPalette(sQuestMenuBgPals, 0x00, 0x60);
+			LoadPalette(sQuestMenuBgPals, 0x00, 0x60);
 			sStateDataPtr->data[0]++;
 			break;
 		case 3:
@@ -1480,7 +1480,7 @@ static void BuildMenuTemplate(void)
 	gMultiuseListMenuTemplate.upText_Y = 2;
 	gMultiuseListMenuTemplate.maxShowed = sStateDataPtr->maxShowed;
 	gMultiuseListMenuTemplate.fontId = 2;
-	gMultiuseListMenuTemplate.cursorPal = 2;
+	gMultiuseListMenuTemplate.cursorPal = 1;
 	gMultiuseListMenuTemplate.fillValue = 0;
 	gMultiuseListMenuTemplate.cursorShadowPal = 0;
 	gMultiuseListMenuTemplate.moveCursorFunc = MoveCursorFunc;
@@ -2190,16 +2190,15 @@ static void QuestMenu_CreateSprite(u16 itemId, u8 idx, u8 spriteType)
 				break;
 			case PKMN:
 				LoadMonIconPalettes();
-				spriteId = CreateMonIcon(itemId, SpriteCallbackDummy, 20, 132, 0, 1, 1);
+				spriteId = CreateMonIcon(itemId, SpriteCallbackDummy, 20, 132, 0, 1);
 				break;
 			default:
 				break;
 		}
 
-		gSprites[spriteId].oam.objMode = ST_OAM_OBJ_BLEND;
-
-		if (spriteId != MAX_SPRITES)
+		if (spriteId < MAX_SPRITES)
 		{
+            gSprites[spriteId].oam.objMode = ST_OAM_OBJ_BLEND;
 			ptr[idx] = spriteId;
 
 			if (spriteType == ITEM)
