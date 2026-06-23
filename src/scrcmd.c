@@ -3506,6 +3506,7 @@ struct GiveItemPackMenu
     struct ListMenuItem *listItems;
     u8 *itemNames;
     u16 *itemsArray;
+    MainCallback returnCallback;
 };
 
 static EWRAM_DATA struct GiveItemPackMenu *sGiveItemPackMenu = NULL;
@@ -3538,6 +3539,10 @@ static void Task_GiveItemPackMenu_WaitFadeIn(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
+        MainCallback retCb = sGiveItemPackMenu->returnCallback;
+        if (retCb == NULL)
+            retCb = CB2_ReturnToFieldContinueScript;
+
         Free(GetBgTilemapBuffer(0));
         Free(sGiveItemPackMenu->listItems);
         Free(sGiveItemPackMenu->itemNames);
@@ -3547,7 +3552,7 @@ static void Task_GiveItemPackMenu_WaitFadeIn(u8 taskId)
         sGiveItemPackMenu = NULL;
         VarSet(VAR_RESULT, TRUE);
         DestroyTask(taskId);
-        SetMainCallback2(CB2_ReturnToFieldContinueScript);
+        SetMainCallback2(retCb);
     }
 }
 
@@ -3788,4 +3793,18 @@ void Cmd_giveterashards_battle(void)
     ScriptContext_Stop();
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
     CreateTask(Task_GiveItemPackMenu_FadeOut, 8);
+}
+
+void ShowGiveItemPackMenuAfterBattle(u16 *items, u16 numItems, void (*returnCallback)(void))
+{
+    u16 *itemsArray = AllocZeroed(numItems * 2 * sizeof(u16));
+    memcpy(itemsArray, items, numItems * 2 * sizeof(u16));
+    
+    sGiveItemPackMenu = AllocZeroed(sizeof(*sGiveItemPackMenu));
+    sGiveItemPackMenu->scriptPtr = (u32)itemsArray;
+    sGiveItemPackMenu->numItems = numItems;
+    sGiveItemPackMenu->itemsArray = itemsArray;
+    sGiveItemPackMenu->returnCallback = returnCallback;
+    
+    gMain.savedCallback = CB2_GiveItemPackMenu;
 }

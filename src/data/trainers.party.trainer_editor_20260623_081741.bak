@@ -2669,18 +2669,18 @@ Gender: Male
 Music: Rich
 Items: Full Restore
 Double Battle: No
-AI: Basic Trainer
+AI: Check Bad Move
 
-Linoone @ Figy Berry
-Ability: Gluttony
-Level: 20
-EVs: 252 Atk / 18 Def / 88 SpD / 150 Spe
-Nature: Adamant
-Shiny: Yes
-Tera Type: Normal
-- Belly Drum
-- Extreme Speed
-- Stomping Tantrum
+Linoone @ Figy Berry  
+Ability: Gluttony  
+Level: 20  
+Tera Type: Normal 
+Shiny: Yes 
+EVs: 252 Atk / 18 Def / 88 SpD / 150 Spe  
+Adamant Nature  
+- Belly Drum  
+- Extreme Speed  
+- Stomping Tantrum  
 - Seed Bomb
 
 === TRAINER_MOLLIE ===
@@ -12000,7 +12000,7 @@ Tera Type: Bug
 - Dual Wingbeat
 
 === TRAINER_VIVI ===
-Name: Vivi
+Name: VIVI
 Class: Winstrate
 Pic: Lass
 Gender: Female
@@ -13034,9 +13034,7 @@ Butterfree @ Leftovers
 Ability: Tinted Lens
 Level: 16
 EVs: 252 SpA / 4 SpD / 252 Spe
-Ball: NET
-Nature: Timid
-Tera Type: Flying
+Timid Nature
 - Air Slash
 - Bug Bite
 - Substitute
@@ -13046,36 +13044,31 @@ Beautifly @ Life Orb
 Ability: Swarm
 Level: 16
 EVs: 252 SpA / 4 SpD / 252 Spe
-Ball: NET
-Nature: Timid
-Tera Type: Flying
+Timid Nature
 - Air Slash
 - Bug Buzz
 - Shadow Ball
 - Roost
 
-Vivillon-Pokeball @ Sitrus Berry
+Vivillon-Pokeball @ Sitrus Berry 
 Ability: Compound Eyes
 Level: 16
 EVs: 136 Def / 120 SpA / 252 Spe
-Ball: NET
-Nature: Timid
-Tera Type: Flying
+Timid Nature
 - Sleep Powder
 - Substitute
 - U-turn
 - Air Slash
 
-Dustox @ Black Sludge
-Ability: Shield Dust
-Level: 16
-IVs: 0 Atk
-EVs: 126 Def / 4 SpA / 126 SpD / 252 Spe
-Ball: NET
-Nature: Bold
-Tera Type: Poison
-- Silver Wind
-- Iron Defense
+Dustox @ Black Sludge  
+Ability: Shield Dust  
+Level: 16  
+Tera Type: Bug  
+EVs: 126 Def / 4 SpA / 126 SpD / 252 Spe  
+Bold Nature  
+IVs: 0 Atk  
+- Silver Wind  
+- Iron Defense  
 - Sludge Bomb
 - Roost
 

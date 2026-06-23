@@ -96,7 +96,7 @@ static void ItemUseOnFieldCB_RockSmash(u8 taskId);
 static void ItemUseOnFieldCB_Waterfall(u8 taskId);
 static void ItemUseOnFieldCB_Dive(u8 taskId);
 static void ItemUseOnFieldCB_DiveUnderwater(u8 taskId);
-static void Task_OpenRegisteredTownMap(u8 taskId);
+// static void Task_OpenRegisteredTownMap(u8 taskId);
 static void CB2_OpenOutfitBoxFromBag(void);
 static void Task_OpenRegisteredOutfitBox(u8 taskId);
 

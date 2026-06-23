@@ -22,6 +22,9 @@
 #include "battle_controllers.h"
 #include "battle_interface.h"
 #include "text.h"
+#include "script.h"
+#include "script_menu.h"
+#include "script_pokemon_util.h"
 #include "sound.h"
 #include "pokedex.h"
 #include "recorded_battle.h"
@@ -9432,9 +9435,8 @@ static void Cmd_pickup(void)
     enum Ability ability;
     bool8 pushedScript = FALSE;
 
-    bool8 linoonTriggered = FALSE;
-    bool8 zigzagTriggered = FALSE;
-    u8 linoonItemsAdded = 0;
+    u16 gatheredItemsArray[8];
+    u16 numGatheredItems = 0;
 
     if (!InBattlePike()) // No items in Battle Pike.
     {
@@ -9443,12 +9445,9 @@ static void Cmd_pickup(void)
         // 1. Linoonmerang Check (Independent)
         if (CheckBagHasItem(ITEM_LINOONMERANG, 1) && FlagGet(FLAG_LINOONMERANG_ENABLED) && (Random() % 100) < 35)
         {
-            u8 leadLevel = GetMonData(&gPlayerParty[0], MON_DATA_LEVEL);
+            u8 leadLevel = GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_LEVEL);
             u8 bagLvlDivBy10 = (leadLevel - 1) / 10;
             if (bagLvlDivBy10 > 9) bagLvlDivBy10 = 9;
-
-            u16 gatheredItems[3] = {ITEM_NONE, ITEM_NONE, ITEM_NONE};
-            u8 gatheredAmounts[3] = {0, 0, 0};
 
             for (k = 0; k < 3; k++)
             {
@@ -9457,11 +9456,11 @@ static void Cmd_pickup(void)
                 if (isInPyramid)
                 {
                     u16 pyramidItem = GetBattlePyramidPickupItemId();
-                    if (AddBagItem(pyramidItem, amount) == TRUE)
+                    if (CheckBagHasSpace(pyramidItem, amount))
                     {
-                        gatheredItems[linoonItemsAdded] = pyramidItem;
-                        gatheredAmounts[linoonItemsAdded] = amount;
-                        linoonItemsAdded++;
+                        gatheredItemsArray[numGatheredItems * 2] = pyramidItem;
+                        gatheredItemsArray[numGatheredItems * 2 + 1] = amount;
+                        numGatheredItems++;
                     }
                 }
                 else
@@ -9480,11 +9479,11 @@ static void Cmd_pickup(void)
                             currentWeight += sPickupTable[j].percentage[bagLvlDivBy10];
                             if (rand < currentWeight)
                             {
-                                if (AddBagItem(sPickupTable[j].itemId, amount) == TRUE)
+                                if (CheckBagHasSpace(sPickupTable[j].itemId, amount))
                                 {
-                                    gatheredItems[linoonItemsAdded] = sPickupTable[j].itemId;
-                                    gatheredAmounts[linoonItemsAdded] = amount;
-                                    linoonItemsAdded++;
+                                    gatheredItemsArray[numGatheredItems * 2] = sPickupTable[j].itemId;
+                                    gatheredItemsArray[numGatheredItems * 2 + 1] = amount;
+                                    numGatheredItems++;
                                 }
                                 break;
                             }
@@ -9492,32 +9491,23 @@ static void Cmd_pickup(void)
                     }
                 }
             }
-
-            if (linoonItemsAdded > 0)
-            {
-                linoonTriggered = TRUE;
-                // Buffer the names for the message
-                if (linoonItemsAdded >= 1) CopyItemNameHandlePlural(gatheredItems[0], gBattleTextBuff1, gatheredAmounts[0]);
-                if (linoonItemsAdded >= 2) CopyItemNameHandlePlural(gatheredItems[1], gBattleTextBuff2, gatheredAmounts[1]);
-                if (linoonItemsAdded >= 3) CopyItemNameHandlePlural(gatheredItems[2], gBattleTextBuff3, gatheredAmounts[2]);
-            }
         }
 
         // 2. Zigzagmerang Check (Notice there is no 'else' here! It rolls independently)
         if (CheckBagHasItem(ITEM_ZIGZAGMERANG, 1) && FlagGet(FLAG_ZIGZAGMERANG_ENABLED) && (Random() % 10) == 0)
         {
-            u8 leadLevel = GetMonData(&gPlayerParty[0], MON_DATA_LEVEL);
+            u8 leadLevel = GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_LEVEL);
             u8 bagLvlDivBy10 = (leadLevel - 1) / 10;
             if (bagLvlDivBy10 > 9) bagLvlDivBy10 = 9;
 
             if (isInPyramid)
             {
                 u16 pyramidItem = GetBattlePyramidPickupItemId();
-                if (AddBagItem(pyramidItem, 1) == TRUE)
+                if (CheckBagHasSpace(pyramidItem, 1))
                 {
-                    // Only buffer this text if Linoon didn't trigger, to prevent overwriting B_BUFF1
-                    if (!linoonTriggered) CopyItemName(pyramidItem, gBattleTextBuff1);
-                    zigzagTriggered = TRUE;
+                    gatheredItemsArray[numGatheredItems * 2] = pyramidItem;
+                    gatheredItemsArray[numGatheredItems * 2 + 1] = 1;
+                    numGatheredItems++;
                 }
             }
             else
@@ -9536,10 +9526,11 @@ static void Cmd_pickup(void)
                         currentWeight += sPickupTable[j].percentage[bagLvlDivBy10];
                         if (rand < currentWeight)
                         {
-                            if (AddBagItem(sPickupTable[j].itemId, 1) == TRUE)
+                            if (CheckBagHasSpace(sPickupTable[j].itemId, 1))
                             {
-                                if (!linoonTriggered) CopyItemName(sPickupTable[j].itemId, gBattleTextBuff1);
-                                zigzagTriggered = TRUE;
+                                gatheredItemsArray[numGatheredItems * 2] = sPickupTable[j].itemId;
+                                gatheredItemsArray[numGatheredItems * 2 + 1] = 1;
+                                numGatheredItems++;
                             }
                             break;
                         }
@@ -9548,31 +9539,9 @@ static void Cmd_pickup(void)
             }
         }
 
-        // 3. Resolve Messages
-        if (linoonTriggered && zigzagTriggered)
+        if (numGatheredItems > 0)
         {
-            // Both triggered! Use the special combined message
-            gBattleScripting.savedStringId = STRINGID_BOTH_BOOMERANGS_GATHERED;
-            BattleScriptPush(cmd->nextInstr);
-            gBattlescriptCurrInstr = BattleScript_LinoonmerangGathered; // Reusing this script is fine, it just prints the string
-            pushedScript = TRUE;
-        }
-        else if (linoonTriggered)
-        {
-            if (linoonItemsAdded == 1) gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_1;
-            else if (linoonItemsAdded == 2) gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_2;
-            else gBattleScripting.savedStringId = STRINGID_LINOONMERANG_GATHERED_3;
-
-            BattleScriptPush(cmd->nextInstr);
-            gBattlescriptCurrInstr = BattleScript_LinoonmerangGathered;
-            pushedScript = TRUE;
-        }
-        else if (zigzagTriggered)
-        {
-            gBattleScripting.savedStringId = STRINGID_ZIGZAGMERANG_GATHERED;
-            BattleScriptPush(cmd->nextInstr);
-            gBattlescriptCurrInstr = BattleScript_ZigzagmerangGathered;
-            pushedScript = TRUE;
+            ShowGiveItemPackMenuAfterBattle(gatheredItemsArray, numGatheredItems, gMain.savedCallback);
         }
 
         // 4. Preserve Honey Gather and Berry Juice for the party
@@ -9580,26 +9549,26 @@ static void Cmd_pickup(void)
         {
             for (i = 0; i < PARTY_SIZE; i++)
             {
-                species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
-                heldItem = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
-                lvlDivBy10 = (GetMonData(&gPlayerParty[i], MON_DATA_LEVEL)-1) / 10;
+                species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG);
+                heldItem = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM);
+                lvlDivBy10 = (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_LEVEL)-1) / 10;
                 
                 if (lvlDivBy10 > 9) lvlDivBy10 = 9;
                     
-                ability = GetSpeciesAbility(species, GetMonData(&gPlayerParty[i], MON_DATA_ABILITY_NUM));
+                ability = GetSpeciesAbility(species, GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_ABILITY_NUM));
 
                 if (ability == ABILITY_HONEY_GATHER && species != 0 && species != SPECIES_EGG && heldItem == ITEM_NONE)
                 {
                     if ((lvlDivBy10 + 1 ) * 5 > Random() % 100)
                     {
                         heldItem = ITEM_HONEY;
-                        SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &heldItem);
+                        SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &heldItem);
                     }
                 }
                 else if (P_SHUCKLE_BERRY_JUICE == GEN_2 && species == SPECIES_SHUCKLE && heldItem == ITEM_ORAN_BERRY && (Random() % 16) == 0)
                 {
                     heldItem = ITEM_BERRY_JUICE;
-                    SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &heldItem);
+                    SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &heldItem);
                 }
             }
         }

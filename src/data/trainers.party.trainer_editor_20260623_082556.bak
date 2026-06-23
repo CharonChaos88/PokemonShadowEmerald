@@ -2669,18 +2669,18 @@ Gender: Male
 Music: Rich
 Items: Full Restore
 Double Battle: No
-AI: Basic Trainer
+AI: Check Bad Move
 
-Linoone @ Figy Berry
-Ability: Gluttony
-Level: 20
-EVs: 252 Atk / 18 Def / 88 SpD / 150 Spe
-Nature: Adamant
-Shiny: Yes
-Tera Type: Normal
-- Belly Drum
-- Extreme Speed
-- Stomping Tantrum
+Linoone @ Figy Berry  
+Ability: Gluttony  
+Level: 20  
+Tera Type: Normal 
+Shiny: Yes 
+EVs: 252 Atk / 18 Def / 88 SpD / 150 Spe  
+Adamant Nature  
+- Belly Drum  
+- Extreme Speed  
+- Stomping Tantrum  
 - Seed Bomb
 
 === TRAINER_MOLLIE ===
@@ -12000,7 +12000,7 @@ Tera Type: Bug
 - Dual Wingbeat
 
 === TRAINER_VIVI ===
-Name: Vivi
+Name: VIVI
 Class: Winstrate
 Pic: Lass
 Gender: Female

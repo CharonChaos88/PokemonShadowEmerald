@@ -75,9 +75,9 @@ static struct BevTracker* GetTrackerForMon(struct Pokemon *mon)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         bool32 slotInUse = FALSE;
-        for (j = 0; j < gPlayerPartyCount; j++)
+        for (j = 0; j < gPartiesCount[B_TRAINER_PLAYER]; j++)
         {
-            if (gBevTrackers[i].personality == GetMonData(&gPlayerParty[j], MON_DATA_PERSONALITY))
+            if (gBevTrackers[i].personality == GetMonData(&gParties[B_TRAINER_PLAYER][j], MON_DATA_PERSONALITY))
             {
                 slotInUse = TRUE;
                 break;
@@ -178,7 +178,7 @@ void InfectMonWithVirus(struct Pokemon *mon, u8 strain, u8 stage)
     // 6. ALERT (Only queue if it belongs to the player and wasn't infected before)
     if (oldStrain == STRAIN_NONE)
     {
-        if (mon >= gPlayerParty && mon < &gPlayerParty[PARTY_SIZE])
+        if (mon >= gParties[B_TRAINER_PLAYER] && mon < &gParties[B_TRAINER_PLAYER][PARTY_SIZE])
             QueueVirusAlert(mon, strain, 1); // 1 = Caught BEV
     }
 }
@@ -289,9 +289,9 @@ static void CheckAndTriggerVirusStage(struct Pokemon *mon)
 void IncrementVirusSteps(void)
 {
     int i;
-    for (i = 0; i < gPlayerPartyCount; i++)
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
     {
-        struct Pokemon *mon = &gPlayerParty[i];
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][i];
         u8 vanillaPokerus = GetMonData(mon, MON_DATA_POKERUS);
 
         if (vanillaPokerus != 0 && (vanillaPokerus & 0x0F) != 0 && !IsMonInfected(mon))
@@ -309,12 +309,12 @@ void IncrementVirusSteps(void)
 void IncrementVirusBattles(void)
 {
     int i;
-    bool8 enemyInfected = IsMonInfected(&gEnemyParty[0]);
-    u8 enemyStrain = enemyInfected ? GetVirusStrain(&gEnemyParty[0]) : STRAIN_NONE;
+    bool8 enemyInfected = IsMonInfected(&gParties[B_TRAINER_OPPONENT_A][0]);
+    u8 enemyStrain = enemyInfected ? GetVirusStrain(&gParties[B_TRAINER_OPPONENT_A][0]) : STRAIN_NONE;
 
-    for (i = 0; i < gPlayerPartyCount; i++)
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
     {
-        struct Pokemon *mon = &gPlayerParty[i];
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][i];
         
         if (enemyInfected && !GetMonData(mon, MON_DATA_IS_EGG) && !IsMonInfected(mon))
         {
@@ -341,7 +341,7 @@ void IncrementVirusTime(void)
     
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        struct Pokemon *mon = &gPlayerParty[i];
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][i];
         if (IsMonInfected(mon))
         {
             struct BevTracker *tracker = GetTrackerForMon(mon);
@@ -360,7 +360,7 @@ void ApplyBadEggVirusStageEffects(void)
 void ConvertMonToBadEgg(void)
 {
     u8 partyIndex = VarGet(VAR_TEMP_1);
-    struct Pokemon *mon = &gPlayerParty[partyIndex];
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][partyIndex];
     u8 isEgg = TRUE;
     u8 isBadEgg = TRUE;
     
@@ -390,7 +390,7 @@ void ApplyBadEggVirusBattleEffects(u8 battlerId)
     // 2. Grab the TRUE party data, not the volatile battle memory
     partyIndex = gBattlerPartyIndexes[battlerId]; 
     if (partyIndex >= PARTY_SIZE) return;
-    mon = &gPlayerParty[partyIndex];
+    mon = &gParties[B_TRAINER_PLAYER][partyIndex];
 
     // 3. Prevent checking empty slots or eggs
     if (GetMonData(mon, MON_DATA_SPECIES) == SPECIES_NONE || GetMonData(mon, MON_DATA_IS_EGG)) 
@@ -501,9 +501,9 @@ void PartySpreadBadEggVirus(void)
     u8 i;
     bool8 virusSpreadThisBattle = FALSE;
 
-    for (i = 0; i < gPlayerPartyCount; i++)
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
     {
-        struct Pokemon *mon = &gPlayerParty[i];
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][i];
 
         if (!GetMonData(mon, MON_DATA_SPECIES) || GetMonData(mon, MON_DATA_IS_EGG))
             continue;
@@ -521,7 +521,7 @@ void PartySpreadBadEggVirus(void)
 
                 if (i > 0)
                 {
-                    struct Pokemon *targetUp = &gPlayerParty[i - 1];
+                    struct Pokemon *targetUp = &gParties[B_TRAINER_PLAYER][i - 1];
                     if (GetMonData(targetUp, MON_DATA_SPECIES) && !GetMonData(targetUp, MON_DATA_IS_EGG) && !IsMonInfected(targetUp))
                     {
                         InfectMonWithVirus(targetUp, spreadStrain, 1);
@@ -529,9 +529,9 @@ void PartySpreadBadEggVirus(void)
                     }
                 }
 
-                if (i < gPlayerPartyCount - 1)
+                if (i < gPartiesCount[B_TRAINER_PLAYER] - 1)
                 {
-                    struct Pokemon *targetDown = &gPlayerParty[i + 1];
+                    struct Pokemon *targetDown = &gParties[B_TRAINER_PLAYER][i + 1];
                     if (GetMonData(targetDown, MON_DATA_SPECIES) && !GetMonData(targetDown, MON_DATA_IS_EGG) && !IsMonInfected(targetDown))
                     {
                         InfectMonWithVirus(targetDown, spreadStrain, 1);
@@ -546,7 +546,7 @@ void PartySpreadBadEggVirus(void)
 
 void InfectStarterWithVirus(void)
 {
-    struct Pokemon *mon = &gPlayerParty[0];
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][0];
     if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE && !GetMonData(mon, MON_DATA_IS_EGG))
     {
         InfectMonWithVirus(mon, STRAIN_X, 1);
@@ -558,7 +558,7 @@ void TryInfectStarterWithVirus(void)
 {
     if ((Random() % 100) < 15)
     {
-        struct Pokemon *mon = &gPlayerParty[0];
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][0];
         if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE && !GetMonData(mon, MON_DATA_IS_EGG))
         {
             InfectMonWithVirus(mon, STRAIN_X, 1);
@@ -600,7 +600,7 @@ bool8 ApplyCasilcoonVaccine(struct Pokemon *mon)
     
     SetMonData(mon, MON_DATA_BAD_EGG_VIRUS, &bevData);
 
-    u8 partyIndex = mon - gPlayerParty;
+    u8 partyIndex = mon - gParties[B_TRAINER_PLAYER];
     if (partyIndex < PARTY_SIZE)
         WipeVirusCounters(mon);
         
@@ -620,12 +620,12 @@ void PerformCocoonRitual(void)
     if (sacrificeChoice >= PARTY_SIZE)
         sacrificeSpecies = GetBoxMonData(GetBoxedMonPtr(VarGet(VAR_0x8005), VarGet(VAR_0x8006)), MON_DATA_SPECIES);
     else
-        sacrificeSpecies = GetMonData(&gPlayerParty[sacrificeChoice], MON_DATA_SPECIES);
+        sacrificeSpecies = GetMonData(&gParties[B_TRAINER_PLAYER][sacrificeChoice], MON_DATA_SPECIES);
 
     if (targetChoice >= PARTY_SIZE)
         targetPokerus = GetBoxMonData(GetBoxedMonPtr(VarGet(VAR_0x8008), VarGet(VAR_0x8009)), MON_DATA_BAD_EGG_VIRUS);
     else
-        targetPokerus = GetMonData(&gPlayerParty[targetChoice], MON_DATA_BAD_EGG_VIRUS);
+        targetPokerus = GetMonData(&gParties[B_TRAINER_PLAYER][targetChoice], MON_DATA_BAD_EGG_VIRUS);
 
     if ((sacrificeSpecies == SPECIES_CASCOON || sacrificeSpecies == SPECIES_SILCOON) && (targetPokerus & BEV_STRAIN_MASK) != 0)
     {
@@ -648,7 +648,7 @@ void PerformCocoonRitual(void)
         }
         else
         {
-            struct Pokemon *mon = &gPlayerParty[targetChoice];
+            struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][targetChoice];
             SetMonData(mon, MON_DATA_BAD_EGG_VIRUS, &targetPokerus);
             WipeVirusCounters(mon); 
             CalculateMonStats(mon); 
@@ -657,7 +657,7 @@ void PerformCocoonRitual(void)
         if (sacrificeChoice >= PARTY_SIZE)
             ZeroBoxMonData(GetBoxedMonPtr(VarGet(VAR_0x8005), VarGet(VAR_0x8006)));
         else
-            ZeroMonData(&gPlayerParty[sacrificeChoice]);
+            ZeroMonData(&gParties[B_TRAINER_PLAYER][sacrificeChoice]);
 
         gSpecialVar_Result = TRUE;
     }
@@ -671,7 +671,7 @@ void QueueVirusAlert(struct Pokemon *mon, u8 strain, u8 reason)
 {
     if (gNumPendingAlerts >= PARTY_SIZE) return;
 
-    gPendingAlert_PartyIndex[gNumPendingAlerts] = mon - gPlayerParty;
+    gPendingAlert_PartyIndex[gNumPendingAlerts] = mon - gParties[B_TRAINER_PLAYER];
     gPendingAlert_Strain[gNumPendingAlerts] = strain;
     gPendingAlert_Reason[gNumPendingAlerts] = reason;
     gPendingAlert_Stage[gNumPendingAlerts] = GetVirusStage(mon);

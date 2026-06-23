@@ -209,9 +209,13 @@ bool32 SaveWonderCard(const struct WonderCard *card)
 #endif //FREE_MYSTERY_GIFT
 }
 
+#if FREE_MYSTERY_GIFT == FALSE
+#endif //FREE_MYSTERY_GIFT
+
 bool32 ValidateSavedWonderCard(void)
 {
 #if FREE_MYSTERY_GIFT == FALSE
+
     if (gSaveBlock1Ptr->mysteryGift.cardCrc != CALC_CRC(gSaveBlock1Ptr->mysteryGift.card))
         return FALSE;
     if (!ValidateWonderCard(&gSaveBlock1Ptr->mysteryGift.card))
@@ -435,8 +439,8 @@ void MysteryGift_LoadLinkGameData(struct MysteryGiftLinkGameData *data, bool32 i
     }
     else // Wonder Card
     {
-        data->validationGiftType1 = GAME_DATA_VALID_GIFT_TYPE_1;
-        data->validationGiftType2 = GAME_DATA_VALID_GIFT_TYPE_2;
+        data->validationGiftType1 = GAME_DATA_VALID_GIFT_TYPE_1 | 1;
+        data->validationGiftType2 = GAME_DATA_VALID_GIFT_TYPE_2 | 1;
     }
 
     if (ValidateSavedWonderCard())

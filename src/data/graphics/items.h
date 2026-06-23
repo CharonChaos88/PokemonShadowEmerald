@@ -2129,6 +2129,43 @@ const u32 gItemIcon_SpoonOfWisdom[] = INCGFX_U32("graphics/items/icons/wisdom_sp
 const u16 gItemIconPalette_SpoonOfWisdom[] = INCGFX_U16("graphics/items/icon_palettes/wisdom_spoon.pal", ".gbapal");
 
 const u32 gItemIcon_CasicoonVaccine[] = INCGFX_U32("graphics/items/icons/casilcoon_vaccine.png", ".4bpp.smol");
-const u32 gItemIcon_OutfitBox[] = INCGFX_U32("graphics/items/icons/outfit_box.png", ".4bpp.smol");
 const u16 gItemIconPalette_CasicoonVaccine[] = INCGFX_U16("graphics/items/icon_palettes/casilcoon_vaccine.pal", ".gbapal");
+
+const u32 gItemIcon_CascoonSample[] = INCGFX_U32("graphics/items/icons/cascoon_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_CascoonSample[] = INCGFX_U16("graphics/items/icon_palettes/cascoon_sample.pal", ".gbapal");
+
+const u32 gItemIcon_SilcoonSample[] = INCGFX_U32("graphics/items/icons/silcoon_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_SilcoonSample[] = INCGFX_U16("graphics/items/icon_palettes/silcoon_sample.pal", ".gbapal");
+
+const u32 gItemIcon_BeautiflySample[] = INCGFX_U32("graphics/items/icons/beautifly_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_BeautiflySample[] = INCGFX_U16("graphics/items/icon_palettes/beautifly_sample.pal", ".gbapal");
+
+const u32 gItemIcon_DustoxSample[] = INCGFX_U32("graphics/items/icons/dustox_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_DustoxSample[] = INCGFX_U16("graphics/items/icon_palettes/dustox_sample.pal", ".gbapal");
+
+const u32 gItemIcon_ButterfreeSample[] = INCGFX_U32("graphics/items/icons/butterfree_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_ButterfreeSample[] = INCGFX_U16("graphics/items/icon_palettes/butterfree_sample.pal", ".gbapal");
+
+const u32 gItemIcon_BeedrillSample[] = INCGFX_U32("graphics/items/icons/beedrill_sample.png", ".4bpp.smol");
+const u16 gItemIconPalette_BeedrillSample[] = INCGFX_U16("graphics/items/icon_palettes/beedrill_sample.pal", ".gbapal");
+
+const u32 gItemIcon_SilcoonShell[] = INCGFX_U32("graphics/items/icons/silcoon_shell.png", ".4bpp.smol");
+const u16 gItemIconPalette_SilcoonShell[] = INCGFX_U16("graphics/items/icon_palettes/silcoon_shell.pal", ".gbapal");
+
+const u32 gItemIcon_CascoonShell[] = INCGFX_U32("graphics/items/icons/cascoon_shell.png", ".4bpp.smol");
+const u16 gItemIconPalette_CascoonShell[] = INCGFX_U16("graphics/items/icon_palettes/cascoon_shell.pal", ".gbapal");
+
+const u32 gItemIcon_KakunaShell[] = INCGFX_U32("graphics/items/icons/kakuna_shell.png", ".4bpp.smol");
+const u16 gItemIconPalette_KakunaShell[] = INCGFX_U16("graphics/items/icon_palettes/kakuna_shell.pal", ".gbapal");
+
+const u32 gItemIcon_MetapodShell[] = INCGFX_U32("graphics/items/icons/metapod_shell.png", ".4bpp.smol");
+const u16 gItemIconPalette_MetapodShell[] = INCGFX_U16("graphics/items/icon_palettes/metapod_shell.pal", ".gbapal");
+
+const u32 gItemIcon_ButterdrillVaccine[] = INCGFX_U32("graphics/items/icons/butterdrill_vaccine.png", ".4bpp.smol");
+const u16 gItemIconPalette_ButterdrillVaccine[] = INCGFX_U16("graphics/items/icon_palettes/butterdrill_vaccine.pal", ".gbapal");
+
+const u32 gItemIcon_DustoxiflyVaccine[] = INCGFX_U32("graphics/items/icons/casilcoon_vaccine.png", ".4bpp.smol");
+const u16 gItemIconPalette_DustoxiflyVaccine[] = INCGFX_U16("graphics/items/icon_palettes/dustoxifly_vaccine.pal", ".gbapal");
+
+const u32 gItemIcon_OutfitBox[] = INCGFX_U32("graphics/items/icons/outfit_box.png", ".4bpp.smol");
 const u16 gItemIconPalette_OutfitBox[] = INCGFX_U16("graphics/items/icon_palettes/outfit_box.pal", ".gbapal");
