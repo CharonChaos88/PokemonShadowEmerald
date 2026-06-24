@@ -3,9 +3,8 @@
   "name": "CaveOfOrigin_UnusedRubySapphireMap3",
   "layout": "LAYOUT_CAVE_OF_ORIGIN_UNUSED_RUBY_SAPPHIRE_MAP3",
   "music": "MUS_CAVE_OF_ORIGIN",
-  "region": "REGION_HOENN",
   "region_map_section": "MAPSEC_CAVE_OF_ORIGIN",
-  "requires_flash": true,
+  "requires_flash": false,
   "weather": "WEATHER_FOG_HORIZONTAL",
   "map_type": "MAP_TYPE_UNDERGROUND",
   "allow_cycling": true,
@@ -32,5 +31,6 @@
     }
   ],
   "coord_events": [],
-  "bg_events": []
+  "bg_events": [],
+  "region": "REGION_HOENN"
 }

@@ -491,7 +491,7 @@ static const struct WindowTemplate sDefaultBagWindows[] =
         .tilemapTop = 15,
         .width = 27,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x1B1,
     },
     DUMMY_WIN_TEMPLATE,
@@ -505,7 +505,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 17,
         .width = 7,
         .height = 2,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_1x2] = {
@@ -514,7 +514,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 7,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_2x2] = {
@@ -523,7 +523,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 14,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_2x3] = {
@@ -532,7 +532,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 13,
         .width = 14,
         .height = 6,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_MESSAGE] = {
@@ -541,7 +541,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 27,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x1B1,
     },
     [ITEMWIN_YESNO_LOW] = { // Yes/No tucked in corner, for toss confirm
@@ -550,7 +550,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 5,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_YESNO_HIGH] = { // Yes/No higher up, positioned above a lower message box
@@ -559,7 +559,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 9,
         .width = 5,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_QUANTITY] = { // Used for quantity of items to Toss/Deposit
@@ -568,7 +568,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 17,
         .width = 5,
         .height = 2,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_QUANTITY_WIDE] = { // Used for quantity and price of items to Sell
@@ -577,7 +577,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 11,
         .width = 10,
         .height = 2,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x245,
     },
     [ITEMWIN_MONEY] = {
@@ -586,7 +586,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 1,
         .width = 10,
         .height = 2,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 0x231,
     },
 };
