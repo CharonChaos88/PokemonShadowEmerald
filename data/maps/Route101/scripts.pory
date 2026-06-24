@@ -290,3 +290,4 @@ script Won_or_Caught {
 	warp(MAP_LITTLEROOT_TOWN_PROFESSOR_BIRCHS_LAB, 6, 12)
 	}
 }
+

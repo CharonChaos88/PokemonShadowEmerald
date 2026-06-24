@@ -589,6 +589,20 @@ u16 CountTotalItemQuantityInBag(enum Item itemId)
     return BagPocket_CountTotalItemQuantity(&gBagPockets[GetItemPocket(itemId)], itemId);
 }
 
+u16 CountTotalItemQuantityInPC(enum Item itemId)
+{
+    u16 i;
+    u16 count = 0;
+    for (i = 0; i < PC_ITEMS_COUNT; i++)
+    {
+        if (gSaveBlock1Ptr->pcItems[i].itemId == itemId)
+        {
+            count += gSaveBlock1Ptr->pcItems[i].quantity;
+        }
+    }
+    return count;
+}
+
 static bool32 CheckPyramidBagHasItem(enum Item itemId, u16 count)
 {
     u8 i;

@@ -76,6 +76,8 @@
 #include "constants/weather.h"
 #include "palette_editor.h"
 #include "bad_egg_virus.h"
+#include "quests.h"
+#include "constants/quests.h"
 extern u16 gSpecialVar_ItemId;
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_8) ? 160 : 220)
@@ -2497,6 +2499,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 }.combinedValue;
             }
             break;
+        case MON_DATA_LAST_SAMPLE_HOUR:
+            retVal = GetSubstruct1(boxMon)->lastSampleHour;
+            break;
         default:
             break;
         }
@@ -2932,6 +2937,9 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
             substruct1->evolutionTracker2 = evoTracker.tracker2;
             break;
         }
+        case MON_DATA_LAST_SAMPLE_HOUR:
+            SET8(GetSubstruct1(boxMon)->lastSampleHour);
+            break;
         default:
             break;
         }
@@ -3552,6 +3560,20 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
         // Remember: In this function, FALSE = Success, TRUE = Failed!
         if (ApplyCasilcoonVaccine(mon) == TRUE)
             return FALSE; 
+        else
+            return TRUE;
+    }
+    if (item == ITEM_BUTTERDRILL_VACCINE)
+    {
+        if (ApplyButterdrillVaccine(mon) == TRUE)
+            return FALSE;
+        else
+            return TRUE;
+    }
+    if (item == ITEM_DUSTOXIFLY_VACCINE)
+    {
+        if (ApplyDustoxiflyVaccine(mon) == TRUE)
+            return FALSE;
         else
             return TRUE;
     }
@@ -7025,4 +7047,79 @@ bool32 HasShedinjaHPHandling(enum Species species)
     if (P_BASE_HP_1_SHEDINJA_HANDLING && GetSpeciesBaseHP(species) == 1)
         return TRUE;
     return FALSE;
+}
+void ShedSkinTimeUpdate(int minutes)
+{
+    int i, j;
+    int expectedSuccesses = minutes / 300;
+    int remainder = minutes % 300;
+    
+    // For party
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][i];
+        u16 species = GetMonData(mon, MON_DATA_SPECIES);
+        if (species != SPECIES_NONE && !GetMonData(mon, MON_DATA_IS_EGG))
+        {
+            if (GetMonAbility(mon) == ABILITY_SHED_SKIN)
+            {
+                int successes = expectedSuccesses;
+                if ((Random() % 300) < remainder) successes++;
+                
+                if (successes > 0)
+                {
+                    u16 item = 0;
+                    if (species == SPECIES_METAPOD && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_METAPOD_SHELL;
+                    else if (species == SPECIES_KAKUNA && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_KAKUNA_SHELL;
+                    else if (species == SPECIES_SILCOON && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_SILCOON_SHELL;
+                    else if (species == SPECIES_CASCOON && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_CASCOON_SHELL;
+
+                    if (item != 0)
+                    {
+                        if (CountTotalItemQuantityInBag(item) + CountTotalItemQuantityInPC(item) < 999)
+                        {
+                            if (!AddBagItem(item, successes))
+                                AddPCItem(item, successes);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // For PC
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        for (j = 0; j < IN_BOX_COUNT; j++)
+        {
+            struct BoxPokemon *boxMon = &gPokemonStoragePtr->boxes[i][j];
+            u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+            if (species != SPECIES_NONE && !GetBoxMonData(boxMon, MON_DATA_IS_EGG, NULL))
+            {
+                u8 abilityNum = GetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, NULL);
+                if (GetAbilityBySpecies(species, abilityNum) == ABILITY_SHED_SKIN)
+                {
+                    int successes = expectedSuccesses;
+                    if ((Random() % 300) < remainder) successes++;
+                    
+                    if (successes > 0)
+                    {
+                        u16 item = 0;
+                        if (species == SPECIES_METAPOD) item = ITEM_METAPOD_SHELL;
+                        else if (species == SPECIES_KAKUNA) item = ITEM_KAKUNA_SHELL;
+                        else if (species == SPECIES_SILCOON && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_SILCOON_SHELL;
+                        else if (species == SPECIES_CASCOON && QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 3)) item = ITEM_CASCOON_SHELL;
+
+                        if (item != 0)
+                        {
+                            if (CountTotalItemQuantityInBag(item) + CountTotalItemQuantityInPC(item) < 999)
+                            {
+                                AddPCItem(item, successes);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

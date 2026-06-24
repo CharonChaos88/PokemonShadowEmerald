@@ -5,6 +5,7 @@
 #include "script.h"
 #include "string_util.h"
 #include "random.h"
+#include "item.h"
 #include "constants/flags.h"
 #include "constants/species.h"
 #include "battle_main.h"
@@ -586,23 +587,105 @@ bool8 ApplyCasilcoonVaccine(struct Pokemon *mon)
 {
     u8 bevData = GetMonData(mon, MON_DATA_BAD_EGG_VIRUS);
     u8 currentStrain = bevData & BEV_STRAIN_MASK;
+    bool8 applied = FALSE;
+    bool8 cured = FALSE;
 
-    if (currentStrain == 0)
-        return FALSE; // Not infected
+    if (currentStrain == STRAIN_X)
+    {
+        bevData &= ~(BEV_STRAIN_MASK | BEV_STAGE_MASK); 
+        cured = TRUE;
+        applied = TRUE;
+    }
 
-    // Grant the correct antibody based on the CURRENT strain!
-    if (currentStrain == STRAIN_X) bevData |= BEV_ANTIBODY_X;
-    else if (currentStrain == STRAIN_Y) bevData |= BEV_ANTIBODY_Y;
-    else if (currentStrain == STRAIN_Z) bevData |= BEV_ANTIBODY_Z;
+    if (!(bevData & BEV_ANTIBODY_X))
+    {
+        bevData |= BEV_ANTIBODY_X;
+        applied = TRUE;
+    }
 
-    // Completely wipe the active virus bits back to 0!
-    bevData &= ~(BEV_STRAIN_MASK | BEV_STAGE_MASK); 
+    if (!applied)
+        return FALSE;
     
     SetMonData(mon, MON_DATA_BAD_EGG_VIRUS, &bevData);
 
-    u8 partyIndex = mon - gParties[B_TRAINER_PLAYER];
-    if (partyIndex < PARTY_SIZE)
-        WipeVirusCounters(mon);
+    if (cured)
+    {
+        u8 partyIndex = mon - gParties[B_TRAINER_PLAYER];
+        if (partyIndex < PARTY_SIZE)
+            WipeVirusCounters(mon);
+    }
+        
+    CalculateMonStats(mon); 
+    return TRUE;
+}
+
+bool8 ApplyButterdrillVaccine(struct Pokemon *mon)
+{
+    u8 bevData = GetMonData(mon, MON_DATA_BAD_EGG_VIRUS);
+    u8 currentStrain = bevData & BEV_STRAIN_MASK;
+    bool8 applied = FALSE;
+    bool8 cured = FALSE;
+
+    if (currentStrain == STRAIN_X || currentStrain == STRAIN_Y)
+    {
+        bevData &= ~(BEV_STRAIN_MASK | BEV_STAGE_MASK); 
+        cured = TRUE;
+        applied = TRUE;
+    }
+
+    if ((bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y)) != (BEV_ANTIBODY_X | BEV_ANTIBODY_Y))
+    {
+        bevData |= (BEV_ANTIBODY_X | BEV_ANTIBODY_Y);
+        applied = TRUE;
+    }
+
+    if (!applied)
+        return FALSE;
+    
+    SetMonData(mon, MON_DATA_BAD_EGG_VIRUS, &bevData);
+
+    if (cured)
+    {
+        u8 partyIndex = mon - gParties[B_TRAINER_PLAYER];
+        if (partyIndex < PARTY_SIZE)
+            WipeVirusCounters(mon);
+    }
+        
+    CalculateMonStats(mon); 
+    return TRUE;
+}
+
+bool8 ApplyDustoxiflyVaccine(struct Pokemon *mon)
+{
+    u8 bevData = GetMonData(mon, MON_DATA_BAD_EGG_VIRUS);
+    u8 currentStrain = bevData & BEV_STRAIN_MASK;
+    bool8 applied = FALSE;
+    bool8 cured = FALSE;
+
+    if (currentStrain == STRAIN_X || currentStrain == STRAIN_Y || currentStrain == STRAIN_Z)
+    {
+        bevData &= ~(BEV_STRAIN_MASK | BEV_STAGE_MASK); 
+        cured = TRUE;
+        applied = TRUE;
+    }
+
+    if ((bevData & (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z)) != (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z))
+    {
+        bevData |= (BEV_ANTIBODY_X | BEV_ANTIBODY_Y | BEV_ANTIBODY_Z);
+        applied = TRUE;
+    }
+
+    if (!applied)
+        return FALSE;
+    
+    SetMonData(mon, MON_DATA_BAD_EGG_VIRUS, &bevData);
+
+    if (cured)
+    {
+        u8 partyIndex = mon - gParties[B_TRAINER_PLAYER];
+        if (partyIndex < PARTY_SIZE)
+            WipeVirusCounters(mon);
+    }
         
     CalculateMonStats(mon); 
     return TRUE;
@@ -725,3 +808,22 @@ bool8 TryTriggerPendingVirusAlerts(void)
     ScriptContext_SetupScript(EventScript_BadEggVirusAlert);
     return TRUE;
 }
+
+void CheckPartyHasBevStrainX(void)
+{
+    u8 i;
+    gSpecialVar_Result = FALSE;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_HAS_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+        {
+            if (GetVirusStrain(&gPlayerParty[i]) == STRAIN_X)
+            {
+                gSpecialVar_Result = TRUE;
+                break;
+            }
+        }
+    }
+}
+
+

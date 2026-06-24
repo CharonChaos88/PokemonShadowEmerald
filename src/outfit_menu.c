@@ -932,7 +932,7 @@ u32 GetPlayerTrainerPicIdByOutfitGenderType(u32 outfitId, u32 gender, bool32 typ
     if (outfitId > OUTFIT_NONE && outfitId < OUTFIT_COUNT)
         return gOutfits[outfitId].trainerPics[gender][type];
     else
-        return gOutfits[0].trainerPics[gender][type];
+        return gOutfits[DEFAULT_OUTFIT].trainerPics[gender][type];
 }
 
 const void *GetPlayerHeadGfxOrPal(u8 which, bool32 isFP)

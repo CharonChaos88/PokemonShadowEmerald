@@ -4458,11 +4458,20 @@ bool32 CheckObjectAtXY(u32 x, u32 y)
 
 bool32 CheckPartyHasSpecies(enum Species givenSpecies)
 {
-    u32 partyIndex;
+    u32 i, j;
 
-    for (partyIndex = 0; partyIndex < CalculatePlayerPartyCount(); partyIndex++)
-        if (GetMonData(&gParties[B_TRAINER_PLAYER][partyIndex], MON_DATA_SPECIES) == givenSpecies)
+    for (i = 0; i < CalculatePlayerPartyCount(); i++)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES) == givenSpecies)
             return TRUE;
+
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        for (j = 0; j < IN_BOX_COUNT; j++)
+        {
+            if (GetBoxMonDataAt(i, j, MON_DATA_SPECIES) == givenSpecies)
+                return TRUE;
+        }
+    }
 
     return FALSE;
 }

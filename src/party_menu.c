@@ -57,11 +57,14 @@
 #include "pokemon_summary_screen.h"
 #include "pokerus.h"
 #include "region_map.h"
+#include "quests.h"
+#include "constants/quests.h"
 #include "reshow_battle_screen.h"
 #include "scanline_effect.h"
 #include "script.h"
 #include "sound.h"
 #include "sprite.h"
+#include "rtc.h"
 #include "start_menu.h"
 #include "string_util.h"
 #include "strings.h"
@@ -136,8 +139,8 @@ enum {
     MENU_CATALOG_MOWER,
     MENU_CHANGE_FORM,
     MENU_CHANGE_ABILITY,
+    MENU_TAKE_SAMPLE,
     MENU_FIELD_MOVES,
-    
 };
 
 // IDs for the action lists that appear when a party mon is selected
@@ -208,7 +211,7 @@ struct PartyMenuInternal
     u32 spriteIdCancelPokeball:7;
     u32 messageId:14;
     u8 windowId[3];
-    u8 actions[9];
+    u8 actions[16];
     u8 numActions;
     // In vanilla Emerald, only the first 0xB0 hwords (0x160 bytes) are actually used.
     // However, a full 0x100 hwords (0x200 bytes) are allocated.
@@ -504,6 +507,7 @@ static void CursorCb_CatalogFan(u8);
 static void CursorCb_CatalogMower(u8);
 static void CursorCb_ChangeForm(u8);
 static void CursorCb_ChangeAbility(u8);
+static void CursorCb_TakeSample(u8);
 void TryItemHoldFormChange(struct Pokemon *mon, s8 slotId);
 static void ShowMoveSelectWindow(u8 slot);
 static void Task_HandleWhichMoveInput(u8 taskId);
@@ -2876,6 +2880,11 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
     {
         AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUB_MOVES);
     }
+    
+    if (QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 2) && (species == SPECIES_SILCOON || species == SPECIES_CASCOON || species == SPECIES_BEAUTIFLY || species == SPECIES_DUSTOX || species == SPECIES_BUTTERFREE || species == SPECIES_BEEDRILL))
+    {
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_TAKE_SAMPLE);
+    }
 
     if (!GetMonData(&mons[slotId], MON_DATA_IS_EGG))
     {
@@ -4846,11 +4855,9 @@ static bool32 IsHPRecoveryItem(enum Item item)
 }
 
 // // --- CUSTOM VACCINE TEXT STRINGS ---
-static const u8 sText_StrainX[] = _("X");
-static const u8 sText_StrainY[] = _("Y");
-static const u8 sText_StrainZ[] = _("Z");
-static const u8 sText_StrainUnknown[] = _("?");
-static const u8 sText_CuredOfStrain[] = _("{STR_VAR_1} was cured of the\nStrain: {STR_VAR_2} Virus!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_CasilcoonImmunity[] = _("{STR_VAR_1} was cured and is\nimmune to Strain X!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_ButterdrillImmunity[] = _("{STR_VAR_1} was cured and is\nimmune to Strain X & Y!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_DustoxiflyImmunity[] = _("{STR_VAR_1} was cured and is\nimmune to all Strains!{PAUSE_UNTIL_PRESS}");
 // -----------------------------------
 
 static void GetMedicineItemEffectMessage(enum Item item, u32 statusCured)
@@ -4858,19 +4865,17 @@ static void GetMedicineItemEffectMessage(enum Item item, u32 statusCured)
     // --- ADD YOUR CUSTOM VACCINE TEXT HERE ---
     if (item == ITEM_CASILCOON_VACCINE)
     {
-       u8 bevData = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_BAD_EGG_VIRUS);
-       
-       // Check Z, then Y, then X to ensure we get the most recent one
-       if (bevData & BEV_ANTIBODY_Z) 
-           StringCopy(gStringVar2, sText_StrainZ);
-       else if (bevData & BEV_ANTIBODY_Y) 
-           StringCopy(gStringVar2, sText_StrainY);
-       else if (bevData & BEV_ANTIBODY_X) 
-           StringCopy(gStringVar2, sText_StrainX);
-       else 
-           StringCopy(gStringVar2, sText_StrainUnknown);
-
-       StringExpandPlaceholders(gStringVar4, sText_CuredOfStrain);
+       StringExpandPlaceholders(gStringVar4, sText_CasilcoonImmunity);
+       return;
+    }
+    else if (item == ITEM_BUTTERDRILL_VACCINE)
+    {
+       StringExpandPlaceholders(gStringVar4, sText_ButterdrillImmunity);
+       return;
+    }
+    else if (item == ITEM_DUSTOXIFLY_VACCINE)
+    {
+       StringExpandPlaceholders(gStringVar4, sText_DustoxiflyImmunity);
        return;
     }
 
@@ -8501,5 +8506,78 @@ static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId)
         else
             DisplayPartyMenuStdMessage(PARTY_MSG_CHOOSE_MON);
         gTasks[taskId].func = Task_HandleChooseMonInput;
+    }
+}
+
+static const u8 sText_ExtractedSample[] = _("Extracted {STR_VAR_1}!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_ExtractedSamplePC[] = _("Extracted {STR_VAR_1} to PC!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_NoRoomForSample[] = _("No room for sample!{PAUSE_UNTIL_PRESS}");
+static const u8 sText_NotReadyForSample1Hour[] = _("Not ready! Come back\nin 1 hour.{PAUSE_UNTIL_PRESS}");
+static const u8 sText_NotReadyForSampleHours[] = _("Not ready! Come back\nin {STR_VAR_1} hours.{PAUSE_UNTIL_PRESS}");
+
+
+
+static void CursorCb_TakeSample(u8 taskId)
+{
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][gPartyMenu.slotId];
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u8 lastSampleHour = GetMonData(mon, MON_DATA_LAST_SAMPLE_HOUR);
+    
+    // Hash localTime to an 0-31 range by dividing hours by 5 (5 hour interval)
+    u8 currentHour = ((gLocalTime.days * 24 + gLocalTime.hours) / 5) % 32;
+    
+    u16 item = 0;
+    if (species == SPECIES_SILCOON) item = ITEM_SILCOON_SAMPLE;
+    else if (species == SPECIES_CASCOON) item = ITEM_CASCOON_SAMPLE;
+    else if (species == SPECIES_BEAUTIFLY) item = ITEM_BEAUTIFLY_SAMPLE;
+    else if (species == SPECIES_DUSTOX) item = ITEM_DUSTOX_SAMPLE;
+    else if (species == SPECIES_BUTTERFREE) item = ITEM_BUTTERFREE_SAMPLE;
+    else if (species == SPECIES_BEEDRILL) item = ITEM_BEEDRILL_SAMPLE;
+    
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
+    
+    if (lastSampleHour != currentHour && item != 0) // once per 5 hours
+    {
+        if (CountTotalItemQuantityInBag(item) + CountTotalItemQuantityInPC(item) >= 999)
+        {
+            PlaySE(SE_FAILURE);
+            DisplayPartyMenuMessage(sText_NoRoomForSample, TRUE);
+            gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        }
+        else if (AddBagItem(item, 1))
+        {
+            SetMonData(mon, MON_DATA_LAST_SAMPLE_HOUR, &currentHour);
+            PlaySE(SE_SELECT);
+            CopyItemName(item, gStringVar1);
+            StringExpandPlaceholders(gStringVar4, sText_ExtractedSample);
+            DisplayPartyMenuMessage(gStringVar4, TRUE);
+            gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        }
+        else if (AddPCItem(item, 1))
+        {
+            SetMonData(mon, MON_DATA_LAST_SAMPLE_HOUR, &currentHour);
+            PlaySE(SE_SELECT);
+            CopyItemName(item, gStringVar1);
+            StringExpandPlaceholders(gStringVar4, sText_ExtractedSamplePC);
+            DisplayPartyMenuMessage(gStringVar4, TRUE);
+            gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+        }
+    }
+    else
+    {
+        u8 hoursUntilReady = 5 - (((gLocalTime.days * 24) + gLocalTime.hours) % 5);
+        PlaySE(SE_FAILURE);
+        if (hoursUntilReady == 1)
+        {
+            DisplayPartyMenuMessage(sText_NotReadyForSample1Hour, TRUE);
+        }
+        else
+        {
+            ConvertIntToDecimalStringN(gStringVar1, hoursUntilReady, STR_CONV_MODE_LEFT_ALIGN, 1);
+            StringExpandPlaceholders(gStringVar4, sText_NotReadyForSampleHours);
+            DisplayPartyMenuMessage(gStringVar4, TRUE);
+        }
+        gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
     }
 }

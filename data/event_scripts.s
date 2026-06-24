@@ -1795,6 +1795,14 @@ EventScript_BadEggVirus_Terminal::
 @ --- NEW INFECTION EVENTS ---
 EventScript_CaughtBEV::
     msgbox Text_CaughtBEV, MSGBOX_DEFAULT
+    goto_if_unset FLAG_FIRST_BEV_INFECTION, EventScript_CaughtBEVFirstTime
+    releaseall
+    end
+
+EventScript_CaughtBEVFirstTime::
+    setflag FLAG_FIRST_BEV_INFECTION
+    setvar VAR_CUTSCENE, 1
+    msgbox Text_CaughtBEVFirstTime, MSGBOX_DEFAULT
     releaseall
     end
 
@@ -1806,6 +1814,9 @@ EventScript_CaughtNormalPokerus::
 @ --- TEXT DEFINITIONS ---
 Text_CaughtBEV:
     .string "{STR_VAR_1} caught the\nBad Egg Virus (Strain {STR_VAR_2})!$"
+
+Text_CaughtBEVFirstTime:
+    .string "This looks dangerous...\nYou should talk to Professor Birch.$"
 
 Text_CaughtNormalPokerus:
     .string "{STR_VAR_1} caught the Pokérus!\nThankfully, it's not the Bad Egg Virus.$"
@@ -1945,3 +1956,8 @@ EventScript_End:
 	.include "data/scripts/battle_frontier.inc"
 	.include "data/scripts/apricorn_tree.inc"
 	.include "data/scripts/wild_encounter.inc"
+
+EventScript_RotomOPowersMenu::
+	release
+	end
+

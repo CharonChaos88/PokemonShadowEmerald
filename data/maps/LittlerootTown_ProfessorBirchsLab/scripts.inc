@@ -2344,98 +2344,800 @@ BirchReaction::
 # 1222 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox BirchReaction_Text_0
 # 1223 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	addvar VAR_CUTSCENE, 1
-# 1224 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	goto ReplyingToBirch
 	return
 
 
 ReplyingToBirch::
+# 1227 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	lock
 # 1228 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	lock
+	setspeaker SP_NAME_PLAYER
 # 1229 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setspeaker SP_NAME_PLAYER
-# 1230 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox ReplyingToBirch_Text_0
-# 1231 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	release
-	end
-
-
-LittlerootTown_ProfessorBirchsLab_EventScript_Birch::
-# 1236 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	lock
-# 1237 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	faceplayer
-# 1238 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto_if_eq VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 5, LittlerootTown_ProfessorBirchsLab_EventScript_CanHaveAnyOneOfRarePokemon
-# 1239 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto_if_eq VAR_CUTSCENE, 3, BirchLooksAtYourStarter
-# 1240 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto_if_eq VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 2, LittlerootTown_ProfessorBirchsLab_EventScript_GrassyPatchWaiting
-# 1241 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto_if_unset FLAG_HAS_MATCH_CALL, LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister
-# 1242 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto_if_unset FLAG_ENABLE_PROF_BIRCH_MATCH_CALL, EventScript_RegisterProfBirch
-# 1243 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	goto LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister
-	end
-
-
-BirchLooksAtYourStarter::
-# 1441 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	lock
-# 1442 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setspeaker SP_PROF_BIRCH
-# 1443 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox BirchLooksAtYourStarter_Text_0
-# 1446 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setspeaker SP_NAME_PLAYER
-# 1447 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox BirchLooksAtYourStarter_Text_1
-# 1448 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1230 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	goto ResearchVirus1
 	return
 
 
-ResearchVirus1::
-# 1452 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch::
+# 1234 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	lock
-# 1453 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1235 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	faceplayer
+# 1236 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	returnqueststate RESEARCHING_BEV
+# 1237 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq LittlerootTown_ProfessorBirchsLab_EventScript_Birch_2
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_1:
+# 1247 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_eq VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 5, LittlerootTown_ProfessorBirchsLab_EventScript_CanHaveAnyOneOfRarePokemon
+# 1248 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_eq VAR_CUTSCENE, 1, TalktoBirchAboutWhatHappened1
+# 1249 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_eq VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 2, LittlerootTown_ProfessorBirchsLab_EventScript_GrassyPatchWaiting
+# 1251 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	returnqueststate RESEARCHING_BEV
+# 1252 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_ge LittlerootTown_ProfessorBirchsLab_EventScript_Birch_5
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_4:
+# 1259 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_unset FLAG_HAS_MATCH_CALL, LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister
+# 1260 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_unset FLAG_ENABLE_PROF_BIRCH_MATCH_CALL, EventScript_RegisterProfBirch
+# 1261 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister
+	end
+
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_2:
+# 1238 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	specialvar VAR_RESULT, CheckPartyHasBevStrainX
+# 1239 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq LittlerootTown_ProfessorBirchsLab_EventScript_Birch_7
+	goto LittlerootTown_ProfessorBirchsLab_EventScript_Birch_1
+
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_5:
+# 1253 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox LittlerootTown_ProfessorBirchsLab_EventScript_Birch_Text_1, MSGBOX_YESNO
+# 1254 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, YES
+	goto_if_eq LittlerootTown_ProfessorBirchsLab_EventScript_Birch_9
+	goto LittlerootTown_ProfessorBirchsLab_EventScript_Birch_4
+
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_7:
+# 1240 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox LittlerootTown_ProfessorBirchsLab_EventScript_Birch_Text_0
+# 1241 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	startquest RESEARCHING_BEV
+# 1242 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	subquestmenu QUEST_MENU_UNLOCK_QUEST, RESEARCHING_BEV, SUBQUEST_WURMPLE
+# 1243 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_9:
+# 1255 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto Birch_CraftVaccineMenu
+	goto LittlerootTown_ProfessorBirchsLab_EventScript_Birch_4
+
+
+ResearchVirus1::
+# 1266 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	lock
+# 1267 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setspeaker SP_PROF_BIRCH
-# 1454 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1268 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox ResearchVirus1_Text_0
-# 1457 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1271 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	goto GivePlayerPokeNav
 	return
 
 
 GivePlayerPokeNav::
-# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1276 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	lock
-# 1463 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1277 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	playfanfare MUS_OBTAIN_ITEM
-# 1464 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1278 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox GivePlayerPokeNav_Text_0
-# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1279 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	waitfanfare
-# 1466 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1280 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKENAV_GET
-# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1281 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_HAS_MATCH_CALL
-# 1468 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1282 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_ADDED_MATCH_CALL_TO_POKENAV
-# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1283 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_ENABLE_PROF_BIRCH_MATCH_CALL
-# 1470 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1284 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setspeaker SP_PROF_BIRCH
-# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1285 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox GivePlayerPokeNav_Text_1
-# 1472 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1286 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_CUTSCENE, 1
-# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1287 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	startquest RESEARCHING_BEV
+# 1288 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	release
 	end
+
+
+Birch_CraftVaccineMenu::
+# 1293 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	message Birch_CraftVaccineMenu_Text_0
+# 1294 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitmessage
+# 1295 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	dynmultipush Birch_CraftVaccineMenu_Text_1, 0
+# 1296 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	dynmultipush Birch_CraftVaccineMenu_Text_2, 1
+# 1297 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	dynmultipush Birch_CraftVaccineMenu_Text_3, 2
+# 1298 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	dynmultipush Birch_CraftVaccineMenu_Text_4, 3
+# 1299 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	dynmultistack 0, 0, FALSE, 4, FALSE, 0, DYN_MULTICHOICE_CB_NONE
+# 1300 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq Birch_CraftVaccineMenu_1
+# 1302 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, 1
+	goto_if_eq Birch_CraftVaccineMenu_2
+# 1304 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_eq Birch_CraftVaccineMenu_3
+# 1307 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox Birch_CraftVaccineMenu_Text_5
+# 1308 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+Birch_CraftVaccineMenu_1:
+# 1301 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto CraftCasilcoonVaccine
+	return
+
+Birch_CraftVaccineMenu_2:
+# 1303 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto CraftButterdrillVaccine
+	return
+
+Birch_CraftVaccineMenu_3:
+# 1305 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto CraftDustoxiflyVaccine
+	return
+
+
+CraftCasilcoonVaccine::
+# 1314 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_SILCOON_SHELL, 5
+# 1315 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftCasilcoonVaccine_2
+CraftCasilcoonVaccine_1:
+# 1316 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_CASCOON_SHELL, 5
+# 1317 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftCasilcoonVaccine_5
+CraftCasilcoonVaccine_4:
+# 1318 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_SILCOON_SAMPLE, 1
+# 1319 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftCasilcoonVaccine_8
+CraftCasilcoonVaccine_7:
+# 1320 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_CASCOON_SAMPLE, 1
+# 1321 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftCasilcoonVaccine_11
+CraftCasilcoonVaccine_10:
+# 1323 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_SILCOON_SHELL, 5
+# 1324 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_CASCOON_SHELL, 5
+# 1325 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_SILCOON_SAMPLE, 1
+# 1326 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_CASCOON_SAMPLE, 1
+# 1327 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_CASILCOON_VACCINE, 1
+# 1328 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CraftCasilcoonVaccine_Text_0
+# 1329 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CraftCasilcoonVaccine_2:
+# 1315 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftCasilcoonVaccine_1
+
+CraftCasilcoonVaccine_5:
+# 1317 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftCasilcoonVaccine_4
+
+CraftCasilcoonVaccine_8:
+# 1319 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftCasilcoonVaccine_7
+
+CraftCasilcoonVaccine_11:
+# 1321 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftCasilcoonVaccine_10
+
+
+CraftButterdrillVaccine::
+# 1334 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_METAPOD_SHELL, 1
+# 1335 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftButterdrillVaccine_2
+CraftButterdrillVaccine_1:
+# 1336 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_KAKUNA_SHELL, 1
+# 1337 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftButterdrillVaccine_5
+CraftButterdrillVaccine_4:
+# 1338 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_BUTTERFREE_SAMPLE, 1
+# 1339 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftButterdrillVaccine_8
+CraftButterdrillVaccine_7:
+# 1340 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_BEEDRILL_SAMPLE, 1
+# 1341 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftButterdrillVaccine_11
+CraftButterdrillVaccine_10:
+# 1343 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_METAPOD_SHELL, 1
+# 1344 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_KAKUNA_SHELL, 1
+# 1345 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_BUTTERFREE_SAMPLE, 1
+# 1346 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_BEEDRILL_SAMPLE, 1
+# 1347 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_BUTTERDRILL_VACCINE, 1
+# 1348 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CraftButterdrillVaccine_Text_0
+# 1349 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CraftButterdrillVaccine_2:
+# 1335 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftButterdrillVaccine_1
+
+CraftButterdrillVaccine_5:
+# 1337 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftButterdrillVaccine_4
+
+CraftButterdrillVaccine_8:
+# 1339 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftButterdrillVaccine_7
+
+CraftButterdrillVaccine_11:
+# 1341 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftButterdrillVaccine_10
+
+
+CraftDustoxiflyVaccine::
+# 1354 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_BEAUTIFLY_SAMPLE, 1
+# 1355 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftDustoxiflyVaccine_2
+CraftDustoxiflyVaccine_1:
+# 1356 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_DUSTOX_SAMPLE, 1
+# 1357 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq CraftDustoxiflyVaccine_5
+CraftDustoxiflyVaccine_4:
+# 1359 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_BEAUTIFLY_SAMPLE, 1
+# 1360 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	removeitem ITEM_DUSTOX_SAMPLE, 1
+# 1361 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveitem ITEM_DUSTOXIFLY_VACCINE, 1
+# 1362 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CraftDustoxiflyVaccine_Text_0
+# 1363 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CraftDustoxiflyVaccine_2:
+# 1355 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftDustoxiflyVaccine_1
+
+CraftDustoxiflyVaccine_5:
+# 1357 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto MissingIngredients
+	goto CraftDustoxiflyVaccine_4
+
+
+MissingIngredients::
+# 1368 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox MissingIngredients_Text_0
+# 1369 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+BadEggVirusQuestNPC::
+# 1374 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	lock
+# 1375 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	faceplayer
+# 1378 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_quest_complete RESEARCHING_BEV, BadEggVirusQuestAllDone
+# 1381 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 0, CheckSubquest0
+# 1382 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 1, CheckSubquest1
+# 1383 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 2, CheckSubquest2
+# 1384 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 3, CheckSubquest3
+# 1385 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 4, CheckSubquest4
+# 1386 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 5, CheckSubquest5
+# 1387 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 6, CheckSubquest6
+# 1388 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 7, CheckSubquest7
+# 1389 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 8, CheckSubquest8
+# 1390 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto_if_subquest_not_complete RESEARCHING_BEV, 9, CheckSubquest9
+# 1393 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox BadEggVirusQuestNPC_Text_0, MSGBOX_DEFAULT
+# 1394 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completequest RESEARCHING_BEV
+# 1395 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1396 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1397 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+BadEggVirusQuestAllDone::
+# 1402 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox BadEggVirusQuestAllDone_Text_0, MSGBOX_DEFAULT
+# 1403 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+CheckSubquest0::
+# 1409 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1410 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest0_2
+# 1417 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest0_Text_1, MSGBOX_DEFAULT
+CheckSubquest0_1:
+# 1419 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest0_2:
+# 1411 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest0_Text_0, MSGBOX_DEFAULT
+# 1412 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 0
+# 1413 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1414 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+	goto CheckSubquest0_1
+
+
+CheckSubquest1::
+# 1424 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SILCOON
+# 1425 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest1_2
+CheckSubquest1_1:
+# 1428 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_CASCOON
+# 1429 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest1_5
+CheckSubquest1_4:
+# 1433 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest1_Text_0, MSGBOX_DEFAULT
+# 1434 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest1_2:
+# 1426 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto Subquest1_Evolved
+	goto CheckSubquest1_1
+
+CheckSubquest1_5:
+# 1430 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	goto Subquest1_Evolved
+	goto CheckSubquest1_4
+
+
+Subquest1_Evolved::
+# 1439 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox Subquest1_Evolved_Text_0, MSGBOX_DEFAULT
+# 1440 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1441 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1442 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 1
+# 1443 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+CheckSubquest2::
+# 1448 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setvar VAR_TEMP_1, 0
+# 1450 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_CATERPIE
+# 1451 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_2
+CheckSubquest2_1:
+# 1452 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_METAPOD
+# 1453 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_5
+CheckSubquest2_4:
+# 1454 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_BUTTERFREE
+# 1455 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_8
+CheckSubquest2_7:
+# 1457 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WEEDLE
+# 1458 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_11
+CheckSubquest2_10:
+# 1459 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_KAKUNA
+# 1460 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_14
+CheckSubquest2_13:
+# 1461 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_BEEDRILL
+# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_17
+CheckSubquest2_16:
+# 1464 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_PINECO
+# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_20
+CheckSubquest2_19:
+# 1466 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_FORRETRESS
+# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_23
+CheckSubquest2_22:
+# 1468 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SCATTERBUG
+# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_26
+CheckSubquest2_25:
+# 1470 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SPINARAK
+# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_29
+CheckSubquest2_28:
+# 1472 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_ARIADOS
+# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_32
+CheckSubquest2_31:
+# 1475 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_TEMP_1, 3
+	goto_if_ge CheckSubquest2_35
+# 1482 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest2_Text_1
+CheckSubquest2_34:
+# 1484 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest2_2:
+# 1451 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_1
+
+CheckSubquest2_5:
+# 1453 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_4
+
+CheckSubquest2_8:
+# 1455 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_7
+
+CheckSubquest2_11:
+# 1458 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_10
+
+CheckSubquest2_14:
+# 1460 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_13
+
+CheckSubquest2_17:
+# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_16
+
+CheckSubquest2_20:
+# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_19
+
+CheckSubquest2_23:
+# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_22
+
+CheckSubquest2_26:
+# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_25
+
+CheckSubquest2_29:
+# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_28
+
+CheckSubquest2_32:
+# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_31
+
+CheckSubquest2_35:
+# 1476 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest2_Text_0, MSGBOX_DEFAULT
+# 1477 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1478 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1479 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 2
+	goto CheckSubquest2_34
+
+
+CheckSubquest3::
+# 1489 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_SILCOON_SAMPLE, 6
+# 1490 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest3_2
+CheckSubquest3_1:
+# 1502 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest3_Text_1
+# 1503 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest3_2:
+# 1491 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_CASCOON_SAMPLE, 6
+# 1492 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest3_4
+	goto CheckSubquest3_1
+
+CheckSubquest3_4:
+# 1493 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest3_Text_0, MSGBOX_DEFAULT
+# 1494 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1495 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1496 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 3
+# 1497 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+CheckSubquest4::
+# 1508 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_SILCOON_SHELL, 30
+# 1509 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest4_2
+CheckSubquest4_1:
+# 1521 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest4_Text_1
+# 1522 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest4_2:
+# 1510 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkitem ITEM_CASCOON_SHELL, 30
+# 1511 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest4_4
+	goto CheckSubquest4_1
+
+CheckSubquest4_4:
+# 1512 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest4_Text_0, MSGBOX_DEFAULT
+# 1513 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1514 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1515 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 4
+# 1516 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+
+CheckSubquest5::
+# 1528 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1529 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest5_2
+# 1536 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest5_Text_1
+CheckSubquest5_1:
+# 1538 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest5_2:
+# 1530 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest5_Text_0, MSGBOX_DEFAULT
+# 1531 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 5
+# 1532 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1533 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+	goto CheckSubquest5_1
+
+
+CheckSubquest6::
+# 1544 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1545 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest6_2
+# 1552 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest6_Text_1
+CheckSubquest6_1:
+# 1554 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest6_2:
+# 1546 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest6_Text_0, MSGBOX_DEFAULT
+# 1547 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 6
+# 1548 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1549 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+	goto CheckSubquest6_1
+
+
+CheckSubquest7::
+# 1560 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1561 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest7_2
+# 1568 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest6_Text_1
+CheckSubquest7_1:
+# 1570 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest7_2:
+# 1562 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest7_Text_0, MSGBOX_DEFAULT
+# 1563 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 7
+# 1564 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1565 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+	goto CheckSubquest7_1
+
+
+CheckSubquest8::
+# 1576 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1577 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest8_2
+# 1584 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest6_Text_1
+CheckSubquest8_1:
+# 1586 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest8_2:
+# 1578 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest8_Text_0, MSGBOX_DEFAULT
+# 1579 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 8
+# 1580 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1581 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+	goto CheckSubquest8_1
+
+
+CheckSubquest9::
+# 1592 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_WURMPLE
+# 1593 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest9_2
+# 1603 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest6_Text_1
+CheckSubquest9_1:
+# 1605 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	release
+	end
+
+CheckSubquest9_2:
+# 1594 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest9_Text_0, MSGBOX_DEFAULT
+# 1595 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	completesubquest RESEARCHING_BEV, 9
+# 1596 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1597 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	waitfanfare
+# 1600 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox CheckSubquest9_Text_1, MSGBOX_DEFAULT
+	goto CheckSubquest9_1
 
 
 LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent_Text_0:
@@ -2564,52 +3266,180 @@ BirchTalkingToPlayer_Text_0:
 
 BirchTalkingToPlayer_Text_1:
 # 1210 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	.string "I saw a Magma Grunt I've never seen\n"
-	.string "before and suddenly Route 103\l"
-	.string "experienced a drought. Then,\l"
-	.string "{STR_VAR_1} got infected with\l"
+	.string "{STR_VAR_1} got infected with\n"
 	.string "Pokérus.$"
 
 BirchReaction_Text_0:
 # 1222 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	.string "All at the same time!? Did you get the\n"
-	.string "Magma Grunt's name?$"
+	.string "Really!?$"
 
 ReplyingToBirch_Text_0:
-# 1230 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	.string "No, He just said “You should have\n"
-	.string "stayed away from me”$"
+# 1229 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Yeah! I don't know if its infected with\n"
+	.string "the virus on the news.$"
 
-BirchLooksAtYourStarter_Text_0:
-# 1443 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	.string "Hey {PLAYER}!\n"
-	.string "Hm.… It seems that your starter caught\l"
-	.string "the virus that was on the news. That's\l"
-	.string "strange, your starter color change to a\l"
-	.string "Cyan-Red scheme.$"
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_Text_0:
+# 1240 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Ah! One of your Pokémon seems to be\n"
+	.string "infected with Strain X of the Bad Egg\l"
+	.string "Virus!\p"
+	.string "I've been looking into this phenomenon.\n"
+	.string "Will you help me research it?$"
 
-BirchLooksAtYourStarter_Text_1:
-# 1447 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	.string "Damn, Professor, I'll go study about\n"
-	.string "this virus.$"
+LittlerootTown_ProfessorBirchsLab_EventScript_Birch_Text_1:
+# 1253 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Ah, {PLAYER}! Did you need me to\n"
+	.string "synthesize a vaccine from your\l"
+	.string "samples?$"
 
 ResearchVirus1_Text_0:
-# 1454 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1268 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Well, for starters we know it comes from\n"
 	.string "Pokerus which is actually a beneficial\l"
-	.string "virus. However, you mention that Magma\l"
-	.string "Grunt earlier. It seems like your\l"
-	.string "starter got exposed from that Magma\l"
-	.string "Grunt. I would talk to Maxie about that.\l"
+	.string "virus. It seems like your Pokémon got\l"
+	.string "exposed the wild. You need to do\l"
+	.string "research so we can study this virus.\l"
 	.string "Before you do that let me give you\l"
 	.string "something to communicate with you.$"
 
 GivePlayerPokeNav_Text_0:
-# 1464 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1278 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "{PLAYER} recieved the PokeNav App\n"
 	.string "from Professor Birch.$"
 
 GivePlayerPokeNav_Text_1:
-# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1285 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Its the PokéNav but now its an app on\n"
-	.string "your Smartphone.$"
+	.string "your tablet.$"
+
+Birch_CraftVaccineMenu_Text_0:
+# 1293 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Which vaccine should I synthesize?$"
+
+Birch_CraftVaccineMenu_Text_1:
+# 1295 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Casilcoon Vaccine$"
+
+Birch_CraftVaccineMenu_Text_2:
+# 1296 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Butterdrill Vaccine$"
+
+Birch_CraftVaccineMenu_Text_3:
+# 1297 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Dustoxifly Vaccine$"
+
+Birch_CraftVaccineMenu_Text_4:
+# 1298 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Cancel$"
+
+Birch_CraftVaccineMenu_Text_5:
+# 1307 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Let me know if you change your mind.$"
+
+CraftCasilcoonVaccine_Text_0:
+# 1328 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Here is your Casilcoon Vaccine!$"
+
+CraftButterdrillVaccine_Text_0:
+# 1348 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Here is your Butterdrill Vaccine!$"
+
+CraftDustoxiflyVaccine_Text_0:
+# 1362 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Here is your Dustoxifly Vaccine!$"
+
+MissingIngredients_Text_0:
+# 1368 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You don't have the necessary shells and\n"
+	.string "samples for this vaccine.$"
+
+BadEggVirusQuestNPC_Text_0:
+# 1393 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You have completed all 10 tasks!\nThe Bad Egg Virus research is complete!$"
+
+BadEggVirusQuestAllDone_Text_0:
+# 1402 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Thanks to you, the Bad Egg Virus\nhas been fully researched!$"
+
+CheckSubquest0_Text_0:
+# 1411 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Wow, you caught a Wurmple!$"
+
+CheckSubquest0_Text_1:
+# 1417 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your first task, please catch a\n"
+	.string "Wurmple and show it to me!$"
+
+CheckSubquest1_Text_0:
+# 1433 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your second task, please evolve\n"
+	.string "your Wurmple into Silcoon or Cascoon!$"
+
+Subquest1_Evolved_Text_0:
+# 1439 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Excellent! You evolved your Wurmple!$"
+
+CheckSubquest2_Text_0:
+# 1476 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You found three different Bug-types!$"
+
+CheckSubquest2_Text_1:
+# 1482 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your third task, go to the Petalburg\n"
+	.string "Woods and find three different bug\l"
+	.string "type Pokémon that's not part of the\l"
+	.string "Wurmple family.$"
+
+CheckSubquest3_Text_0:
+# 1493 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Oh! You collected all the samples!$"
+
+CheckSubquest3_Text_1:
+# 1502 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your fourth task, take 6 samples\n"
+	.string "from Silcoon and 6 from Cascoon. If you\l"
+	.string "don't have one or the other there's\l"
+	.string "plenty in the Petalburg Woods.$"
+
+CheckSubquest4_Text_0:
+# 1512 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Incredible! You've collected\nenough shells!$"
+
+CheckSubquest4_Text_1:
+# 1521 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your fifth task, please collect 30\n"
+	.string "Silcoon Shells and 30 Cascoon Shells!$"
+
+CheckSubquest5_Text_0:
+# 1530 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You completed the sixth task!$"
+
+CheckSubquest5_Text_1:
+# 1536 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your fourth task, Talk to the\n"
+	.string "professor. Its time to make the\l"
+	.string "vaccines. Make six vaccines.$"
+
+CheckSubquest6_Text_0:
+# 1546 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You completed the seventh task!$"
+
+CheckSubquest6_Text_1:
+# 1552 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "For your fourth task, please do that!$"
+
+CheckSubquest7_Text_0:
+# 1562 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You completed the eighth task!$"
+
+CheckSubquest8_Text_0:
+# 1578 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You completed the ninth task!$"
+
+CheckSubquest9_Text_0:
+# 1594 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "You completed the final task!$"
+
+CheckSubquest9_Text_1:
+# 1600 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Talk to me again to finalize the research!$"

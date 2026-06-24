@@ -16040,6 +16040,166 @@ const struct ItemInfo gItemsInfo[] =
         .iconPic = gItemIcon_CasicoonVaccine,
         .iconPalette = gItemIconPalette_CasicoonVaccine,
     },
+    [ITEM_SILCOON_SHELL] =
+    {
+        .name = ITEM_NAME("Silcoon Shell"),
+        .price = 200,
+        .description = COMPOUND_STRING("A Shell that is used\n"
+                                       "used for crafting\n"
+                                       "Vaccines."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_SilcoonShell,
+        .iconPalette = gItemIconPalette_SilcoonShell,
+    },
+    [ITEM_CASCOON_SHELL] =
+    {
+        .name = ITEM_NAME("Cascoon Shell"),
+        .price = 200,
+        .description = COMPOUND_STRING("A Shell that is used\n"
+                                       "used for crafting\n"
+                                       "Vaccines."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_CascoonShell,
+        .iconPalette = gItemIconPalette_CascoonShell,
+    },
+    [ITEM_SILCOON_SAMPLE] =
+    {
+        .name = ITEM_NAME("Silcoon Sample"),
+        .price = 500,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Silcoon."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_SilcoonSample,
+        .iconPalette = gItemIconPalette_SilcoonSample,
+    },
+    [ITEM_CASCOON_SAMPLE] =
+    {
+        .name = ITEM_NAME("Cascoon Sample"),
+        .price = 500,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Cascoon."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_CascoonSample,
+        .iconPalette = gItemIconPalette_CascoonSample,
+    },
+    [ITEM_BEAUTIFLY_SAMPLE] =
+    {
+        .name = ITEM_NAME("Beautifly Sample"),
+        .price = 1000,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Beautifly."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_BeautiflySample,
+        .iconPalette = gItemIconPalette_BeautiflySample,
+    },
+    [ITEM_DUSTOX_SAMPLE] =
+    {
+        .name = ITEM_NAME("Dustox Sample"),
+        .price = 1000,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Dustox."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_DustoxSample,
+        .iconPalette = gItemIconPalette_DustoxSample,
+    },
+    [ITEM_METAPOD_SHELL] =
+    {
+        .name = ITEM_NAME("Metapod Shell"),
+        .price = 200,
+        .description = COMPOUND_STRING("A Shell that is used\n"
+                                       "used for crafting\n"
+                                       "Vaccines."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_MetapodShell,
+        .iconPalette = gItemIconPalette_MetapodShell,
+    },
+    [ITEM_KAKUNA_SHELL] =
+    {
+        .name = ITEM_NAME("Kakuna Shell"),
+        .price = 200,
+        .description = COMPOUND_STRING("A Shell that is used\n"
+                                       "used for crafting\n"
+                                       "Vaccines."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_KakunaShell,
+        .iconPalette = gItemIconPalette_KakunaShell,
+    },
+    [ITEM_BUTTERFREE_SAMPLE] =
+    {
+        .name = ITEM_NAME("Butterfree Sample"),
+        .price = 1000,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Butterfree."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_ButterfreeSample,
+        .iconPalette = gItemIconPalette_ButterfreeSample,
+    },
+    [ITEM_BEEDRILL_SAMPLE] =
+    {
+        .name = ITEM_NAME("Beedrill Sample"),
+        .price = 1000,
+        .description = COMPOUND_STRING(
+            "Blood extracted\n"
+            "from a Beedrill."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_BAG_MENU,
+        .iconPic = gItemIcon_BeedrillSample,
+        .iconPalette = gItemIconPalette_BeedrillSample,
+    },
+    [ITEM_BUTTERDRILL_VACCINE] =
+    {
+        .name = ITEM_NAME("Butterdrill Vaccine"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A vaccine that\n"
+            "cures two strains\n"
+            "of Bad Egg Virus."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_ButterdrillVaccine,
+        .iconPic = gItemIcon_ButterdrillVaccine,
+        .iconPalette = gItemIconPalette_ButterdrillVaccine,
+    },
+    [ITEM_DUSTOXIFLY_VACCINE] =
+    {
+        .name = ITEM_NAME("Dustoxifly Vaccine"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "A vaccine that\n"
+            "cures all strains\n"
+            "of Bad Egg Virus."),
+        .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_UNCATEGORIZED,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_DustoxiflyVaccine,
+        .iconPic = gItemIcon_DustoxiflyVaccine,
+        .iconPalette = gItemIconPalette_DustoxiflyVaccine,
+    },
     [ITEM_OUTFIT_BOX] =
     {
         .name = ITEM_NAME("Outfit Box"),

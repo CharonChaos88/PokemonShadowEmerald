@@ -1207,7 +1207,7 @@ script BirchTalkingToPlayer {
 	msgbox(format("What's wrong {PLAYER}?"))
 	bufferpartymonnick(STR_VAR_1, 0)
 	setspeaker(SP_NAME_PLAYER)
-	msgbox(format("I saw a Magma Grunt I've never seen before and suddenly Route 103 experienced a drought. Then, {STR_VAR_1} got infected with Pok\erus."))
+	msgbox(format(" {STR_VAR_1} got infected with Pok\erus."))
 	goto(BirchReaction)
 }
 
@@ -1219,240 +1219,54 @@ script BirchReaction {
 	waitfanfare
 	delay(48)
 	waitmovement
-	msgbox(format("All at the same time!? Did you get the Magma Grunt's name?"))
-	addvar(VAR_CUTSCENE, 1)
+	msgbox(format("Really!?"))
 	goto(ReplyingToBirch)
 }
 
 script ReplyingToBirch {
 	lock
 	setspeaker(SP_NAME_PLAYER)
-	msgbox(format("No, He just said \qoYou should have stayed away from me\qc"))
-	release
-	end
+	msgbox(format("Yeah! I don't know if its infected with the virus on the news."))
+	goto(ResearchVirus1)
 }
 
 script LittlerootTown_ProfessorBirchsLab_EventScript_Birch {
 	lock
 	faceplayer
+	returnqueststate(RESEARCHING_BEV)
+	if (var(VAR_RESULT) == 0) {
+		specialvar(VAR_RESULT, CheckPartyHasBevStrainX)
+		if (var(VAR_RESULT) == TRUE) {
+			msgbox(format("Ah! One of your Pokémon seems to be infected with Strain X of the Bad Egg Virus!\pI've been looking into this phenomenon.\nWill you help me research it?"))
+			startquest(RESEARCHING_BEV)
+			subquestmenu(QUEST_MENU_UNLOCK_QUEST,RESEARCHING_BEV, SUBQUEST_WURMPLE)
+			release
+			end
+		}
+	}
 	goto_if_eq(VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 5, LittlerootTown_ProfessorBirchsLab_EventScript_CanHaveAnyOneOfRarePokemon)
-	goto_if_eq(VAR_CUTSCENE, 3, BirchLooksAtYourStarter)
+	goto_if_eq(VAR_CUTSCENE, 1, TalktoBirchAboutWhatHappened1)
 	goto_if_eq(VAR_DEX_UPGRADE_JOHTO_STARTER_STATE, 2, LittlerootTown_ProfessorBirchsLab_EventScript_GrassyPatchWaiting)
+
+	returnqueststate(RESEARCHING_BEV)
+	if (var(VAR_RESULT) >= 2) {
+		msgbox(format("Ah, {PLAYER}! Did you need me to synthesize a vaccine from your samples?"), MSGBOX_YESNO)
+		if (var(VAR_RESULT) == YES) {
+			goto(Birch_CraftVaccineMenu)
+		}
+	}
+
 	goto_if_unset(FLAG_HAS_MATCH_CALL, LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister)
 	goto_if_unset(FLAG_ENABLE_PROF_BIRCH_MATCH_CALL, EventScript_RegisterProfBirch)
 	goto(LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister)
 	end
 }
-// script BadEggRoll {
-// 	// 1. Roll a number from 0 to 99
-//     random(100)
-//     setvar(VAR_CUTSCENE, 3)
-//     // 2. 85% chance to trigger the virus logic
-//     if (var(VAR_RESULT) < 85) {
-        
-//         // 3. Check exactly which of the 27 starters the player chose.
-//         // (Assuming your custom UI saves the chosen species to VAR_STARTER_MON)
-        
-//         // --- PAGE 0: Kanto, Johto, Hoenn ---
-//         if (var(VAR_STARTER_MON) == SPECIES_BULBASAUR) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_CHARMANDER) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-        
-//         } elif (var(VAR_STARTER_MON) == SPECIES_SQUIRTLE) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-        
-//         } elif (var(VAR_STARTER_MON) == SPECIES_CHIKORITA) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_CYNDAQUIL) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_TOTODILE) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-        
-//         } elif (var(VAR_STARTER_MON) == SPECIES_TREECKO) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_TORCHIC) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_MUDKIP) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         // --- PAGE 1: Sinnoh, Unova, Kalos ---
-//         } elif (var(VAR_STARTER_MON) == SPECIES_TURTWIG) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_CHIMCHAR) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_PIPLUP) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_SNIVY) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_TEPIG) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_OSHAWOTT) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_CHESPIN) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_FENNEKIN) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_FROAKIE) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         // --- PAGE 2: Alola, Galar, Paldea ---
-//         } elif (var(VAR_STARTER_MON) == SPECIES_ROWLET) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_LITTEN) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_POPPLIO) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_GROOKEY) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_SCORBUNNY) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_SOBBLE) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-
-//         } elif (var(VAR_STARTER_MON) == SPECIES_SPRIGATITO) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_FUECOCO) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         } elif (var(VAR_STARTER_MON) == SPECIES_QUAXLY) {
-//             callnative(InfectStarterWithVirus)
-// 			addvar(VAR_CUTSCENE, 1)
-//             release
-//             end
-            
-//         }
-//     }
-    
-//     // Continue with the rest of your starter event (giving Pokedex, rivals, etc.)
-//     return
-// }
-
-
-// script TriggerCutscene {
-//     setvar(VAR_CUTSCENE, 3)
-// 	release
-// 	end
-// }
-
-script BirchLooksAtYourStarter {
-	lock
-	setspeaker(SP_PROF_BIRCH)
-	msgbox(format("Hey {PLAYER}!\n Hm.\. It seems that your starter caught the virus that was on the news."
-				  "That's strange, your starter color change to a Cyan-Red scheme."))
-
-	setspeaker(SP_NAME_PLAYER)
-	msgbox(format("Damn, Professor, I'll go study about this virus."))
-	goto(ResearchVirus1)
-}
 
 script ResearchVirus1 {
 	lock
 	setspeaker(SP_PROF_BIRCH)
-	msgbox(format("Well, for starters we know it comes from Pokerus which is actually a beneficial virus. However, you mention that Magma Grunt earlier."
-				  "It seems like your starter got exposed from that Magma Grunt. I would talk to Maxie about that."
+	msgbox(format("Well, for starters we know it comes from Pokerus which is actually a beneficial virus."
+				  "It seems like your Pok\emon got exposed the wild. You need to do research so we can study this virus."
 				  "Before you do that let me give you something to communicate with you."))
 	goto(GivePlayerPokeNav)
 	
@@ -1468,8 +1282,326 @@ script GivePlayerPokeNav {
 	setflag(FLAG_ADDED_MATCH_CALL_TO_POKENAV)
 	setflag(FLAG_ENABLE_PROF_BIRCH_MATCH_CALL)
 	setspeaker(SP_PROF_BIRCH)
-	msgbox(format("Its the Pok\eNav but now its an app on your Smartphone."))
+	msgbox(format("Its the Pok\eNav but now its an app on your tablet."))
 	addvar(VAR_CUTSCENE, 1)
+	startquest(RESEARCHING_BEV)
 	release
 	end
+}
+
+script Birch_CraftVaccineMenu {
+	message("Which vaccine should I synthesize?")
+	waitmessage
+	dynmultipush("Casilcoon Vaccine", 0)
+	dynmultipush("Butterdrill Vaccine", 1)
+	dynmultipush("Dustoxifly Vaccine", 2)
+	dynmultipush("Cancel", 3)
+	dynmultistack(0, 0, FALSE, 4, FALSE, 0, DYN_MULTICHOICE_CB_NONE)
+	if (var(VAR_RESULT) == 0) {
+		goto(CraftCasilcoonVaccine)
+	} elif (var(VAR_RESULT) == 1) {
+		goto(CraftButterdrillVaccine)
+	} elif (var(VAR_RESULT) == 2) {
+		goto(CraftDustoxiflyVaccine)
+	} else {
+		msgbox(format("Let me know if you change your mind."))
+		release
+		end
+	}
+}
+
+script CraftCasilcoonVaccine {
+	checkitem(ITEM_SILCOON_SHELL, 5)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_CASCOON_SHELL, 5)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_SILCOON_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_CASCOON_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+
+	removeitem(ITEM_SILCOON_SHELL, 5)
+	removeitem(ITEM_CASCOON_SHELL, 5)
+	removeitem(ITEM_SILCOON_SAMPLE, 1)
+	removeitem(ITEM_CASCOON_SAMPLE, 1)
+	giveitem(ITEM_CASILCOON_VACCINE, 1)
+	msgbox(format("Here is your Casilcoon Vaccine!"))
+	release
+	end
+}
+
+script CraftButterdrillVaccine {
+	checkitem(ITEM_METAPOD_SHELL, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_KAKUNA_SHELL, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_BUTTERFREE_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_BEEDRILL_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+
+	removeitem(ITEM_METAPOD_SHELL, 1)
+	removeitem(ITEM_KAKUNA_SHELL, 1)
+	removeitem(ITEM_BUTTERFREE_SAMPLE, 1)
+	removeitem(ITEM_BEEDRILL_SAMPLE, 1)
+	giveitem(ITEM_BUTTERDRILL_VACCINE, 1)
+	msgbox(format("Here is your Butterdrill Vaccine!"))
+	release
+	end
+}
+
+script CraftDustoxiflyVaccine {
+	checkitem(ITEM_BEAUTIFLY_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+	checkitem(ITEM_DUSTOX_SAMPLE, 1)
+	if (var(VAR_RESULT) == FALSE) { goto(MissingIngredients) }
+
+	removeitem(ITEM_BEAUTIFLY_SAMPLE, 1)
+	removeitem(ITEM_DUSTOX_SAMPLE, 1)
+	giveitem(ITEM_DUSTOXIFLY_VACCINE, 1)
+	msgbox(format("Here is your Dustoxifly Vaccine!"))
+	release
+	end
+}
+
+script MissingIngredients {
+	msgbox(format("You don't have the necessary shells and samples for this vaccine."))
+	release
+	end
+}
+
+script BadEggVirusQuestNPC {
+    lock
+    faceplayer
+    
+    // Check if the overall quest is already completely finished
+    goto_if_quest_complete(RESEARCHING_BEV, BadEggVirusQuestAllDone)
+    
+    // Check which subquest is the current active one, in sequential order
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 0, CheckSubquest0)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 1, CheckSubquest1)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 2, CheckSubquest2)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 3, CheckSubquest3)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 4, CheckSubquest4)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 5, CheckSubquest5)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 6, CheckSubquest6)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 7, CheckSubquest7)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 8, CheckSubquest8)
+    goto_if_subquest_not_complete(RESEARCHING_BEV, 9, CheckSubquest9)
+    
+    // If we reach here, it means all 10 subquests (0-9) are complete!
+    msgbox("You have completed all 10 tasks!\nThe Bad Egg Virus research is complete!", MSGBOX_DEFAULT)
+    completequest(RESEARCHING_BEV)
+    playfanfare(MUS_OBTAIN_ITEM)
+    waitfanfare
+    release
+    end
+}
+
+script BadEggVirusQuestAllDone {
+    msgbox("Thanks to you, the Bad Egg Virus\nhas been fully researched!", MSGBOX_DEFAULT)
+    release
+    end
+}
+
+script CheckSubquest0 {
+    // TEMPLATE: Replace with your specific check for Subquest 0
+    checkspecies(SPECIES_WURMPLE)
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("Wow, you caught a Wurmple!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 0)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+    }
+    else {
+        msgbox(format("For your first task, please catch a Wurmple and show it to me!"), MSGBOX_DEFAULT)
+    }
+    release
+    end
+}
+
+script CheckSubquest1 {
+    checkspecies(SPECIES_SILCOON) 
+    if (var(VAR_RESULT) == TRUE) {
+        goto(Subquest1_Evolved)
+    }
+    checkspecies(SPECIES_CASCOON)
+    if (var(VAR_RESULT) == TRUE) {
+        goto(Subquest1_Evolved)
+    }
+    
+    msgbox(format("For your second task, please evolve your Wurmple into Silcoon or Cascoon!"), MSGBOX_DEFAULT)
+    release
+    end
+}
+
+script Subquest1_Evolved {
+    msgbox("Excellent! You evolved your Wurmple!", MSGBOX_DEFAULT)
+	playfanfare(MUS_OBTAIN_ITEM)
+    waitfanfare
+    completesubquest(RESEARCHING_BEV, 1)
+    release
+    end
+}
+
+script CheckSubquest2 {
+    setvar(VAR_TEMP_1, 0)
+    
+    checkspecies(SPECIES_CATERPIE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_METAPOD)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_BUTTERFREE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    
+    checkspecies(SPECIES_WEEDLE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_KAKUNA)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_BEEDRILL)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    
+    checkspecies(SPECIES_PINECO)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_FORRETRESS)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_SCATTERBUG)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_SPINARAK)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_ARIADOS)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    
+    if (var(VAR_TEMP_1) >= 3) {
+        msgbox("You found three different Bug-types!", MSGBOX_DEFAULT)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+        completesubquest(RESEARCHING_BEV, 2)
+    }
+    else {
+        msgbox(format("For your third task, go to the Petalburg Woods and find three different bug type Pok\emon that's not part of the Wurmple family."))
+    }
+    release
+    end
+}
+
+script CheckSubquest3 {
+    checkitem(ITEM_SILCOON_SAMPLE, 6) 
+    if (var(VAR_RESULT) == TRUE) {
+        checkitem(ITEM_CASCOON_SAMPLE, 6)
+        if (var(VAR_RESULT) == TRUE) {
+            msgbox("Oh! You collected all the samples!", MSGBOX_DEFAULT)
+            playfanfare(MUS_OBTAIN_ITEM)
+            waitfanfare
+            completesubquest(RESEARCHING_BEV, 3)
+            release
+            end
+        }
+    }
+    
+    msgbox(format("For your fourth task, take 6 samples from Silcoon and 6 from Cascoon. If you don't have one or the other there's plenty in the Petalburg Woods."))
+    release
+    end
+}
+
+script CheckSubquest4 {
+    checkitem(ITEM_SILCOON_SHELL, 30)
+    if (var(VAR_RESULT) == TRUE) {
+        checkitem(ITEM_CASCOON_SHELL, 30)
+        if (var(VAR_RESULT) == TRUE) {
+            msgbox("Incredible! You've collected\nenough shells!", MSGBOX_DEFAULT)
+            playfanfare(MUS_OBTAIN_ITEM)
+            waitfanfare
+            completesubquest(RESEARCHING_BEV, 4)
+            release
+            end
+        }
+    }
+    
+    msgbox(format("For your fifth task, please collect 30 Silcoon Shells and 30 Cascoon Shells!"))
+    release
+    end
+}
+
+script CheckSubquest5 {
+    // TEMPLATE: Replace with your specific check for Subquest 5
+    checkspecies(SPECIES_WURMPLE) 
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("You completed the sixth task!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 5)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+    }
+    else {
+        msgbox(format("For your fourth task, Talk to the professor. Its time to make the vaccines. Make six vaccines."))
+    }
+    release
+    end
+}
+
+script CheckSubquest6 {
+    // TEMPLATE: Replace with your specific check for Subquest 6
+    checkspecies(SPECIES_WURMPLE) 
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("You completed the seventh task!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 6)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+    }
+    else {
+        msgbox(format("For your fourth task, please do that!"))
+    }
+    release
+    end
+}
+
+script CheckSubquest7 {
+    // TEMPLATE: Replace with your specific check for Subquest 7
+    checkspecies(SPECIES_WURMPLE) 
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("You completed the eighth task!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 7)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+    }
+    else {
+        msgbox(format("For your fourth task, please do that!"))
+    }
+    release
+    end
+}
+
+script CheckSubquest8 {
+    // TEMPLATE: Replace with your specific check for Subquest 8
+    checkspecies(SPECIES_WURMPLE) 
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("You completed the ninth task!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 8)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+    }
+    else {
+        msgbox(format("For your fourth task, please do that!"))
+    }
+    release
+    end
+}
+
+script CheckSubquest9 {
+    // TEMPLATE: Replace with your specific check for Subquest 9
+    checkspecies(SPECIES_WURMPLE) 
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox("You completed the final task!", MSGBOX_DEFAULT)
+        completesubquest(RESEARCHING_BEV, 9)
+        playfanfare(MUS_OBTAIN_ITEM)
+        waitfanfare
+        
+        // Final completion text so they don't have to talk again
+        msgbox("Talk to me again to finalize the research!", MSGBOX_DEFAULT)
+    }
+    else {
+        msgbox(format("For your fourth task, please do that!"))
+    }
+    release
+    end
 }

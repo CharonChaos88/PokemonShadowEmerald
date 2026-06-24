@@ -37,6 +37,8 @@
 // Functions to expose to Poryscript
 void PerformCocoonRitual(void);
 bool8 ApplyCasilcoonVaccine(struct Pokemon *mon);
+bool8 ApplyButterdrillVaccine(struct Pokemon *mon);
+bool8 ApplyDustoxiflyVaccine(struct Pokemon *mon);
 
 // EWRAM array to track partial stage progress for the active party.
 // Wiped to 0 when deposited in the PC to simulate "Quarantine Stasis".

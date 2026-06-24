@@ -31,6 +31,7 @@
 #include "follower_npc.h"
 #include "gpu_regs.h"
 #include "item.h"
+#include "international_string_util.h"
 #include "lilycove_lady.h"
 #include "main.h"
 #include "map_preview_screen.h"
@@ -3504,6 +3505,7 @@ struct GiveItemPackMenu
     u16 numItems;
     u16 listMenuTaskId;
     u8 windowId;
+    u8 windowType; // 0 = Default, 1 = Zigzagmerang
     struct ListMenuItem *listItems;
     u8 *itemNames;
     u16 *itemsArray;
@@ -3532,6 +3534,17 @@ static const struct WindowTemplate sGiveItemPackWindowTemplate =
     .tilemapTop = 1,
     .width = 26,
     .height = 18,
+    .paletteNum = 15,
+    .baseBlock = 1
+};
+
+static const struct WindowTemplate sZigzagmerangPackWindowTemplate =
+{
+    .bg = 0,
+    .tilemapLeft = 5,
+    .tilemapTop = 6,
+    .width = 20,
+    .height = 8,
     .paletteNum = 15,
     .baseBlock = 1
 };
@@ -3609,7 +3622,15 @@ static void CB2_GiveItemPackMenu(void)
         gMain.state++;
         break;
     case 3:
-        sGiveItemPackMenu->windowId = AddWindow(&sGiveItemPackWindowTemplate);
+        if (sGiveItemPackMenu->windowType == 1)
+        {
+            sGiveItemPackMenu->windowId = AddWindow(&sZigzagmerangPackWindowTemplate);
+        }
+        else
+        {
+            sGiveItemPackMenu->windowId = AddWindow(&sGiveItemPackWindowTemplate);
+        }
+            
         DeactivateAllTextPrinters();
         gMain.state++;
         break;
@@ -3623,14 +3644,31 @@ static void CB2_GiveItemPackMenu(void)
             u16 i;
             const u8 *ptr = (const u8 *)sGiveItemPackMenu->scriptPtr;
             struct ListMenuTemplate listTemplate;
-            sGiveItemPackMenu->listItems = AllocZeroed(sGiveItemPackMenu->numItems * sizeof(struct ListMenuItem));
-            sGiveItemPackMenu->itemNames = AllocZeroed(sGiveItemPackMenu->numItems * 64);
+            u16 numAllocatedItems = sGiveItemPackMenu->numItems;
+            u16 itemIndexOffset = 0;
+            
+            if (sGiveItemPackMenu->windowType == 1)
+            {
+                numAllocatedItems += 1; // 1 for the empty header
+            }
+            
+            sGiveItemPackMenu->listItems = AllocZeroed(numAllocatedItems * sizeof(struct ListMenuItem));
+            sGiveItemPackMenu->itemNames = AllocZeroed(numAllocatedItems * 64);
+            
+            if (sGiveItemPackMenu->windowType == 1)
+            {
+                // Add empty header
+                StringCopy(&sGiveItemPackMenu->itemNames[0], (const u8[]) _(""));
+                sGiveItemPackMenu->listItems[0].name = &sGiveItemPackMenu->itemNames[0];
+                sGiveItemPackMenu->listItems[0].id = LIST_HEADER;
+                itemIndexOffset = 1;
+            }
             
             for (i = 0; i < sGiveItemPackMenu->numItems; i++)
             {
                 u16 itemId = T1_READ_16(ptr); ptr += 2;
                 u16 amount = T1_READ_16(ptr); ptr += 2;
-                u8 *nameStr = &sGiveItemPackMenu->itemNames[i * 64];
+                u8 *nameStr = &sGiveItemPackMenu->itemNames[(i + itemIndexOffset) * 64];
                 
                 AddBagItem(itemId, amount);
                 
@@ -3642,20 +3680,32 @@ static void CB2_GiveItemPackMenu(void)
                 StringAppend(nameStr, (const u8[]) _(" x"));
                 StringAppend(nameStr, gStringVar3);
                 
-                sGiveItemPackMenu->listItems[i].name = nameStr;
-                sGiveItemPackMenu->listItems[i].id = i;
+                sGiveItemPackMenu->listItems[i + itemIndexOffset].name = nameStr;
+                sGiveItemPackMenu->listItems[i + itemIndexOffset].id = i;
             }
             
             listTemplate.items = sGiveItemPackMenu->listItems;
             listTemplate.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
             listTemplate.itemPrintFunc = NULL;
-            listTemplate.totalItems = sGiveItemPackMenu->numItems;
-            listTemplate.maxShowed = sGiveItemPackMenu->numItems > 8 ? 8 : sGiveItemPackMenu->numItems;
+            listTemplate.totalItems = numAllocatedItems;
+            if (sGiveItemPackMenu->windowType == 1)
+                listTemplate.maxShowed = numAllocatedItems > 4 ? 4 : numAllocatedItems;
+            else
+                listTemplate.maxShowed = numAllocatedItems > 8 ? 8 : numAllocatedItems;
             listTemplate.windowId = sGiveItemPackMenu->windowId;
             listTemplate.header_X = 0;
             listTemplate.item_X = 8;
             listTemplate.cursor_X = 0;
-            listTemplate.upText_Y = 1;
+            
+            if (sGiveItemPackMenu->windowType == 1)
+            {
+                listTemplate.upText_Y = 1;
+            }
+            else
+            {
+                listTemplate.upText_Y = 1;
+            }
+            
             listTemplate.cursorPal = 2;
             listTemplate.fillValue = 1;
             listTemplate.cursorShadowPal = 3;
@@ -3665,7 +3715,13 @@ static void CB2_GiveItemPackMenu(void)
             listTemplate.fontId = FONT_NARROW;
             listTemplate.cursorKind = CURSOR_BLACK_ARROW;
             
-            sGiveItemPackMenu->listMenuTaskId = ListMenuInit(&listTemplate, 0, 0);
+            sGiveItemPackMenu->listMenuTaskId = ListMenuInit(&listTemplate, 0, itemIndexOffset);
+            
+            if (sGiveItemPackMenu->windowType == 1)
+            {
+                StringCopy(gStringVar1, (const u8[]) _("Boomerang Collected Items:"));
+                AddTextPrinterParameterized(sGiveItemPackMenu->windowId, FONT_NARROW, gStringVar1, GetStringCenterAlignXOffset(FONT_NARROW, gStringVar1, 160), 1, 0, NULL);
+            }
             
             CopyWindowToVram(sGiveItemPackMenu->windowId, COPYWIN_FULL);
         }
@@ -3715,6 +3771,7 @@ bool8 ScrCmd_giveitempack(struct ScriptContext *ctx)
         sGiveItemPackMenu = AllocZeroed(sizeof(*sGiveItemPackMenu));
         sGiveItemPackMenu->scriptPtr = (u32)startPtr;
         sGiveItemPackMenu->numItems = size;
+        sGiveItemPackMenu->windowType = 0;
         
         ScriptContext_Stop();
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
@@ -3790,6 +3847,7 @@ void Cmd_giveterashards_battle(void)
     sGiveItemPackMenu->scriptPtr = (u32)itemsArray;
     sGiveItemPackMenu->numItems = numItems;
     sGiveItemPackMenu->itemsArray = itemsArray;
+    sGiveItemPackMenu->windowType = 0;
     
     ScriptContext_Stop();
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
@@ -3806,6 +3864,7 @@ void ShowGiveItemPackMenuAfterBattle(u16 *items, u16 numItems, void (*returnCall
     sGiveItemPackMenu->numItems = numItems;
     sGiveItemPackMenu->itemsArray = itemsArray;
     sGiveItemPackMenu->returnCallback = returnCallback;
+    sGiveItemPackMenu->windowType = 1; // Zigzagmerang
     
     gMain.savedCallback = CB2_GiveItemPackMenu;
 }

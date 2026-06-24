@@ -250,9 +250,9 @@ static const struct SubQuest sSubQuests1[QUEST_1_SUB_COUNT] =
 	      gText_SubQuest1_Name1,
 	      gText_SubQuest1_Desc1,
 	      gText_SideQuestMap1,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
-	      sText_Found
+	      SPECIES_WURMPLE,
+	      PKMN,
+	      sText_Caught
 	),
 
 	sub_quest(
@@ -260,9 +260,9 @@ static const struct SubQuest sSubQuests1[QUEST_1_SUB_COUNT] =
 	      gText_SubQuest1_Name2,
 	      gText_SubQuest1_Desc2,
 	      gText_SideQuestMap2,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
-	      sText_Found
+	      SPECIES_SILCOON,
+	      PKMN,
+	      sText_Caught
 	),
 
 	sub_quest(
@@ -270,9 +270,9 @@ static const struct SubQuest sSubQuests1[QUEST_1_SUB_COUNT] =
 	      gText_SubQuest1_Name3,
 	      gText_SubQuest1_Desc3,
 	      gText_SideQuestMap3,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
-	      sText_Found
+	      SPECIES_CATERPIE,
+	      PKMN,
+	      sText_Caught
 	),
 
 	sub_quest(
@@ -280,8 +280,8 @@ static const struct SubQuest sSubQuests1[QUEST_1_SUB_COUNT] =
 	      gText_SubQuest1_Name4,
 	      gText_SubQuest1_Desc4,
 	      gText_SideQuestMap4,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
+	      ITEM_SILCOON_SAMPLE,
+	      ITEM,
 	      sText_Found
 	),
 
@@ -290,8 +290,8 @@ static const struct SubQuest sSubQuests1[QUEST_1_SUB_COUNT] =
 	      gText_SubQuest1_Name5,
 	      gText_SubQuest1_Desc5,
 	      gText_SideQuestMap5,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
+	      ITEM_SILCOON_SHELL,
+	      ITEM,
 	      sText_Found
 	),
 
@@ -566,10 +566,10 @@ static const struct SideQuest sSideQuests[QUEST_COUNT] =
 	      gText_SideQuestDesc_1,
 	      gText_SideQuestDoneDesc_1,
 	      gText_SideQuestMap1,
-	      OBJ_EVENT_GFX_WALLY,
-	      OBJECT,
-	      NULL,
-	      0
+	      SPECIES_EGG,
+	      PKMN,
+	      sSubQuests1,
+	      QUEST_1_SUB_COUNT
 	),
 	side_quest(
 	      gText_SideQuestName_2,
@@ -1903,7 +1903,7 @@ void PopulateQuestName(u8 countQuest)
 
 void PopulateSubquestName(u8 parentQuest, u8 countQuest)
 {
-	if (IsSubquestCompletedState(countQuest))
+	if (countQuest == 0 || IsSubquestCompletedState(countQuest) || IsSubquestCompletedState(countQuest - 1))
 	{
 		questNamePointer = StringAppend(questNamePointer,
 		                                sSideQuests[parentQuest].subquests[countQuest].name);
@@ -2009,8 +2009,15 @@ void GenerateQuestLocation(s32 questId)
 	}
 	else
 	{
-		StringCopy(gStringVar2,
-		           sSideQuests[sStateDataPtr->parentQuest].subquests[questId].map);
+		if (questId == 0 || IsSubquestCompletedState(questId) || IsSubquestCompletedState(questId - 1))
+		{
+			StringCopy(gStringVar2,
+			           sSideQuests[sStateDataPtr->parentQuest].subquests[questId].map);
+		}
+		else
+		{
+			StringCopy(gStringVar2, sText_Empty);
+		}
 	}
 
 	StringExpandPlaceholders(gStringVar4, sText_ShowLocation);
@@ -2044,7 +2051,7 @@ void GenerateQuestFlavorText(s32 questId)
 	}
 	else
 	{
-		if (IsSubquestCompletedState(questId) == TRUE)
+		if (questId == 0 || IsSubquestCompletedState(questId) || IsSubquestCompletedState(questId - 1))
 		{
 			StringCopy(gStringVar1,
 			           sSideQuests[sStateDataPtr->parentQuest].subquests[questId].desc);
@@ -2153,7 +2160,7 @@ void DetermineSpriteType(s32 questId)
 		QuestMenu_CreateSprite(spriteId, sStateDataPtr->spriteIconSlot,
 		                       spriteType);
 	}
-	else if (IsSubquestCompletedState(questId) == TRUE)
+	else if (questId == 0 || IsSubquestCompletedState(questId) || IsSubquestCompletedState(questId - 1))
 	{
 		spriteId =
 		      sSideQuests[sStateDataPtr->parentQuest].subquests[questId].sprite;

@@ -1958,6 +1958,18 @@ void ItemUseOutOfBattle_CasilcoonVaccine(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
+void ItemUseOutOfBattle_ButterdrillVaccine(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_Medicine;
+    SetUpItemUseCallback(taskId);
+}
+
+void ItemUseOutOfBattle_DustoxiflyVaccine(u8 taskId)
+{
+    gItemUseCB = ItemUseCB_Medicine;
+    SetUpItemUseCallback(taskId);
+}
+
 void ItemUseOutOfBattle_OutfitBox(u8 taskId)
 {
     if (MenuHelpers_IsLinkActive() == TRUE)

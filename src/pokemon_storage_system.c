@@ -48,7 +48,9 @@
 #include "chooseboxmon.h"
 #include "party_menu.h"
 #include "palette_editor.h"
-
+#include "rtc.h"
+#include "quests.h"
+#include "constants/quests.h"
 /*
     NOTE: This file is large. Some general groups of functions have
           been labeled with commented headers to make navigation easier.
@@ -169,6 +171,7 @@ enum {
     MENU_SELECT,
     MENU_TAKE_ITEMS,
     MENU_TAKE_ALL_ITEMS,
+    MENU_TAKE_SAMPLE,
 };
 #define MENU_WALLPAPER_SETS_START MENU_SCENERY_1
 #define MENU_WALLPAPERS_START MENU_FOREST
@@ -595,6 +598,7 @@ static void Task_NameBox(u8);
 static void Task_PrintCantStoreMail(u8);
 static void Task_HandleMovingMonFromParty(u8);
 static void Task_TakeAllItemsFromAllBoxes(u8);
+static void Task_TakeSample(u8);
 
 // Input handlers
 static u8 InBoxInput_Normal(void);
@@ -2697,6 +2701,11 @@ static void Task_OnSelectedMon(u8 taskId)
             ClearBottomWindow();
             SetPokeStorageTask(Task_TakeAllItemsFromAllBoxes);
             break;
+        case MENU_TAKE_SAMPLE:
+            PlaySE(SE_SELECT);
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_TakeSample);
+            break;
         case MENU_SELECT:
             PlaySE(SE_SELECT);
             struct BoxPokemon *boxmon = GetCursorBoxMon();
@@ -3456,6 +3465,96 @@ static void Task_TakeAllItemsFromAllBoxes(u8 taskId)
             ScheduleBgCopyTilemapToVram(0);
             sStorage->state = 1;
         }
+        break;
+    case 1:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            RefreshDisplayMon();
+            PrintDisplayMonInfo();
+            if (IsCursorOnBoxTitle())
+                AnimateBoxScrollArrows(TRUE);
+            SetPokeStorageTask(Task_PokeStorageMain);
+        }
+        break;
+    }
+}
+
+static const u8 sText_ExtractedSample[] = _("Extracted {STR_VAR_1}!");
+static const u8 sText_ExtractedSamplePC[] = _("Extracted {STR_VAR_1} to PC!");
+static const u8 sText_NoRoomForSample[] = _("No room for sample!");
+static const u8 sText_NotReadyForSample1Hour[] = _("Not ready! Come back\nin 1 hour.");
+static const u8 sText_NotReadyForSampleHours[] = _("Not ready! Come back\nin {STR_VAR_1} hours.");
+
+static void Task_TakeSample(u8 taskId)
+{
+    struct BoxPokemon *boxMon = GetCursorBoxMon();
+    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    u8 lastSampleHour = GetBoxMonData(boxMon, MON_DATA_LAST_SAMPLE_HOUR, NULL);
+    
+    // Hash localTime to an 0-31 range by dividing hours by 5 (5 hour interval)
+    u8 currentHour = ((gLocalTime.days * 24 + gLocalTime.hours) / 5) % 32;
+    
+    u16 item = 0;
+    if (species == SPECIES_SILCOON) item = ITEM_SILCOON_SAMPLE;
+    else if (species == SPECIES_CASCOON) item = ITEM_CASCOON_SAMPLE;
+    else if (species == SPECIES_BEAUTIFLY) item = ITEM_BEAUTIFLY_SAMPLE;
+    else if (species == SPECIES_DUSTOX) item = ITEM_DUSTOX_SAMPLE;
+    else if (species == SPECIES_BUTTERFREE) item = ITEM_BUTTERFREE_SAMPLE;
+    else if (species == SPECIES_BEEDRILL) item = ITEM_BEEDRILL_SAMPLE;
+
+    switch (sStorage->state)
+    {
+    case 0:
+        ClearBottomWindow();
+        if (lastSampleHour != currentHour && item != 0) // once per 5 hours
+        {
+            if (CountTotalItemQuantityInBag(item) + CountTotalItemQuantityInPC(item) >= 999)
+            {
+                PlaySE(SE_FAILURE);
+                StringExpandPlaceholders(sStorage->messageText, sText_NoRoomForSample);
+            }
+            else if (AddBagItem(item, 1))
+            {
+                SetBoxMonData(boxMon, MON_DATA_LAST_SAMPLE_HOUR, &currentHour);
+                PlaySE(SE_SELECT);
+                CopyItemName(item, gStringVar1);
+                StringExpandPlaceholders(sStorage->messageText, sText_ExtractedSample);
+            }
+            else if (AddPCItem(item, 1))
+            {
+                SetBoxMonData(boxMon, MON_DATA_LAST_SAMPLE_HOUR, &currentHour);
+                PlaySE(SE_SELECT);
+                CopyItemName(item, gStringVar1);
+                StringExpandPlaceholders(sStorage->messageText, sText_ExtractedSamplePC);
+            }
+            else
+            {
+                PlaySE(SE_FAILURE);
+                StringExpandPlaceholders(sStorage->messageText, sText_NoRoomForSample);
+            }
+        }
+        else
+        {
+            u8 hoursUntilReady = 5 - (((gLocalTime.days * 24) + gLocalTime.hours) % 5);
+            PlaySE(SE_FAILURE);
+            if (hoursUntilReady == 1)
+            {
+                StringExpandPlaceholders(sStorage->messageText, sText_NotReadyForSample1Hour);
+            }
+            else
+            {
+                ConvertIntToDecimalStringN(gStringVar1, hoursUntilReady, STR_CONV_MODE_LEFT_ALIGN, 1);
+                StringExpandPlaceholders(sStorage->messageText, sText_NotReadyForSampleHours);
+            }
+        }
+        FillWindowPixelBuffer(WIN_MESSAGE, PIXEL_FILL(1));
+        AddTextPrinterParameterized(WIN_MESSAGE, FONT_NORMAL, sStorage->messageText, 0, 1, TEXT_SKIP_DRAW, NULL);
+        DrawTextBorderOuter(WIN_MESSAGE, 2, 14);
+        PutWindowTilemap(WIN_MESSAGE);
+        CopyWindowToVram(WIN_MESSAGE, COPYWIN_GFX);
+        ScheduleBgCopyTilemapToVram(0);
+        sStorage->state++;
         break;
     case 1:
         if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
@@ -7899,6 +7998,13 @@ static bool8 SetMenuTexts_Mon(void)
             SetMenuText(MENU_SUMMARY);
             SetMenuText(MENU_TAKE_ALL_ITEMS);
             SetMenuText(MENU_MARK);
+            if (QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 2) && 
+                (species == SPECIES_SILCOON || species == SPECIES_CASCOON ||
+                species == SPECIES_BUTTERFREE || species == SPECIES_BEEDRILL ||
+                species == SPECIES_BEAUTIFLY || species == SPECIES_DUSTOX))
+            {
+                SetMenuText(MENU_TAKE_SAMPLE);
+            }
             SetMenuText(MENU_CANCEL);
             return TRUE;
         }
@@ -7922,6 +8028,14 @@ static bool8 SetMenuTexts_Mon(void)
     }
 
     SetMenuText(MENU_MARK);
+    if (QuestMenu_GetSetSubquestState(RESEARCHING_BEV, FLAG_GET_COMPLETED, 2) && 
+        (species == SPECIES_SILCOON || species == SPECIES_CASCOON ||
+        species == SPECIES_BUTTERFREE || species == SPECIES_BEEDRILL ||
+        species == SPECIES_BEAUTIFLY || species == SPECIES_DUSTOX))
+    {
+        SetMenuText(MENU_TAKE_SAMPLE);
+    }
+
     if (sStorage->boxOption != OPTION_SELECT_MON)
         SetMenuText(MENU_RELEASE);
     SetMenuText(MENU_CANCEL);
@@ -8226,6 +8340,7 @@ static const u8 *const sMenuTexts[] =
     [MENU_SELECT]     = COMPOUND_STRING("SELECT"),
     [MENU_TAKE_ITEMS] = COMPOUND_STRING("TAKE ITEMS"),
     [MENU_TAKE_ALL_ITEMS] = COMPOUND_STRING("TAKE ALL"),
+    [MENU_TAKE_SAMPLE] = COMPOUND_STRING("Take Sample"),
 };
 
 static void SetMenuText(u8 textId)

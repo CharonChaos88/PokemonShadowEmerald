@@ -43,6 +43,7 @@
 #include "union_room.h"
 #include "window.h"
 #include "quests.h"
+#include "event_scripts.h"
 #include "wallclock.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -211,6 +212,7 @@ static void RotomPhone_StartMenu_SelectedFunc_DexNav(void);
 static void RotomPhone_StartMenu_SelectedFunc_Clock(void);
 static void RotomPhone_StartMenu_SelectedFunc_Daycare(void);
 static void RotomPhone_StartMenu_SelectedFunc_Quest(void);
+static void RotomPhone_StartMenu_SelectedFunc_OPowers(void);
 
 // Init Rotom Start Menu
 void RotomPhone_StartMenu_Open(bool32 firstInit)
@@ -514,6 +516,7 @@ enum RotomPhone_MenuItems
     RP_MENU_SAVE,
     RP_MENU_OPTIONS,
     RP_MENU_QUEST,
+    RP_MENU_O_POWERS,
     RP_MENU_COUNT,
 };
 #define RP_MENU_FIRST_OPTION RP_MENU_COUNT - RP_MENU_COUNT
@@ -785,6 +788,9 @@ struct RotomPhone_StartMenu_State
     u32 menuRotomRealityPanelY;
     u32 menuRotomRealityPanelSpriteId[RP_RR_PANEL_SPRITE_COUNT];
     u32 menuRotomRealityPanelWindowId[RP_RR_PANEL_WIN_COUNT];
+    u32 menuRotomRealityIconSpriteId_Old[RP_RR_OPTION_COUNT];
+    u32 menuRotomRealityPageSlideComfyAnimId;
+    bool8 menuRotomRealitySlideRight;
 };
 static EWRAM_DATA struct RotomPhone_StartMenu_State *sRotomPhone_StartMenu = NULL;
 
@@ -931,7 +937,7 @@ static const struct CompressedSpriteSheet sSpriteSheet_RotomRealityIcons_One[] =
 
 static const struct CompressedSpriteSheet sSpriteSheet_RotomRealityIcons_Two[] = 
 {
-    {sRotomPhone_RotomRealityMenuIconsGfx_Two, 32*32/2 , TAG_PHONE_RR_ICON_GFX_2},
+    {sRotomPhone_RotomRealityMenuIconsGfx_Two, 32*352/2 , TAG_PHONE_RR_ICON_GFX_2},
     {NULL},
 };
 
@@ -1185,7 +1191,7 @@ static const struct SpriteTemplate sSpriteTemplate_RotomRealityIcons_One = {
 
 static const struct SpriteTemplate sSpriteTemplate_RotomRealityIcons_Two = {
     .tileTag = TAG_PHONE_RR_ICON_GFX_2,
-    .paletteTag = TAG_PHONE_RR_ICON_GFX_2,
+    .paletteTag = TAG_ROTOM_FACE_ICON_PAL,
     .oam = &sOam_RotomPhoneIcons,
     .anims = sAnims_StartMenu_Icons,
     .images = NULL,
@@ -1358,6 +1364,15 @@ static const struct RotomPhone_MenuOptions sRotomPhoneOptions[RP_MENU_COUNT] =
         .rrAnim = RP_ICON_ANIM_FIVE,
         .rrSpriteTemplate = &sSpriteTemplate_RotomRealityIcons_One,
     },
+    [RP_MENU_O_POWERS] =
+    {
+        .menuName = COMPOUND_STRING("O-Powers"),
+        .rotomSpeech = COMPOUND_STRING("to use your O-Powers?"),
+        .unlockedFunc = RotomPhone_StartMenu_UnlockedFunc_Unlocked_RotomReality,
+        .selectedFunc = RotomPhone_StartMenu_SelectedFunc_OPowers,
+        .rrAnim = RP_ICON_ANIM_ONE,
+        .rrSpriteTemplate = &sSpriteTemplate_RotomRealityIcons_Two,
+    },
 };
 static enum RotomPhone_MenuItems RotomPhone_StartMenu_SetFirstSelectedMenu(void)
 {
@@ -1372,6 +1387,38 @@ static enum RotomPhone_MenuItems RotomPhone_StartMenu_SetFirstSelectedMenu(void)
     return RP_MENU_OPTIONS;
 }
 
+static enum RotomPhone_MenuItems RotomPhone_StartMenu_GetSavedPageFirstOption(void)
+{
+    enum RotomPhone_MenuItems firstOption = RotomPhone_StartMenu_SetFirstSelectedMenu();
+    enum RotomPhone_MenuItems currentOption = firstOption;
+    u32 unlockedCount = 0;
+
+    while (currentOption < RP_MENU_COUNT && currentOption != menuSelectedRotomReality)
+    {
+        if (sRotomPhoneOptions[currentOption].unlockedFunc && sRotomPhoneOptions[currentOption].unlockedFunc())
+        {
+            unlockedCount++;
+        }
+        currentOption++;
+    }
+
+    u32 targetFirstUnlockedIndex = (unlockedCount / RP_RR_OPTION_COUNT) * RP_RR_OPTION_COUNT;
+    
+    currentOption = firstOption;
+    u32 currentUnlockedIndex = 0;
+    while (currentOption < RP_MENU_COUNT)
+    {
+        if (sRotomPhoneOptions[currentOption].unlockedFunc && sRotomPhoneOptions[currentOption].unlockedFunc())
+        {
+            if (currentUnlockedIndex == targetFirstUnlockedIndex)
+                return currentOption;
+            currentUnlockedIndex++;
+        }
+        currentOption++;
+    }
+    
+    return firstOption;
+}
 
 static const u8 *const sRotomPhone_Overworld_DayNames[] =
 {
@@ -1428,6 +1475,7 @@ static const u8 *RotomPhone_OverworldMenu_GetWeatherAction(u32 weatherId)
 #define tPhoneComfyAnimId gTasks[taskId].data[6]
 #define tPhoneCloseParameterSaveSafariFade gTasks[taskId].data[7]
 #define tPhoneHighlightComfyAnimId gTasks[taskId].data[8]
+#define tRotomPageSlideLastX gTasks[taskId].data[9]
 // // static void RotomPhone_OverworldMenu_Init(bool32 firstInit)
 // {
 //     u8 taskId;
@@ -2676,7 +2724,7 @@ static void RotomPhone_RotomRealityMenu_SetupCB(void)
         if (!sRotomPhoneOptions[menuSelectedRotomReality].unlockedFunc || !sRotomPhoneOptions[menuSelectedRotomReality].unlockedFunc())
             menuSelectedRotomReality = RotomPhone_StartMenu_SetFirstSelectedMenu();
 
-        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_StartMenu_SetFirstSelectedMenu();
+        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_StartMenu_GetSavedPageFirstOption();
 
         RotomPhone_RotomRealityMenu_PrintTime();
         RotomPhone_RotomRealityMenu_PrintMenuName();
@@ -2762,6 +2810,111 @@ static void RotomPhone_RotomRealityMenu_HandleScroll(u8 taskId, bool32 scrollRig
     RotomPhone_RotomRealityMenu_CreateIconSprites();
 }
 
+static void Task_RotomPhone_RotomRealityMenu_SlidePage(u8 taskId)
+{
+    u32 animVal = ReadComfyAnimValueSmooth(&gComfyAnims[sRotomPhone_StartMenu->menuRotomRealityPageSlideComfyAnimId]);
+    s32 delta = animVal - tRotomPageSlideLastX;
+    tRotomPageSlideLastX = animVal;
+
+    if (!sRotomPhone_StartMenu->menuRotomRealitySlideRight)
+        delta = -delta;
+
+    for (int i = 0; i < RP_RR_OPTION_COUNT; i++)
+    {
+        if (sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i] != SPRITE_NONE)
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i]].x -= delta;
+            
+        if (sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] != SPRITE_NONE)
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i]].x -= delta;
+    }
+
+    if (animVal >= 240)
+    {
+        ReleaseComfyAnim(sRotomPhone_StartMenu->menuRotomRealityPageSlideComfyAnimId);
+        
+        for (int i = 0; i < RP_RR_OPTION_COUNT; i++)
+        {
+            if (sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i] != SPRITE_NONE)
+            {
+                FreeSpriteOamMatrix(&gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i]]);
+                DestroySprite(&gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i]]);
+                sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i] = SPRITE_NONE;
+            }
+        }
+        
+        tRotomPageSlideLastX = 0;
+        
+        if (sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId != SPRITE_NONE)
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId].invisible = FALSE;
+            
+        gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMainInput;
+    }
+}
+
+static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right)
+{
+    if (right && !RotomPhone_RotomRealityMenu_CanScrollRight())
+    {
+        tRotomMessageSoundEffect = SE_BOO;
+        return;
+    }
+    if (!right && sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == RotomPhone_StartMenu_SetFirstSelectedMenu())
+    {
+        tRotomMessageSoundEffect = SE_BOO;
+        return;
+    }
+
+    tRotomMessageSoundEffect = SE_PC_ON;
+    sRotomPhone_StartMenu->menuRotomRealitySlideRight = right;
+
+    for (int i = 0; i < RP_RR_OPTION_COUNT; i++)
+    {
+        sRotomPhone_StartMenu->menuRotomRealityIconSpriteId_Old[i] = sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i];
+        sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] = SPRITE_NONE;
+    }
+
+    for (int count = 0; count < RP_RR_OPTION_COUNT; count++)
+    {
+        if (right)
+        {
+            if (!RotomPhone_RotomRealityMenu_CanScrollRight()) break;
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption + 1, +1);
+        }
+        else
+        {
+            if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == RotomPhone_StartMenu_SetFirstSelectedMenu()) break;
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption - 1, -1);
+        }
+    }
+
+    RotomPhone_RotomRealityMenu_CreateIconSprites();
+
+    struct ComfyAnimEasingConfig config;
+    InitComfyAnimConfig_Easing(&config);
+    config.durationFrames = 20;
+    config.from = 0;
+    config.to = Q_24_8(240);
+    config.easingFunc = ComfyAnimEasing_EaseInOutCubic;
+    sRotomPhone_StartMenu->menuRotomRealityPageSlideComfyAnimId = CreateComfyAnim_Easing(&config);
+    tRotomPageSlideLastX = 0;
+
+    int offset = right ? 240 : -240;
+    for (int i = 0; i < RP_RR_OPTION_COUNT; i++)
+    {
+        if (sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] != SPRITE_NONE)
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i]].x += offset;
+    }
+
+    menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[RP_RR_OPTION_1];
+    RotomPhone_StartMenu_UpdateRotomFaceAnim(TRUE);
+    RotomPhone_RotomRealityMenu_PrintMenuName();
+
+    if (sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId != SPRITE_NONE)
+        gSprites[sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId].invisible = TRUE;
+
+    gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_SlidePage;
+}
+
 
 static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
 {
@@ -2845,7 +2998,15 @@ static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
         RotomPhone_StartMenu_RotomShutdownPreparation(taskId, FALSE);
         tPhoneCloseParameterSaveSafariFade = FALSE;
     }
-    if (JOY_NEW(DPAD_ANY))
+    if (JOY_NEW(L_BUTTON))
+    {
+        RotomPhone_RotomRealityMenu_HandlePageScroll(taskId, FALSE);
+    }
+    else if (JOY_NEW(R_BUTTON))
+    {
+        RotomPhone_RotomRealityMenu_HandlePageScroll(taskId, TRUE);
+    }
+    else if (JOY_NEW(DPAD_ANY))
     {
         RotomPhone_RotomRealityMenu_HandleDPAD(taskId);
     }
@@ -2858,6 +3019,12 @@ static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
         }
         else if (JOY_NEW(START_BUTTON) && !RP_CONFIG_ROTOM_REALITY_SHORTCUT)
         {
+            return;
+        }
+        
+        if (menuSelectedRotomReality == RP_MENU_O_POWERS)
+        {
+            PlaySE(SE_FAILURE);
             return;
         }
         
@@ -4046,6 +4213,11 @@ static void RotomPhone_StartMenu_SelectedFunc_Clock(void)
 static void RotomPhone_StartMenu_SelectedFunc_Quest(void)
 {
     RotomPhone_StartMenu_DoCleanUpAndCreateTask(Task_QuestMenu_OpenFromStartMenu, 0);
+}
+
+static void RotomPhone_StartMenu_SelectedFunc_OPowers(void)
+{
+    PlaySE(SE_FAILURE);
 }
 
 static void RotomPhone_StartMenu_SelectedFunc_Daycare(void)
