@@ -25,5 +25,8 @@ Makefile text eol=lf
 *.png binary
 *.bin binary
 
+# Keep our custom graphics during upstream merges
+graphics/** merge=ours
+
 *.h linguist-language=C
 *.inc linguist-language=Assembly
