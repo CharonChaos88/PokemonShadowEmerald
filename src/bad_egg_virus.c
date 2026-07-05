@@ -815,9 +815,9 @@ void CheckPartyHasBevStrainX(void)
     gSpecialVar_Result = FALSE;
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_HAS_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SANITY_HAS_SPECIES) && !GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG))
         {
-            if (GetVirusStrain(&gPlayerParty[i]) == STRAIN_X)
+            if (GetVirusStrain(&gParties[B_TRAINER_PLAYER][i]) == STRAIN_X)
             {
                 gSpecialVar_Result = TRUE;
                 break;

@@ -1846,6 +1846,15 @@ static void OverworldBasic(void)
             ApplyWeatherColorMapIfIdle(gWeatherPtr->colorMapIndex);
         }
     }
+    if (gSaveBlock2Ptr->activeOPower != 0)
+    {
+        if (gSaveBlock2Ptr->activeOPowerTimer > 0)
+            gSaveBlock2Ptr->activeOPowerTimer--;
+        
+        if (gSaveBlock2Ptr->activeOPowerTimer == 0)
+            gSaveBlock2Ptr->activeOPower = 0;
+    }
+
     UpdateOverworldWildEncounter();
 }
 

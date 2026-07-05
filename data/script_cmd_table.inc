@@ -256,7 +256,8 @@ gScriptCmdTable::
 	script_cmd_table_entry SCR_OP_GIVEITEMPACK					ScrCmd_giveitempack,				requests_effects=0  @ 0xe7
     script_cmd_table_entry SCR_OP_QUESTMENU                     ScrCmd_questmenu                    requests_effects=0  @ 0xe8
     script_cmd_table_entry SCR_OP_SUBQUESTMENU                  ScrCmd_subquestmenu                 requests_effects=0  @ 0xe9
-    script_cmd_table_entry SCR_OP_RETURNQUESTSTATE              ScrCmd_returnqueststate             requests_effects=0  @ 0xea
+    script_cmd_table_entry SCR_OP_RETURNQUESTSTATE              ScrCmd_returnqueststate,            requests_effects=0  @ 0xea
+    script_cmd_table_entry SCR_OP_GIVEOPOWER                    ScrCmd_giveopower,                  requests_effects=0  @ 0xeb
 	
 	.if ALLOCATE_SCRIPT_CMD_TABLE
 gScriptCmdTableEnd::

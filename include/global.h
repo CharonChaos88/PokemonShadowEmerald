@@ -257,7 +257,8 @@ struct NPCFollower
 struct CustomPaletteSave {
     u32 personality;
     u8 slotNum;      // <--- ADDED: Tracks if this is Slot 1 or Slot 2
-    u8 padding[3];   // <--- ADDED: Keeps the memory perfectly aligned for the GBA!
+    u8 padding1;     // <--- ADDED: Keeps the memory perfectly aligned for the GBA!
+    u16 species;     // <--- ADDED: Tracks species to prevent bleeding on evolution
     u16 palette[16];
 };
 
@@ -664,6 +665,18 @@ struct SaveBlock2
 
     u8 questData[QUEST_FLAGS_COUNT * QUEST_STATES];
     u8 subQuests[SUB_FLAGS_COUNT];
+    
+    u32 oPowerDailySteps;
+    u16 oPowerRegenTimer;
+    u8 oPowerOrbs;
+    u8 activeOPower;
+    
+    u8 activeOPowerLevel;
+    u8 oPowerLevels[19];
+    u8 oPowerUses[19];
+    u8 oPowerFiller[3];
+    
+    u32 activeOPowerTimer;
 }; 
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;

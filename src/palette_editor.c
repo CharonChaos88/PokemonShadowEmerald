@@ -46,7 +46,10 @@ const u16 *GetUnifiedMonPalette(u16 species, bool32 isShiny, u32 personality, u8
         u8 savedSlot = isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].slotNum
                                : gSaveBlock3Ptr->customPalettesNormal[i].slotNum;
 
-        if (savedPersonality == personality && savedSlot == altPalette)
+        u16 savedSpecies = isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].species
+                                   : gSaveBlock3Ptr->customPalettesNormal[i].species;
+
+        if (savedPersonality == personality && savedSlot == altPalette && savedSpecies == species)
         {
             return isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].palette
                            : gSaveBlock3Ptr->customPalettesNormal[i].palette;
@@ -68,7 +71,10 @@ const u16 *GetCustomMonSpritePal(u16 species, bool32 isShiny, u32 personality)
         u32 savedPersonality = isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].personality
                                        : gSaveBlock3Ptr->customPalettesNormal[i].personality;
 
-        if (savedPersonality == personality)
+        u16 savedSpecies = isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].species
+                                   : gSaveBlock3Ptr->customPalettesNormal[i].species;
+
+        if (savedPersonality == personality && savedSpecies == species)
         {
             return isShiny ? gSaveBlock3Ptr->customPalettesShiny[i].palette
                            : gSaveBlock3Ptr->customPalettesNormal[i].palette;
@@ -89,6 +95,8 @@ struct PaletteEditor
     u8 editChannel;
     bool32 isShiny;
     struct Pokemon mon;
+    bool8 showExportView;
+    bool8 maskMode;
 };
 
 // --- FORWARD DECLARATIONS ---
@@ -109,8 +117,12 @@ static void CB2_PaletteEditorRunner(void)
 }
 
 // --- UI PRINTING (TEXT CURSOR STRINGS) ---
-static const u8 sText_TitleNormal[] = _("PALETTE EDITOR (NORMAL)");
-static const u8 sText_TitleShiny[] = _("PALETTE EDITOR (SHINY)");
+static const u8 sText_TitleNormal[] = _("Palette Editor (Normal)");
+static const u8 sText_TitleShiny[] = _("Palette Editor (Shiny)");
+static const u8 sText_ArrowShiny[] = _("{RIGHT_ARROW} Palette: ");
+static const u8 sText_EmptyShiny[] = _("  Palette: ");
+static const u8 sText_Shiny[] = _("Shiny");
+static const u8 sText_Normal[] = _("Normal");
 static const u8 sText_ArrowSlot[] = _("{RIGHT_ARROW} Slot: ");
 static const u8 sText_EmptySlot[] = _("  Slot: ");
 static const u8 sText_ArrowIndex[] = _("{RIGHT_ARROW} Index: ");
@@ -121,8 +133,12 @@ static const u8 sText_ArrowGreen[] = _("{RIGHT_ARROW} Green: ");
 static const u8 sText_EmptyGreen[] = _("  Green: ");
 static const u8 sText_ArrowBlue[] = _("{RIGHT_ARROW} Blue:  ");
 static const u8 sText_EmptyBlue[] = _("  Blue:  ");
-static const u8 sText_Controls1[] = _("{L_BUTTON}{R_BUTTON} Shiny {START_BUTTON} Reset");
-static const u8 sText_Controls2[] = _("{A_BUTTON}{B_BUTTON} Save & Exit");
+static const u8 sText_Controls1[] = _("{L_BUTTON} Mask {R_BUTTON} View RGB");
+static const u8 sText_Controls2[] = _("{START_BUTTON} Reset Slot {SELECT_BUTTON} Reset All");
+static const u8 sText_PaletteRGBValues[] = _("Palette RGB Values");
+static const u8 sText_RGBValuesSuffix[] = _("'s RGB Values");
+static const u8 sText_ColonSpace[] = _(": ");
+static const u8 sText_Comma[] = _(",");
 
 static void PrintEditorUI(struct PaletteEditor *data)
 {
@@ -131,6 +147,50 @@ static void PrintEditorUI(struct PaletteEditor *data)
 
     FillWindowPixelBuffer(0, PIXEL_FILL(0));
     DrawStdFrameWithCustomTileAndPalette(0, FALSE, 0x214, 14);
+
+    if (data->showExportView)
+    {
+        ClearStdWindowAndFrameToTransparent(0, TRUE);
+        FillWindowPixelBuffer(1, PIXEL_FILL(0));
+        DrawStdFrameWithCustomTileAndPalette(1, FALSE, 830, 14);
+
+        u16 species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
+        StringCopy(gStringVar4, GetSpeciesName(species));
+        StringAppend(gStringVar4, sText_RGBValuesSuffix);
+        AddTextPrinterParameterized4(1, FONT_SMALL, 4, 4, 0, 0, sTextColor, 0, gStringVar4);
+        
+        for (u8 i = 1; i <= 15; i++)
+        {
+            u16 color = data->mutablePalette[i];
+            u8 r = color & 0x1F;
+            u8 g = (color >> 5) & 0x1F;
+            u8 b = (color >> 10) & 0x1F;
+            
+            u8 x = (i <= 8) ? 4 : 112; // Adjusted spacing for wider window
+            u8 y = 16 + ((i - 1) % 8) * 16;
+            
+            ConvertIntToDecimalStringN(gStringVar1, i, STR_CONV_MODE_LEADING_ZEROS, 2);
+            StringCopy(gStringVar4, gStringVar1);
+            StringAppend(gStringVar4, sText_ColonSpace);
+            ConvertIntToDecimalStringN(gStringVar1, r, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            StringAppend(gStringVar4, gStringVar1);
+            StringAppend(gStringVar4, sText_Comma);
+            ConvertIntToDecimalStringN(gStringVar1, g, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            StringAppend(gStringVar4, gStringVar1);
+            StringAppend(gStringVar4, sText_Comma);
+            ConvertIntToDecimalStringN(gStringVar1, b, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            StringAppend(gStringVar4, gStringVar1);
+            
+            AddTextPrinterParameterized4(1, FONT_SMALL, x, y, 0, 0, sTextColor, 0, gStringVar4);
+        }
+        PutWindowTilemap(1);
+        CopyWindowToVram(1, COPYWIN_FULL);
+        return;
+    }
+
+    ClearStdWindowAndFrameToTransparent(1, TRUE);
+    FillWindowPixelBuffer(0, PIXEL_FILL(0));
+    DrawStdFrameWithCustomTileAndPalette(0, FALSE, 830, 14);
 
     // Dynamic Title based on Shiny State
     if (data->isShiny)
@@ -142,54 +202,67 @@ static void PrintEditorUI(struct PaletteEditor *data)
         AddTextPrinterParameterized4(0, FONT_SMALL, 4, 4, 0, 0, sTextColor, 0, sText_TitleNormal);
     }
 
-    // Slot
+    // Shiny Version
     if (data->editChannel == 0)
+        StringCopy(gStringVar4, sText_ArrowShiny);
+    else
+        StringCopy(gStringVar4, sText_EmptyShiny);
+        
+    if (data->isShiny)
+        StringAppend(gStringVar4, sText_Shiny);
+    else
+        StringAppend(gStringVar4, sText_Normal);
+        
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 24, 0, 0, sTextColor, 0, gStringVar4);
+
+    // Slot
+    if (data->editChannel == 1)
         StringCopy(gStringVar4, sText_ArrowSlot);
     else
         StringCopy(gStringVar4, sText_EmptySlot);
     ConvertIntToDecimalStringN(gStringVar1, data->currentAlt, STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
-    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 24, 0, 0, sTextColor, 0, gStringVar4);
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 40, 0, 0, sTextColor, 0, gStringVar4);
 
     // Index
-    if (data->editChannel == 1)
+    if (data->editChannel == 2)
         StringCopy(gStringVar4, sText_ArrowIndex);
     else
         StringCopy(gStringVar4, sText_EmptyIndex);
     ConvertIntToDecimalStringN(gStringVar1, data->editColorIndex, STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
-    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 40, 0, 0, sTextColor, 0, gStringVar4);
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 56, 0, 0, sTextColor, 0, gStringVar4);
 
     // Red
-    if (data->editChannel == 2)
+    if (data->editChannel == 3)
         StringCopy(gStringVar4, sText_ArrowRed);
     else
         StringCopy(gStringVar4, sText_EmptyRed);
     ConvertIntToDecimalStringN(gStringVar1, (color & 0x1F), STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
-    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 56, 0, 0, sTextColor, 0, gStringVar4);
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 72, 0, 0, sTextColor, 0, gStringVar4);
 
     // Green
-    if (data->editChannel == 3)
+    if (data->editChannel == 4)
         StringCopy(gStringVar4, sText_ArrowGreen);
     else
         StringCopy(gStringVar4, sText_EmptyGreen);
     ConvertIntToDecimalStringN(gStringVar1, ((color >> 5) & 0x1F), STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
-    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 72, 0, 0, sTextColor, 0, gStringVar4);
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 88, 0, 0, sTextColor, 0, gStringVar4);
 
     // Blue
-    if (data->editChannel == 4)
+    if (data->editChannel == 5)
         StringCopy(gStringVar4, sText_ArrowBlue);
     else
         StringCopy(gStringVar4, sText_EmptyBlue);
     ConvertIntToDecimalStringN(gStringVar1, ((color >> 10) & 0x1F), STR_CONV_MODE_LEFT_ALIGN, 2);
     StringAppend(gStringVar4, gStringVar1);
-    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 88, 0, 0, sTextColor, 0, gStringVar4);
+    AddTextPrinterParameterized4(0, FONT_NORMAL, 4, 104, 0, 0, sTextColor, 0, gStringVar4);
 
     // Controls
-    AddTextPrinterParameterized4(0, FONT_SMALL, 4, 104, 0, 0, sTextColor, 0, sText_Controls1);
-    AddTextPrinterParameterized4(0, FONT_SMALL, 4, 114, 0, 0, sTextColor, 0, sText_Controls2);
+    AddTextPrinterParameterized4(0, FONT_SMALL_NARROWER, 4, 120, 0, 0, sTextColor, 0, sText_Controls1);
+    AddTextPrinterParameterized4(0, FONT_SMALL_NARROWER, 4, 130, 0, 0, sTextColor, 0, sText_Controls2);
 
     PutWindowTilemap(0);
     CopyWindowToVram(0, COPYWIN_FULL);
@@ -229,11 +302,16 @@ void CB2_InitPaletteEditor(void)
         FreeAllWindowBuffers(); 
         
         // Define the array first to avoid preprocessor comma confusion
-        const struct WindowTemplate winTemplates[] = {{0,14,2,15,16,15,1}, DUMMY_WIN_TEMPLATE};
+        const struct WindowTemplate winTemplates[] = {
+            {0, 12, 1, 17, 18, 15, 1},     // Window 0 (Main UI)
+            {0, 1, 1, 28, 18, 15, 325},    // Window 1 (Export View)
+            DUMMY_WIN_TEMPLATE
+        };
         InitWindows(winTemplates); 
         
         LoadPalette(GetTextWindowPalette(0), BG_PLTT_ID(15), 32); 
-        LoadStdWindowGfx(0, 0x214, 14); 
+        LoadUserWindowBorderGfx(0, 830, BG_PLTT_ID(14)); 
+        LoadUserWindowBorderGfx(1, 830, BG_PLTT_ID(14)); 
         gMain.state++; 
         break;
     case 3:
@@ -305,15 +383,44 @@ static void HandleInput_PaletteEditor(u8 taskId)
     if (gPaletteFade.active)
         return;
 
-    // TOGGLE SHINY PALETTE (L or R Button)
-    if (JOY_NEW(R_BUTTON) || JOY_NEW(L_BUTTON))
+    // TOGGLE EXPORT VIEW (R Button)
+    if (JOY_NEW(R_BUTTON))
     {
-        data->isShiny = !data->isShiny;
+        data->showExportView = !data->showExportView;
+        PrintEditorUI(data);
+        PlaySE(SE_SELECT);
+        return;
+    }
 
+    if (data->showExportView)
+    {
+        if (JOY_NEW(B_BUTTON))
+        {
+            data->showExportView = FALSE;
+            PrintEditorUI(data);
+            PlaySE(SE_SELECT);
+        }
+        return;
+    }
+
+    // TOGGLE MASK MODE (L Button)
+    if (JOY_NEW(L_BUTTON))
+    {
+        data->maskMode = !data->maskMode;
+        PrintEditorUI(data);
+        PlaySE(SE_SELECT);
+        return;
+    }
+
+    // RESET ALL COLORS (SELECT Button)
+    if (JOY_NEW(SELECT_BUTTON))
+    {
         u16 species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
         u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
 
-        memcpy(data->mutablePalette, GetUnifiedMonPalette(species, data->isShiny, personality, data->currentAlt), 32);
+        // Fetch the default palette
+        const u16 *defaultPal = GetMonSpritePalFromSpeciesAndPersonality(species, data->isShiny, personality);
+        memcpy(data->mutablePalette, defaultPal, 32);
 
         u8 palSlot = IndexOfSpritePaletteTag(personality);
         if (palSlot != 0xFF)
@@ -326,15 +433,14 @@ static void HandleInput_PaletteEditor(u8 taskId)
         return;
     }
 
-    // RESET PALETTE TO DEFAULT (START Button)
+    // RESET CURRENT COLOR (START Button)
     if (JOY_NEW(START_BUTTON))
     {
         u16 species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
         u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
 
-        // Fetch the default palette
         const u16 *defaultPal = GetMonSpritePalFromSpeciesAndPersonality(species, data->isShiny, personality);
-        memcpy(data->mutablePalette, defaultPal, 32);
+        data->mutablePalette[data->editColorIndex] = defaultPal[data->editColorIndex];
 
         u8 palSlot = IndexOfSpritePaletteTag(personality);
         if (palSlot != 0xFF)
@@ -387,6 +493,7 @@ static void HandleInput_PaletteEditor(u8 taskId)
             // 4. Save the PID AND the Slot Number!
             wardrobe[saveSlot].personality = personality;
             wardrobe[saveSlot].slotNum = data->currentAlt;
+            wardrobe[saveSlot].species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
             memcpy(wardrobe[saveSlot].palette, data->mutablePalette, 32);
         }
 
@@ -405,7 +512,7 @@ static void HandleInput_PaletteEditor(u8 taskId)
     if (JOY_NEW(DPAD_UP))
     {
         if (data->editChannel == 0)
-            data->editChannel = 4;
+            data->editChannel = 5;
         else
             data->editChannel--;
         PrintEditorUI(data);
@@ -413,7 +520,7 @@ static void HandleInput_PaletteEditor(u8 taskId)
     }
     else if (JOY_NEW(DPAD_DOWN))
     {
-        data->editChannel = (data->editChannel + 1) % 5;
+        data->editChannel = (data->editChannel + 1) % 6;
         PrintEditorUI(data);
         PlaySE(SE_SELECT);
     }
@@ -428,43 +535,66 @@ static void HandleInput_PaletteEditor(u8 taskId)
         u16 species = GetMonData(&data->mon, MON_DATA_SPECIES_OR_EGG);
         u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
 
-        switch (data->editChannel)
+        if (data->editChannel == 0)
         {
-        case 0:
-            data->currentAlt = (data->currentAlt + dir + 3) % 3;
-            memcpy(data->mutablePalette, GetUnifiedMonPalette(species, data->isShiny, personality, data->currentAlt), 32);
-            changed = TRUE;
-            break;
-        case 1:
-            data->editColorIndex = (data->editColorIndex + dir - 1 + 15) % 15 + 1;
-            changed = TRUE;
-            break;
-        case 2:
-            if (data->currentAlt > 0 && (int)r + dir >= 0 && (int)r + dir <= 31)
+            if (JOY_NEW(DPAD_LEFT) || JOY_NEW(DPAD_RIGHT))
             {
-                r += dir;
+                if (GetMonData(&data->mon, MON_DATA_IS_SHINY)) // Only allow editing shiny palette if the Pokemon natively is shiny
+                {
+                    data->isShiny = !data->isShiny;
+                    memcpy(data->mutablePalette, GetUnifiedMonPalette(species, data->isShiny, personality, data->currentAlt), 32);
+                    changed = TRUE;
+                }
+            }
+        }
+        else if (data->editChannel == 1)
+        {
+            if (JOY_NEW(DPAD_LEFT) || JOY_NEW(DPAD_RIGHT))
+            {
+                data->currentAlt = (data->currentAlt + dir + 3) % 3;
+                memcpy(data->mutablePalette, GetUnifiedMonPalette(species, data->isShiny, personality, data->currentAlt), 32);
                 changed = TRUE;
             }
-            break;
-        case 3:
-            if (data->currentAlt > 0 && (int)g + dir >= 0 && (int)g + dir <= 31)
+        }
+        else if (data->editChannel == 2)
+        {
+            if (JOY_NEW(DPAD_LEFT) || JOY_NEW(DPAD_RIGHT))
             {
-                g += dir;
+                data->editColorIndex = (data->editColorIndex + dir - 1 + 15) % 15 + 1;
                 changed = TRUE;
             }
-            break;
-        case 4:
-            if (data->currentAlt > 0 && (int)b + dir >= 0 && (int)b + dir <= 31)
+        }
+        else
+        {
+            switch (data->editChannel)
             {
-                b += dir;
-                changed = TRUE;
+            case 3:
+                if (data->currentAlt > 0 && (int)r + dir >= 0 && (int)r + dir <= 31)
+                {
+                    r += dir;
+                    changed = TRUE;
+                }
+                break;
+            case 4:
+                if (data->currentAlt > 0 && (int)g + dir >= 0 && (int)g + dir <= 31)
+                {
+                    g += dir;
+                    changed = TRUE;
+                }
+                break;
+            case 5:
+                if (data->currentAlt > 0 && (int)b + dir >= 0 && (int)b + dir <= 31)
+                {
+                    b += dir;
+                    changed = TRUE;
+                }
+                break;
             }
-            break;
         }
 
         if (changed)
         {
-            if (data->editChannel >= 2)
+            if (data->editChannel >= 3)
                 *colorPtr = RGB(r, g, b);
 
             u8 palSlot = IndexOfSpritePaletteTag(personality);
@@ -475,6 +605,25 @@ static void HandleInput_PaletteEditor(u8 taskId)
 
             PrintEditorUI(data);
             PlaySE(SE_SELECT);
+        }
+    }
+
+    // MASK SYSTEM: Constant mask logic
+    u32 personality = GetMonData(&data->mon, MON_DATA_PERSONALITY);
+    u8 palSlot = IndexOfSpritePaletteTag(personality);
+    if (palSlot != 0xFF)
+    {
+        if (data->maskMode && !data->showExportView && data->editColorIndex != 0)
+        {
+            for (u8 i = 1; i < 16; i++)
+            {
+                u16 maskColor = (i == data->editColorIndex) ? RGB(31, 31, 31) : RGB(0, 0, 0);
+                LoadPalette(&maskColor, OBJ_PLTT_ID(palSlot) + i, 2);
+            }
+        }
+        else
+        {
+            LoadPalette(data->mutablePalette, OBJ_PLTT_ID(palSlot), 32);
         }
     }
 }

@@ -18,6 +18,7 @@
 #include "constants/form_change_types.h"
 #include "apricorn_tree.h"
 #include "bad_egg_virus.h"
+#include "opowers_menu.h"
 
 static void UpdatePerDay(struct Time *localTime);
 static void UpdatePerMinute(struct Time *localTime);
@@ -68,6 +69,7 @@ static void UpdatePerDay(struct Time *localTime)
         SetRandomLotteryNumber(daysSince);
         UpdateDaysPassedSinceFormChange(daysSince);
         DailyResetApricornTrees();
+        gSaveBlock2Ptr->oPowerDailySteps = 0;
         *days = localTime->days;
     }
 }
@@ -86,6 +88,7 @@ static void UpdatePerMinute(struct Time *localTime)
             BerryTreeTimeUpdate(minutes);
             IncrementVirusTime();
             ShedSkinTimeUpdate(minutes);
+            UpdateOPowersTime(minutes);
             gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;
         }
     }

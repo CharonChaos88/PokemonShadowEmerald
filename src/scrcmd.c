@@ -3982,4 +3982,16 @@ bool8 ScrCmd_subquestmenu(struct ScriptContext *ctx)
 
     return TRUE;
 }
-
+bool8 ScrCmd_giveopower(struct ScriptContext *ctx)
+{
+    u16 powerId = ScriptReadHalfword(ctx);
+    if (powerId < 19)
+    {
+        if (gSaveBlock2Ptr->oPowerLevels[powerId] == 0)
+        {
+            gSaveBlock2Ptr->oPowerLevels[powerId] = 1;
+            gSaveBlock2Ptr->oPowerUses[powerId] = 0;
+        }
+    }
+    return FALSE;
+}

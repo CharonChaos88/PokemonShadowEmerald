@@ -191,6 +191,8 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     if (input->tookStep)
     {
         IncrementGameStat(GAME_STAT_STEPS);
+        if (gSaveBlock2Ptr->oPowerDailySteps < 0xFFFFFFFF)
+            gSaveBlock2Ptr->oPowerDailySteps++;
         IncrementVirusSteps();
         IncrementBirthIslandRockStepCount();
         DespawnAllOverworldWildEncounters(OWE_GENERATED, WILD_CHECK_REPEL);

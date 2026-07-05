@@ -1,6 +1,7 @@
 #include "rotom_start_menu.h"
 #include "global.h"
 #include "option_menu.h"
+#include "opowers_menu.h"
 #include "bg.h"
 #include "battle_pyramid.h"
 #include "daycare.h"
@@ -3022,11 +3023,7 @@ static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
             return;
         }
         
-        if (menuSelectedRotomReality == RP_MENU_O_POWERS)
-        {
-            PlaySE(SE_FAILURE);
-            return;
-        }
+        // Removed blocking check - R/P Powers is now accessible
         
         if (menuSelectedRotomReality != RP_MENU_SAVE)
         {
@@ -4217,7 +4214,7 @@ static void RotomPhone_StartMenu_SelectedFunc_Quest(void)
 
 static void RotomPhone_StartMenu_SelectedFunc_OPowers(void)
 {
-    PlaySE(SE_FAILURE);
+    RotomPhone_StartMenu_DoCleanUpAndChangeCallback(CB2_OPowersMenu);
 }
 
 static void RotomPhone_StartMenu_SelectedFunc_Daycare(void)

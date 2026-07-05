@@ -78,9 +78,16 @@ static EWRAM_DATA struct {
     u8 tileBuffer[0x1c0];
     u8 nameBuffer[0x26]; // never read
     bool8 choseFlyLocation;
+    bool8 fromDebugMenu;
 } *sFlyMap = NULL;
 
 static bool32 sDrawFlyDestTextWindow;
+static bool8 sOpenFlyMapFromDebug;
+
+void SetFlyMapDebugMode(void)
+{
+    sOpenFlyMapFromDebug = TRUE;
+}
 
 static u8 ProcessRegionMapInput_Full(void);
 static u8 MoveRegionMapCursor_Full(void);
@@ -1964,6 +1971,8 @@ void CB2_OpenFlyMap(void)
         }
         else
         {
+            sFlyMap->fromDebugMenu = sOpenFlyMapFromDebug;
+            sOpenFlyMapFromDebug = FALSE;
             ResetPaletteFade();
             ResetSpriteData();
             FreeSpriteTileRanges();
@@ -2486,14 +2495,37 @@ static void CB_ExitFlyMap(void)
                 struct RegionMap* tempRegionMap = &sFlyMap->regionMap;
 
                 SetFlyDestination(tempRegionMap);
-                ReturnToFieldFromFlyMapSelect();
+                if (sFlyMap->fromDebugMenu)
+                {
+                    // Skip fly animation for debug menu - warp directly
+                    Overworld_ResetStateAfterFly();
+                    TRY_FREE_AND_SET_NULL(sFlyMap);
+                    FreeAllWindowBuffers();
+                    WarpIntoMap();
+                    SetMainCallback2(CB2_LoadMap);
+                }
+                else
+                {
+                    TRY_FREE_AND_SET_NULL(sFlyMap);
+                    FreeAllWindowBuffers();
+                    ReturnToFieldFromFlyMapSelect();
+                }
             }
             else
             {
-                SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                if (sFlyMap->fromDebugMenu)
+                {
+                    TRY_FREE_AND_SET_NULL(sFlyMap);
+                    FreeAllWindowBuffers();
+                    SetMainCallback2(CB2_ReturnToFieldWithOpenMenu);
+                }
+                else
+                {
+                    TRY_FREE_AND_SET_NULL(sFlyMap);
+                    FreeAllWindowBuffers();
+                    SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                }
             }
-            TRY_FREE_AND_SET_NULL(sFlyMap);
-            FreeAllWindowBuffers();
         }
         break;
     }

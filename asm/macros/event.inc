@@ -3198,3 +3198,8 @@
 	callnative Cmd_giveterashards_battle, requests_effects=1
 	waitfanfare
 	.endm
+
+	.macro giveopower power:req
+	.byte SCR_OP_GIVEOPOWER
+	.2byte \power
+	.endm
