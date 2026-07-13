@@ -5876,7 +5876,6 @@ void PokemonSummaryDoMonAnimation(struct Sprite *sprite, enum Species species, b
         gTasks[taskId].sAnimId = gSpeciesInfo[species].frontAnimId;
         gTasks[taskId].sAnimDelay = gSpeciesInfo[species].frontAnimDelay;
         gTasks[taskId].tIsShadow = isShadow;  // needed to track anim delay task for mon shadow in BW summary screen
-        bool8 isShadow = FALSE;
         #if BW_SUMMARY_SCREEN == TRUE
         if (isShadow)
             SummaryScreen_SetShadowAnimDelayTaskId_BW(taskId);
@@ -5897,9 +5896,38 @@ void PokemonSummaryDoMonAnimation(struct Sprite *sprite, enum Species species, b
 
 void StopPokemonAnimationDelayTask(void)
 {
-    u8 delayTaskId = FindTaskIdByFunc(Task_PokemonSummaryAnimateAfterDelay);
-    if (delayTaskId != TASK_NONE)
-        DestroyTask(delayTaskId);
+    u8 i;
+
+    for (i = 0; i < NUM_TASKS; i++)
+    {
+        if (gTasks[i].isActive == TRUE 
+         && gTasks[i].func == Task_PokemonSummaryAnimateAfterDelay 
+         && gTasks[i].tIsShadow == FALSE)
+        {
+            SummaryScreen_SetAnimDelayTaskId(TASK_NONE);
+            DestroyTask(i);
+            break;
+        }
+    }
+}
+
+void StopShadowAnimDelayTask(void)
+{
+    u8 i;
+
+    for (i = 0; i < NUM_TASKS; i++)
+    {
+        if (gTasks[i].isActive == TRUE 
+         && gTasks[i].func == Task_PokemonSummaryAnimateAfterDelay 
+         && gTasks[i].tIsShadow == TRUE)
+        {
+            #if BW_SUMMARY_SCREEN == TRUE
+            SummaryScreen_SetShadowAnimDelayTaskId_BW(TASK_NONE);
+            #endif
+            DestroyTask(i);
+            break;
+        }
+    }
 }
 
 void BattleAnimateBackSprite(struct Sprite *sprite, enum Species species)

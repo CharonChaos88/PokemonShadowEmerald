@@ -2786,7 +2786,7 @@ static bool32 RotomPhone_RotomRealityMenu_CanScrollRight(void)
 
 static void RotomPhone_RotomRealityMenu_HandleScroll(u8 taskId, bool32 scrollRight)
 {
-    tRotomMessageSoundEffect = SE_PC_ON;
+    tRotomMessageSoundEffect = SE_WIN_OPEN;
     for (enum RotomPhone_RotomReality_Options spriteId = RP_RR_OPTION_1; spriteId < RP_RR_OPTION_COUNT; spriteId++)
     {
         if (sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[spriteId] != SPRITE_NONE)
@@ -2865,7 +2865,7 @@ static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right
         return;
     }
 
-    tRotomMessageSoundEffect = SE_PC_ON;
+    tRotomMessageSoundEffect = SE_WIN_OPEN;
     sRotomPhone_StartMenu->menuRotomRealitySlideRight = right;
 
     for (int i = 0; i < RP_RR_OPTION_COUNT; i++)

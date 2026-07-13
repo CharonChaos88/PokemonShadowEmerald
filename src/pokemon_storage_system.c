@@ -145,6 +145,7 @@ enum {
     MENU_GIVE,
     MENU_GIVE_2,
     MENU_SWITCH,
+    MENU_STAT_EDITOR,
     MENU_BAG,
     MENU_INFO,
     MENU_SCENERY_1,

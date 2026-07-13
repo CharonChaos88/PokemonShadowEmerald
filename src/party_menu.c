@@ -86,7 +86,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "config/pokemon.h"
-#include "ui_stat_editor.h"
+#include "stat_editor.h"
 #include "bad_egg_virus.h"
 #if __has_include("config/party_menu.h")
 #include "config/party_menu.h"
@@ -106,7 +106,7 @@
 
 enum {
     MENU_SUMMARY,
-    MENU_STAT_EDIT,
+    MENU_STAT_EDITOR,
     MENU_SWITCH,
     MENU_CANCEL1,
     MENU_ITEM,
@@ -2870,7 +2870,8 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
-    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_STAT_EDIT);
+    if ((P_STAT_EDITOR_ALWAYS || FlagGet(P_FLAG_STAT_EDITOR_GET)) && P_PARTY_MENU_STAT_EDITOR)
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_STAT_EDITOR);
 
     u16 species = GetMonData(&mons[slotId], MON_DATA_SPECIES);
 

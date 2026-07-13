@@ -273,6 +273,8 @@ EventScript_ResetAllMapFlags::
 	setflag FLAG_HIDE_SKY_PILLAR_TOP_RAYQUAZA_STILL
 	setflag FLAG_SYS_B_DASH
 	setflag FLAG_UNUSED_0x91F
+	setflag FLAG_SYS_MYSTERY_GIFT_ENABLE
+	setflag FLAG_SYS_MYSTERY_EVENT_ENABLE
 	call EventScript_ResetAllBerries
 	end
 

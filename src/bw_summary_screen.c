@@ -448,6 +448,7 @@ static const u32 sMoveTypes_Gfx_BW[]                        = INCBIN_U32("graphi
 static const u16 sMoveTypes_Pal_BW[]                        = INCBIN_U16("graphics/types_bw/move_types_bw.gbapal");
 #endif
 static const u32 sTeraTypes_Gfx[]                           = INCBIN_U32("graphics/types_bw/tera/tera_types_bw.4bpp.smol");
+static const u16 sStellarRainbowPalette[]                   = INCBIN_U16("graphics/types_bw/tera/stellar_rainbow.gbapal");
 static const u32 sSummaryMoveSelect_Gfx_BW[]                = INCBIN_U32("graphics/summary_screen/bw/move_select.4bpp.smol");
 static const u16 sSummaryMoveSelect_Pal_BW[]                = INCBIN_U16("graphics/summary_screen/bw/move_select.gbapal");
 static const u16 sMarkings_Pal_BW[]                         = INCBIN_U16("graphics/summary_screen/bw/markings.gbapal");
@@ -2306,6 +2307,7 @@ static bool8 DecompressGraphics(void)
     #else
         LoadPalette(gMoveTypes_Pal, OBJ_PLTT_ID(13), 3 * PLTT_SIZE_4BPP);
     #endif
+        LoadPalette(sStellarRainbowPalette, OBJ_PLTT_ID(12), PLTT_SIZE_4BPP);
         sMonSummaryScreen->switchCounter++;
         break;
     case 23:
@@ -5384,7 +5386,12 @@ static void SetTypeSpritePosAndPal(u8 typeId, u8 x, u8 y, u8 spriteArrayId)
     struct Sprite *sprite = &gSprites[sMonSummaryScreen->spriteIds[spriteArrayId]];
     StartSpriteAnim(sprite, typeId);
     if (typeId < NUMBER_OF_MON_TYPES)
-        sprite->oam.paletteNum = gTypesInfo[typeId].palette;
+    {
+        if (spriteArrayId == SPRITE_ARR_ID_TERA_TYPE && typeId == TYPE_STELLAR)
+            sprite->oam.paletteNum = 12;
+        else
+            sprite->oam.paletteNum = gTypesInfo[typeId].palette;
+    }
     else
         sprite->oam.paletteNum = sContestCategoryToOamPaletteNum[typeId - NUMBER_OF_MON_TYPES];
     sprite->x = x + 16;

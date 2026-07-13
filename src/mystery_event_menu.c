@@ -20,6 +20,8 @@
 #include "decompress.h"
 #include "constants/rgb.h"
 
+EWRAM_DATA u32 gDecompressionBuffer[0x7D4 / 4];
+
 enum {
     WIN_MSG,
     WIN_LOADING,
@@ -74,7 +76,7 @@ static void VBlankCB(void)
 
 static bool8 CheckLanguageMatch(void)
 {
-    return (gLinkPlayers[0].language == gLinkPlayers[1].language);
+    return TRUE;
 }
 
 void CB2_InitMysteryEventMenu(void)
@@ -255,14 +257,11 @@ static void CB2_MysteryEventMenu(void)
     case 11:
         if (!gReceivedRemoteLinkPlayers)
         {
-            // No clue what is going on here, and from where gDecompressionBuffer gets actually populated with mystery event script.
-            /*
-            u16 status = RunMysteryEventScript(gDecompressionBuffer);
+            u16 status = RunMysteryEventScript((u8 *)gDecompressionBuffer);
             CpuFill32(0, gDecompressionBuffer, 0x7D4);
 
             if (!GetEventLoadMessage(gStringVar4, status))
                 TrySavingData(SAVE_NORMAL);
-            */
             gMain.state++;
         }
         break;

@@ -52,7 +52,7 @@
 #include "constants/battle_frontier.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
-#include "ui_stat_editor.h"
+#include "stat_editor.h"
 
 #include "rotom_start_menu.h"
 
