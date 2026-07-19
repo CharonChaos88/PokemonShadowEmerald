@@ -14,7 +14,8 @@
 #include "m4a.h"
 #include "decompress.h"
 #include "constants/rgb.h"
-
+#include "string_util.h"
+#include "strings.h"
 enum {
     WIN_TITLE,          // "Berry Program Update" header on the first screen
     WIN_MSG_BODY,
@@ -35,27 +36,29 @@ static int BerryFix_TrySetScene(int);
 static void BerryFix_SetScene(int);
 static void BerryFix_HideScene(void);
 
-static const u8 sText_BerryProgramUpdate[] = _("Berry Program Update");
-static const u8 sText_RubySapphire[] = _("Ruby/Sapphire");
-static const u8 sText_Emerald[] = _("Emerald");
-static const u8 sText_BerryProgramWillBeUpdatedPressA[] = _("The Berry Program on your POKéMON\n"
-                                                            "Ruby/Sapphire Game Pak will be updated.\n"
+static u16 sDistributionsSent = 0;
+
+static const u8 sText_BerryProgramUpdate[] = _("Event Distribution");
+static const u8 sText_RubySapphire[] = _("Client Game");
+static const u8 sText_Emerald[] = _("Host Game");
+static const u8 sText_BerryProgramWillBeUpdatedPressA[] = _("The selected event will be prepared\n"
+                                                            "for distribution.\n"
                                                             "{COLOR RED}{SHADOW LIGHT_RED}Press the A Button.");
-static const u8 sText_EnsureGBAConnectionMatches[] = _("Please ensure the connection of your\n"
-                                                       "Game Boy Advance system matches this.\n"
+static const u8 sText_EnsureGBAConnectionMatches[] = _("Please connect the Game Boy Advance\n"
+                                                       "systems with a Game Link Cable.\n"
                                                        "{COLOR RED}{SHADOW LIGHT_RED}YES: Press the A Button.\n"
                                                        "NO: Turn off the power and try again.");
-static const u8 sText_TurnOffPowerHoldingStartSelect[] = _("Please turn on the power of POKéMON\n"
-                                                           "Ruby/Sapphire while holding START and\n"
-                                                           "SELECT simultaneously. Then, ensure\n"
-                                                           "the picture above appears.");
-static const u8 sText_TransmittingPleaseWait[] = _("Transmitting. Please wait.\n"
+static const u8 sText_TurnOffPowerHoldingStartSelect[] = _("Please turn on the 2nd Game Boy Advance\n"
+                                                           "while holding START and SELECT.\n"
+                                                           "Waiting for connection...");
+static const u8 sText_TransmittingPleaseWait[] = _("Transmitting Payload. Please wait.\n"
                                                    "{COLOR RED}{SHADOW LIGHT_RED}Please do not turn off the power or\n"
-                                                   "unplug the Game Boy Advance Game\nLink Cable.");
-static const u8 sText_PleaseFollowInstructionsOnScreen[] = _("Please follow the instructions on your\n"
-                                                             "POKéMON Ruby/Sapphire screen.");
+                                                   "unplug the Game Link Cable.");
+static const u8 sText_PleaseFollowInstructionsOnScreen[] = _("Transmission successful!\n"
+                                                             "Total Sent: {STR_VAR_1}\n"
+                                                             "{COLOR RED}{SHADOW LIGHT_RED}Press A to send another.");
 static const u8 sText_TransmissionFailureTryAgain[] = _("Transmission failure.\n"
-                                                        "{COLOR RED}{SHADOW LIGHT_RED}Please try again.");
+                                                        "{COLOR RED}{SHADOW LIGHT_RED}Press A to try again.");
 
 static const struct BgTemplate sBerryFixBgTemplates[] = {
     {
@@ -229,43 +232,60 @@ static void BerryFix_Main(void)
     case MAINSTATE_INIT_MULTIBOOT:
         if (TryScene(SCENE_TURN_OFF_POWER))
         {
-            sBerryFix->mb.masterp = gMultiBootProgram_BerryGlitchFix_Start;
-            sBerryFix->mb.server_type = 0;
-            MultiBootInit(&sBerryFix->mb);
-            sBerryFix->timer = 0;
+            extern const u8 gMultibootEventPayload[];
+            extern const u32 gMultibootEventPayloadSize;
+
+            sBerryFix->mb.system_work[0] = 0;
+            sBerryFix->mb.system_work[1] = 0;
+            sBerryFix->mb.system_work[2] = 0;
+            sBerryFix->mb.system_work[3] = 0;
+            sBerryFix->mb.system_work[4] = 0;
+            sBerryFix->mb.handshake_data = 0;
+            sBerryFix->mb.handshake_timeout = 400;
+            sBerryFix->mb.probe_count = 0;
+            sBerryFix->mb.client_data[0] = 0;
+            sBerryFix->mb.client_data[1] = 0;
+            sBerryFix->mb.client_data[2] = 0;
+            sBerryFix->mb.palette_data = 0x81;
+            sBerryFix->mb.client_bit = 0;
+            sBerryFix->mb.boot_srcp = gMultibootEventPayload + 0xC0;
+            sBerryFix->mb.boot_endp = gMultibootEventPayload + 0xC0 + ((gMultibootEventPayloadSize - 0xC0 + 15) & ~15);
+            sBerryFix->mb.masterp = gMultibootEventPayload;
+
             sBerryFix->state = MAINSTATE_MULTIBOOT;
         }
         break;
     case MAINSTATE_MULTIBOOT:
-        MultiBootMain(&sBerryFix->mb);
-        if (sBerryFix->mb.probe_count != 0 || (!(sBerryFix->mb.response_bit & 2) || !(sBerryFix->mb.client_bit & 2)))
+        if (TryScene(SCENE_TRANSMITTING))
         {
-            sBerryFix->timer = 0;
-        }
-        else if (++sBerryFix->timer > 180)
-        {
-            MultiBootStartMaster(&sBerryFix->mb,
-                                 gMultiBootProgram_BerryGlitchFix_Start + ROM_HEADER_SIZE,
-                                 (u32)(gMultiBootProgram_BerryGlitchFix_End - (gMultiBootProgram_BerryGlitchFix_Start + ROM_HEADER_SIZE)),
-                                 4,
-                                 1);
-            sBerryFix->state = MAINSTATE_TRANSMIT;
+            int result = MultiBoot(&sBerryFix->mb);
+            if (result == 0) {
+                // Success!
+                sDistributionsSent++;
+                sBerryFix->state = MAINSTATE_EXIT;
+            } else {
+                // Failed or no slave connected. 
+                // We reset system_work to 0 so it tries Mode 0 again next frame.
+                sBerryFix->mb.system_work[0] = 0;
+                sBerryFix->mb.system_work[1] = 0;
+                sBerryFix->mb.system_work[2] = 0;
+                sBerryFix->mb.system_work[3] = 0;
+                sBerryFix->mb.system_work[4] = 0;
+                
+                // If it was actively transmitting and failed, show failure screen
+                // We can detect active transmission by checking if client_bit was set
+                if (sBerryFix->mb.client_bit != 0) {
+                    sBerryFix->state = MAINSTATE_FAILED;
+                }
+            }
         }
         break;
     case MAINSTATE_TRANSMIT:
-        if (TryScene(SCENE_TRANSMITTING))
-        {
-            MultiBootMain(&sBerryFix->mb);
-
-            if (MultiBootCheckComplete(&sBerryFix->mb))
-                sBerryFix->state = MAINSTATE_EXIT;
-            else if (!(sBerryFix->mb.client_bit & 2))
-                sBerryFix->state = MAINSTATE_FAILED;
-        }
+        // Unused now
         break;
     case MAINSTATE_EXIT:
         if (TryScene(SCENE_FOLLOW_INSTRUCT) && JOY_NEW(A_BUTTON))
-            DoSoftReset();
+            sBerryFix->state = MAINSTATE_INIT_MULTIBOOT;
         break;
     case MAINSTATE_FAILED:
         if (TryScene(SCENE_TRANSMIT_FAILED) && JOY_NEW(A_BUTTON))
@@ -348,7 +368,15 @@ static void BerryFix_SetScene(int scene)
 {
     FillBgTilemapBufferRect_Palette0(0, 0, 0, 0, 32, 32);
     FillWindowPixelBuffer(WIN_MSG_BODY, PIXEL_FILL(10));
-    AddTextPrinterParameterized3(WIN_MSG_BODY, FONT_NORMAL, 0, 0, sBerryProgramTextColors, TEXT_SKIP_DRAW, sBerryProgramTexts[scene]);
+    
+    if (scene == SCENE_FOLLOW_INSTRUCT) {
+        ConvertIntToDecimalStringN(gStringVar1, sDistributionsSent, STR_CONV_MODE_LEFT_ALIGN, 4);
+        StringExpandPlaceholders(gStringVar4, sBerryProgramTexts[scene]);
+        AddTextPrinterParameterized3(WIN_MSG_BODY, FONT_NORMAL, 0, 0, sBerryProgramTextColors, TEXT_SKIP_DRAW, gStringVar4);
+    } else {
+        AddTextPrinterParameterized3(WIN_MSG_BODY, FONT_NORMAL, 0, 0, sBerryProgramTextColors, TEXT_SKIP_DRAW, sBerryProgramTexts[scene]);
+    }
+    
     PutWindowTilemap(WIN_MSG_BODY);
     CopyWindowToVram(WIN_MSG_BODY, COPYWIN_GFX);
     switch (scene)
