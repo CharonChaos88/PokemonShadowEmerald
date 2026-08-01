@@ -2381,7 +2381,7 @@ static void RecipeBook_RestoreTimeOfDayBlend(void)
         return;
 
     sRecipeBookTimeBlendOverridden = FALSE;
-    UpdateTimeOfDay();
+    UpdateTimeOfDay(TRUE);
     ApplyWeatherColorMapIfIdle(gWeatherPtr->colorMapIndex);
 }
 
