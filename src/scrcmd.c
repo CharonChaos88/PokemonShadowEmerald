@@ -3622,7 +3622,7 @@ static void CB2_GiveItemPackMenu(void)
         gMain.state++;
         break;
     case 3:
-        if (sGiveItemPackMenu->windowType == 1)
+        if (sGiveItemPackMenu->windowType != 0)
         {
             sGiveItemPackMenu->windowId = AddWindow(&sZigzagmerangPackWindowTemplate);
         }
@@ -3647,7 +3647,7 @@ static void CB2_GiveItemPackMenu(void)
             u16 numAllocatedItems = sGiveItemPackMenu->numItems;
             u16 itemIndexOffset = 0;
             
-            if (sGiveItemPackMenu->windowType == 1)
+            if (sGiveItemPackMenu->windowType != 0)
             {
                 numAllocatedItems += 1; // 1 for the empty header
             }
@@ -3655,7 +3655,7 @@ static void CB2_GiveItemPackMenu(void)
             sGiveItemPackMenu->listItems = AllocZeroed(numAllocatedItems * sizeof(struct ListMenuItem));
             sGiveItemPackMenu->itemNames = AllocZeroed(numAllocatedItems * 64);
             
-            if (sGiveItemPackMenu->windowType == 1)
+            if (sGiveItemPackMenu->windowType != 0)
             {
                 // Add empty header
                 StringCopy(&sGiveItemPackMenu->itemNames[0], (const u8[]) _(""));
@@ -3688,7 +3688,7 @@ static void CB2_GiveItemPackMenu(void)
             listTemplate.moveCursorFunc = ListMenuDefaultCursorMoveFunc;
             listTemplate.itemPrintFunc = NULL;
             listTemplate.totalItems = numAllocatedItems;
-            if (sGiveItemPackMenu->windowType == 1)
+            if (sGiveItemPackMenu->windowType != 0)
                 listTemplate.maxShowed = numAllocatedItems > 4 ? 4 : numAllocatedItems;
             else
                 listTemplate.maxShowed = numAllocatedItems > 8 ? 8 : numAllocatedItems;
@@ -3697,7 +3697,7 @@ static void CB2_GiveItemPackMenu(void)
             listTemplate.item_X = 8;
             listTemplate.cursor_X = 0;
             
-            if (sGiveItemPackMenu->windowType == 1)
+            if (sGiveItemPackMenu->windowType != 0)
             {
                 listTemplate.upText_Y = 1;
             }
@@ -3720,6 +3720,11 @@ static void CB2_GiveItemPackMenu(void)
             if (sGiveItemPackMenu->windowType == 1)
             {
                 StringCopy(gStringVar1, (const u8[]) _("Boomerang Collected Items:"));
+                AddTextPrinterParameterized(sGiveItemPackMenu->windowId, FONT_NARROW, gStringVar1, GetStringCenterAlignXOffset(FONT_NARROW, gStringVar1, 160), 1, 0, NULL);
+            }
+            else if (sGiveItemPackMenu->windowType == 2)
+            {
+                StringCopy(gStringVar1, (const u8[]) _("Battle Rewards:"));
                 AddTextPrinterParameterized(sGiveItemPackMenu->windowId, FONT_NARROW, gStringVar1, GetStringCenterAlignXOffset(FONT_NARROW, gStringVar1, 160), 1, 0, NULL);
             }
             
@@ -3786,24 +3791,7 @@ bool8 ScrCmd_giveitempack(struct ScriptContext *ctx)
 void Cmd_giveterashards_battle(void)
 {
     static const u16 sTeraShards[] = {
-        ITEM_NORMAL_TERA_SHARD,
-        ITEM_FIGHTING_TERA_SHARD,
-        ITEM_FLYING_TERA_SHARD,
-        ITEM_POISON_TERA_SHARD,
-        ITEM_GROUND_TERA_SHARD,
-        ITEM_ROCK_TERA_SHARD,
-        ITEM_BUG_TERA_SHARD,
-        ITEM_GHOST_TERA_SHARD,
-        ITEM_STEEL_TERA_SHARD,
-        ITEM_FIRE_TERA_SHARD,
-        ITEM_WATER_TERA_SHARD,
-        ITEM_GRASS_TERA_SHARD,
-        ITEM_ELECTRIC_TERA_SHARD,
-        ITEM_PSYCHIC_TERA_SHARD,
-        ITEM_ICE_TERA_SHARD,
-        ITEM_DRAGON_TERA_SHARD,
-        ITEM_DARK_TERA_SHARD,
-        ITEM_FAIRY_TERA_SHARD,
+        ITEM_STELLAR_TERA_SHARD,
     };
     
     u32 i, idx = 0;
@@ -3847,7 +3835,7 @@ void Cmd_giveterashards_battle(void)
     sGiveItemPackMenu->scriptPtr = (u32)itemsArray;
     sGiveItemPackMenu->numItems = numItems;
     sGiveItemPackMenu->itemsArray = itemsArray;
-    sGiveItemPackMenu->windowType = 0;
+    sGiveItemPackMenu->windowType = 2;
     
     ScriptContext_Stop();
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);

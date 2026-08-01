@@ -270,18 +270,18 @@ static bool32 IsRecordedBattleSaveValid(struct RecordedBattleSave *save)
     return TRUE;
 }
 
-static bool32 RecordedBattleToSave(struct RecordedBattleSave *battleSave, struct RecordedBattleSave *saveSector)
-{
-    memset(saveSector, 0, SECTOR_SIZE);
-    memcpy(saveSector, battleSave, sizeof(*battleSave));
+// static bool32 RecordedBattleToSave(struct RecordedBattleSave *battleSave, struct RecordedBattleSave *saveSector)
+// {
+//     memset(saveSector, 0, SECTOR_SIZE);
+//     memcpy(saveSector, battleSave, sizeof(*battleSave));
 
-    saveSector->checksum = CalcByteArraySum((void *)(saveSector), sizeof(*saveSector) - 4);
+//     saveSector->checksum = CalcByteArraySum((void *)(saveSector), sizeof(*saveSector) - 4);
 
-    if (TryWriteSpecialSaveSector(SECTOR_ID_RECORDED_BATTLE, (void *)(saveSector)) != SAVE_STATUS_OK)
-        return FALSE;
-    else
-        return TRUE;
-}
+//     if (TryWriteSpecialSaveSector(SECTOR_ID_RECORDED_BATTLE, (void *)(saveSector)) != SAVE_STATUS_OK)
+//         return FALSE;
+//     else
+//         return TRUE;
+// }
 
 bool32 MoveRecordedBattleToSaveData(void)
 {

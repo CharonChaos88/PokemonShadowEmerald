@@ -136,9 +136,11 @@ static void RotomPhone_RotomRealityMenu_SetupCB(void);
 
 static void Task_RotomPhone_RotomRealityMenu_WaitFadeIn(u8 taskId);
 static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId);
+static void Task_RotomPhone_RotomRealityMenu_HandleMoveInput(u8 taskId);
 static void Task_RotomPhone_RotomRealityMenu_PanelInput(u8 taskId);
 static void Task_RotomPhone_RotomRealityMenu_PanelSlide(u8 taskId);
 static void RotomPhone_RotomRealityMenu_StartPanelSlide(void);
+static void RotomPhone_SyncRotomRealityLayout(void);
 static void Task_RotomPhone_RotomRealityMenu_WaitFadeAndBail(u8 taskId);
 static void Task_RotomPhone_RotomRealityMenu_WaitFadeAndExitGracefully(u8 taskId);
 static void Task_RotomPhone_RotomRealityMenu_WaitFadeAndExitGracefullyForSave(u8 taskId);
@@ -782,7 +784,7 @@ struct RotomPhone_StartMenu_State
     u32 menuRotomRealityLoadState;
     bool32 menuRotomRealityPanelOpen;
     enum RotomPhone_MenuItems menuRotomRealityOptions[RP_RR_OPTION_COUNT];
-    enum RotomPhone_MenuItems menuRotomRealityFirstOnScreenOption;
+    u32 menuRotomRealityFirstOnScreenOption;
     u32 menuRotomRealityIconSpriteId[RP_RR_OPTION_COUNT];
     u32 menuRotomRealityShortcutIconSpriteId;
     u32 menuRotomRealityCursorSpriteId;
@@ -792,6 +794,11 @@ struct RotomPhone_StartMenu_State
     u32 menuRotomRealityIconSpriteId_Old[RP_RR_OPTION_COUNT];
     u32 menuRotomRealityPageSlideComfyAnimId;
     bool8 menuRotomRealitySlideRight;
+    bool8 menuRotomRealityIsMovingIcon;
+    u8 menuRotomRealityMovingLayoutIndex;
+    u8 menuRotomRealityMovingMenuId;
+    u32 menuRotomRealityMovingSpriteId;
+    u8 menuRotomRealityCurrentSlot;
 };
 static EWRAM_DATA struct RotomPhone_StartMenu_State *sRotomPhone_StartMenu = NULL;
 
@@ -1388,37 +1395,20 @@ static enum RotomPhone_MenuItems RotomPhone_StartMenu_SetFirstSelectedMenu(void)
     return RP_MENU_OPTIONS;
 }
 
-static enum RotomPhone_MenuItems RotomPhone_StartMenu_GetSavedPageFirstOption(void)
+static u32 RotomPhone_StartMenu_GetSavedPageFirstOption(void)
 {
-    enum RotomPhone_MenuItems firstOption = RotomPhone_StartMenu_SetFirstSelectedMenu();
-    enum RotomPhone_MenuItems currentOption = firstOption;
-    u32 unlockedCount = 0;
-
-    while (currentOption < RP_MENU_COUNT && currentOption != menuSelectedRotomReality)
-    {
-        if (sRotomPhoneOptions[currentOption].unlockedFunc && sRotomPhoneOptions[currentOption].unlockedFunc())
-        {
-            unlockedCount++;
-        }
-        currentOption++;
-    }
-
-    u32 targetFirstUnlockedIndex = (unlockedCount / RP_RR_OPTION_COUNT) * RP_RR_OPTION_COUNT;
+    // Need to make sure layout is synced first just in case
+    RotomPhone_SyncRotomRealityLayout();
     
-    currentOption = firstOption;
-    u32 currentUnlockedIndex = 0;
-    while (currentOption < RP_MENU_COUNT)
+    for (u32 i = 0; i < 20; i++)
     {
-        if (sRotomPhoneOptions[currentOption].unlockedFunc && sRotomPhoneOptions[currentOption].unlockedFunc())
+        if (gSaveBlock2Ptr->rotomRealityLayout[i] == menuSelectedRotomReality)
         {
-            if (currentUnlockedIndex == targetFirstUnlockedIndex)
-                return currentOption;
-            currentUnlockedIndex++;
+            if (i >= 10) return 10;
+            return 0;
         }
-        currentOption++;
     }
-    
-    return firstOption;
+    return 0;
 }
 
 static const u8 *const sRotomPhone_Overworld_DayNames[] =
@@ -2732,6 +2722,18 @@ static void RotomPhone_RotomRealityMenu_SetupCB(void)
         RotomPhone_RotomRealityMenu_LoadSprites();
         RotomPhone_StartMenu_CreateRotomFaceSprite(FALSE);
         RotomPhone_RotomRealityMenu_CreateIconSprites();
+
+        sRotomPhone_StartMenu->menuRotomRealityCurrentSlot = 0;
+        for (u32 i = 0; i < RP_RR_OPTION_COUNT; i++)
+        {
+            if (sRotomPhone_StartMenu->menuRotomRealityOptions[i] == menuSelectedRotomReality)
+            {
+                sRotomPhone_StartMenu->menuRotomRealityCurrentSlot = i;
+                break;
+            }
+        }
+        menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
+
         RotomPhone_RotomRealityMenu_CreateShortcutIcon();
         RotomPhone_RotomRealityMenu_CreateCursorSprite();
         gMain.state++;
@@ -2751,34 +2753,22 @@ static void Task_RotomPhone_RotomRealityMenu_WaitFadeIn(u8 taskId)
     }
 }
 
-static enum RotomPhone_MenuItems RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(u32 startIndex, s32 direction)
-{
-    u32 unlockedCount = 0;
-    u32 i = startIndex;
-
-    while (i < RP_MENU_COUNT && i >= 0)
-    {
-        if (sRotomPhoneOptions[i].unlockedFunc && sRotomPhoneOptions[i].unlockedFunc())
-        {
-            unlockedCount++;
-            if (unlockedCount == RP_RR_OPTION_COUNT)
-                break;
-        }
-        i += direction;
-    }
-    return i;
-}
 
 static bool32 RotomPhone_RotomRealityMenu_CanScrollRight(void)
 {
-    u32 unlockedSeen = 0;
-    for (u32 i = sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption; i < RP_MENU_COUNT; i++)
+    if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption >= 10)
+        return FALSE; // already on page 2
+        
+    for (int i = 10; i < 20; i++)
     {
-        if (sRotomPhoneOptions[i].unlockedFunc && sRotomPhoneOptions[i].unlockedFunc())
+        u8 menuId = gSaveBlock2Ptr->rotomRealityLayout[i];
+        if (menuId < RP_MENU_COUNT)
         {
-            unlockedSeen++;
-            if (unlockedSeen > RP_RR_OPTION_COUNT)
+            const struct RotomPhone_MenuOptions *menuOption = &sRotomPhoneOptions[menuId];
+            if (menuOption->unlockedFunc && menuOption->unlockedFunc())
+            {
                 return TRUE;
+            }
         }
     }
     return FALSE;
@@ -2799,13 +2789,14 @@ static void RotomPhone_RotomRealityMenu_HandleScroll(u8 taskId, bool32 scrollRig
 
     if (scrollRight)
     {
-        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(
-            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption + 1, +1);
+        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption += 10;
     }
     else
     {
-        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(
-            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption - 1, -1);
+        if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption >= 10)
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption -= 10;
+        else
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = 0;
     }
 
     RotomPhone_RotomRealityMenu_CreateIconSprites();
@@ -2848,7 +2839,10 @@ static void Task_RotomPhone_RotomRealityMenu_SlidePage(u8 taskId)
         if (sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId != SPRITE_NONE)
             gSprites[sRotomPhone_StartMenu->menuRotomRealityShortcutIconSpriteId].invisible = FALSE;
             
-        gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMainInput;
+        if (sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon)
+            gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMoveInput;
+        else
+            gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMainInput;
     }
 }
 
@@ -2859,7 +2853,7 @@ static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right
         tRotomMessageSoundEffect = SE_BOO;
         return;
     }
-    if (!right && sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == RotomPhone_StartMenu_SetFirstSelectedMenu())
+    if (!right && sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == 0)
     {
         tRotomMessageSoundEffect = SE_BOO;
         return;
@@ -2874,18 +2868,16 @@ static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right
         sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] = SPRITE_NONE;
     }
 
-    for (int count = 0; count < RP_RR_OPTION_COUNT; count++)
+    if (right)
     {
-        if (right)
-        {
-            if (!RotomPhone_RotomRealityMenu_CanScrollRight()) break;
-            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption + 1, +1);
-        }
+        sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption += 10;
+    }
+    else
+    {
+        if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption >= 10)
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption -= 10;
         else
-        {
-            if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == RotomPhone_StartMenu_SetFirstSelectedMenu()) break;
-            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = RotomPhone_RotomRealityMenu_GetNextUnlockedOffset(sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption - 1, -1);
-        }
+            sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption = 0;
     }
 
     RotomPhone_RotomRealityMenu_CreateIconSprites();
@@ -2906,7 +2898,7 @@ static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right
             gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i]].x += offset;
     }
 
-    menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[RP_RR_OPTION_1];
+    menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
     RotomPhone_StartMenu_UpdateRotomFaceAnim(TRUE);
     RotomPhone_RotomRealityMenu_PrintMenuName();
 
@@ -2919,17 +2911,8 @@ static void RotomPhone_RotomRealityMenu_HandlePageScroll(u8 taskId, bool32 right
 
 static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
 {
-    enum RotomPhone_RotomReality_Options optionCurrent = RP_RR_OPTION_1;
+    enum RotomPhone_RotomReality_Options optionCurrent = sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
     enum RotomPhone_RotomReality_Options optionNew;
-
-    for (enum RotomPhone_RotomReality_Options i = RP_RR_OPTION_1; i < RP_RR_OPTION_COUNT; i++)
-    {
-        if (sRotomPhone_StartMenu->menuRotomRealityOptions[i] == menuSelectedRotomReality)
-        {
-            optionCurrent = i;
-            break;
-        }
-    }
 
     if (JOY_NEW(DPAD_UP))
         optionNew = sRotomRealityOptionInfo[optionCurrent].optionUp;
@@ -2942,10 +2925,13 @@ static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
     
     tRotomMessageSoundEffect = SE_SELECT;
 
-    if (sRotomPhone_StartMenu->menuRotomRealityOptions[optionNew] == RP_MENU_COUNT)
+    if (!sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon && optionNew != RP_RR_OPTION_COUNT)
     {
-        tRotomMessageSoundEffect = SE_BOO;
-        return;
+        if (sRotomPhone_StartMenu->menuRotomRealityOptions[optionNew] == RP_MENU_COUNT)
+        {
+            tRotomMessageSoundEffect = SE_BOO;
+            return;
+        }
     }
 
     if (optionNew == RP_RR_OPTION_COUNT)
@@ -2958,7 +2944,7 @@ static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
 
         if (JOY_NEW(DPAD_LEFT))
         {
-            if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == RotomPhone_StartMenu_SetFirstSelectedMenu())
+            if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == 0)
             {
                 tRotomMessageSoundEffect = SE_BOO;
                 return;
@@ -2966,6 +2952,9 @@ static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
             else
             {
                 RotomPhone_RotomRealityMenu_HandleScroll(taskId, FALSE);
+                if (optionCurrent == RP_RR_OPTION_1) optionNew = RP_RR_OPTION_4;
+                else if (optionCurrent == RP_RR_OPTION_5) optionNew = RP_RR_OPTION_8;
+                else if (optionCurrent == RP_RR_OPTION_9) optionNew = RP_RR_OPTION_10;
             }
         }
 
@@ -2979,13 +2968,21 @@ static void RotomPhone_RotomRealityMenu_HandleDPAD(u8 taskId)
             else
             {
                 RotomPhone_RotomRealityMenu_HandleScroll(taskId, TRUE);
+                if (optionCurrent == RP_RR_OPTION_4) optionNew = RP_RR_OPTION_1;
+                else if (optionCurrent == RP_RR_OPTION_8) optionNew = RP_RR_OPTION_5;
+                else if (optionCurrent == RP_RR_OPTION_10) optionNew = RP_RR_OPTION_9;
             }
         }
     }
 
-    menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[optionNew];
-    RotomPhone_StartMenu_UpdateRotomFaceAnim(TRUE);
-    RotomPhone_RotomRealityMenu_PrintMenuName();
+    if (optionNew != RP_RR_OPTION_COUNT)
+    {
+        sRotomPhone_StartMenu->menuRotomRealityCurrentSlot = optionNew;
+        if (!sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon)
+            menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[optionNew];
+        RotomPhone_StartMenu_UpdateRotomFaceAnim(TRUE);
+        RotomPhone_RotomRealityMenu_PrintMenuName();
+    }
 }
 
 static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
@@ -3013,19 +3010,29 @@ static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
     }
     if (JOY_NEW(A_BUTTON | START_BUTTON))
     {
-        if (JOY_NEW(START_BUTTON) && RP_CONFIG_ROTOM_REALITY_SHORTCUT)
+        if (JOY_NEW(START_BUTTON))
         {
-            menuSelectedRotomReality = RP_GET_SHORTCUT_OPTION;
-            RotomPhone_RotomRealityMenu_PrintMenuName();
-        }
-        else if (JOY_NEW(START_BUTTON) && !RP_CONFIG_ROTOM_REALITY_SHORTCUT)
-        {
-            return;
+            if (menuSelectedRotomReality != RP_MENU_COUNT)
+            {
+                sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon = TRUE;
+                sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex = sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption + sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
+                sRotomPhone_StartMenu->menuRotomRealityMovingMenuId = menuSelectedRotomReality;
+                
+                sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId = sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
+                sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = SPRITE_NONE;
+                
+                gSaveBlock2Ptr->rotomRealityLayout[sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex] = RP_MENU_COUNT;
+                sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = RP_MENU_COUNT;
+
+                gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMoveInput;
+                PlaySE(SE_SELECT);
+                return;
+            }
         }
         
         // Removed blocking check - R/P Powers is now accessible
         
-        if (menuSelectedRotomReality != RP_MENU_SAVE)
+        if (menuSelectedRotomReality != RP_MENU_SAVE && menuSelectedRotomReality != RP_MENU_COUNT)
         {
             PlaySE(SE_BALL_TRAY_ENTER);
 
@@ -3040,12 +3047,132 @@ static void Task_RotomPhone_RotomRealityMenu_HandleMainInput(u8 taskId)
                 sRotomPhoneOptions[menuSelectedRotomReality].selectedFunc();
             }
         }
-        else
+        else if (menuSelectedRotomReality != RP_MENU_COUNT)
         {
             sRotomPhoneOptions[menuSelectedRotomReality].selectedFunc();
         }
     }
 
+    if (tRotomMessageSoundEffect && !IsSEPlaying())
+        PlaySE(tRotomMessageSoundEffect);
+}
+
+static void Task_RotomPhone_RotomRealityMenu_HandleMoveInput(u8 taskId)
+{
+    tRotomMessageSoundEffect = MUS_DUMMY;
+    RotomPhone_RotomRealityMenu_TimerUpdates(taskId);
+    
+    if (JOY_NEW(B_BUTTON))
+    {
+        sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon = FALSE;
+        
+        gSaveBlock2Ptr->rotomRealityLayout[sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+        
+        u32 movingPageOffset = (sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex / 10) * 10;
+        if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == movingPageOffset)
+        {
+            u8 slot = sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex % 10;
+            sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[slot] = sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId;
+            sRotomPhone_StartMenu->menuRotomRealityOptions[slot] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+            
+            if (sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId != SPRITE_NONE)
+            {
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].x = sRotomRealityOptionInfo[slot].x;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].y = sRotomRealityOptionInfo[slot].y;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].oam.priority = 2;
+            }
+        }
+        else
+        {
+            if (sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId != SPRITE_NONE)
+            {
+                FreeSpriteOamMatrix(&gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId]);
+                DestroySprite(&gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId]);
+            }
+        }
+        
+        menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
+        RotomPhone_RotomRealityMenu_PrintMenuName();
+        gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMainInput;
+        PlaySE(SE_PC_OFF);
+    }
+    else if (JOY_NEW(DPAD_ANY))
+    {
+        RotomPhone_RotomRealityMenu_HandleDPAD(taskId);
+        
+        if (sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId != SPRITE_NONE)
+        {
+            u8 currentSlot = sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].x = sRotomRealityOptionInfo[currentSlot].x;
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].y = sRotomRealityOptionInfo[currentSlot].y;
+            gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].oam.priority = 1;
+        }
+    }
+    else if (JOY_NEW(A_BUTTON | START_BUTTON))
+    {
+        u8 currentLayoutIndex = sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption + sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
+        
+        if (currentLayoutIndex != sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex)
+        {
+            u8 tempMenuId = gSaveBlock2Ptr->rotomRealityLayout[currentLayoutIndex];
+            gSaveBlock2Ptr->rotomRealityLayout[sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex] = tempMenuId;
+            gSaveBlock2Ptr->rotomRealityLayout[currentLayoutIndex] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+            
+            u32 oldSpriteInSlot = sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
+            sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId;
+            sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+            
+            if (sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId != SPRITE_NONE)
+            {
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].x = sRotomRealityOptionInfo[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot].x;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].y = sRotomRealityOptionInfo[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot].y;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].oam.priority = 2;
+            }
+            
+            u32 movingPageOffset = (sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex / 10) * 10;
+            if (sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption == movingPageOffset)
+            {
+                u8 slot = sRotomPhone_StartMenu->menuRotomRealityMovingLayoutIndex % 10;
+                sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[slot] = oldSpriteInSlot;
+                sRotomPhone_StartMenu->menuRotomRealityOptions[slot] = tempMenuId;
+                
+                if (oldSpriteInSlot != SPRITE_NONE)
+                {
+                    gSprites[oldSpriteInSlot].x = sRotomRealityOptionInfo[slot].x;
+                    gSprites[oldSpriteInSlot].y = sRotomRealityOptionInfo[slot].y;
+                    gSprites[oldSpriteInSlot].oam.priority = 2;
+                }
+            }
+            else
+            {
+                if (oldSpriteInSlot != SPRITE_NONE)
+                {
+                    FreeSpriteOamMatrix(&gSprites[oldSpriteInSlot]);
+                    DestroySprite(&gSprites[oldSpriteInSlot]);
+                }
+            }
+        }
+        else
+        {
+            gSaveBlock2Ptr->rotomRealityLayout[currentLayoutIndex] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+            sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId;
+            sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot] = sRotomPhone_StartMenu->menuRotomRealityMovingMenuId;
+            
+            if (sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId != SPRITE_NONE)
+            {
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].x = sRotomRealityOptionInfo[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot].x;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].y = sRotomRealityOptionInfo[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot].y;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityMovingSpriteId].oam.priority = 2;
+            }
+        }
+        
+        sRotomPhone_StartMenu->menuRotomRealityIsMovingIcon = FALSE;
+        menuSelectedRotomReality = sRotomPhone_StartMenu->menuRotomRealityOptions[sRotomPhone_StartMenu->menuRotomRealityCurrentSlot];
+        RotomPhone_RotomRealityMenu_PrintMenuName();
+        gTasks[taskId].func = Task_RotomPhone_RotomRealityMenu_HandleMainInput;
+        PlaySE(SE_PC_LOGIN);
+    }
+    
     if (tRotomMessageSoundEffect && !IsSEPlaying())
         PlaySE(tRotomMessageSoundEffect);
 }
@@ -3290,48 +3417,87 @@ static bool32 RotomPhone_RotomRealityMenu_LoadGraphics(void)
     return FALSE;
 }
 
-static void RotomPhone_RotomRealityMenu_CreateIconSprites(void)
+static void RotomPhone_SyncRotomRealityLayout(void)
 {
-    enum RotomPhone_RotomReality_Options drawn = RP_RR_OPTION_1;
-    u32 drawnCount = RP_RR_OPTION_COUNT;
-    u32 animNum;
-
-    for (enum RotomPhone_MenuItems menuId = sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption; menuId < RP_MENU_COUNT && drawn < drawnCount; menuId++)
+    u32 i, j;
+    if (!gSaveBlock2Ptr->rotomRealityLayoutInitialized)
     {
-        const struct RotomPhone_MenuOptions *menuOption = &sRotomPhoneOptions[menuId];
-
-        if (menuOption->unlockedFunc && menuOption->unlockedFunc())
-        {
-            enum RotomPhone_RotomReality_Options optionSlot = RP_RR_OPTION_1 + drawn;
-            const struct SpriteTemplate *spriteTemplate;
-
-            if (menuId != RP_MENU_SHORTCUT)
-            {
-                animNum = menuOption->rrAnim;
-                spriteTemplate = menuOption->rrSpriteTemplate;
-            }
-            else
-            {
-                animNum = sRotomPhoneOptions[RP_GET_SHORTCUT_OPTION].rrAnim;
-                spriteTemplate = sRotomPhoneOptions[RP_GET_SHORTCUT_OPTION].rrSpriteTemplate;
-            }
-
-            sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[optionSlot] = CreateSprite(
-                spriteTemplate,
-                sRotomRealityOptionInfo[optionSlot].x,
-                sRotomRealityOptionInfo[optionSlot].y,
-                1
-            );
-            sRotomPhone_StartMenu->menuRotomRealityOptions[optionSlot] = menuId;
-            gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[optionSlot]].oam.priority = 2;
-            StartSpriteAnim(&gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[optionSlot]], animNum);
-            drawn++;
-        }
+        for (i = 0; i < 20; i++)
+            gSaveBlock2Ptr->rotomRealityLayout[i] = RP_MENU_COUNT;
+        gSaveBlock2Ptr->rotomRealityLayoutInitialized = TRUE;
     }
 
-    for (; drawn < RP_RR_OPTION_COUNT; drawn++)
+    // Ensure all unlocked options are in the layout somewhere
+    for (i = RP_MENU_FIRST_OPTION; i < RP_MENU_COUNT; i++)
     {
-        sRotomPhone_StartMenu->menuRotomRealityOptions[drawn] = RP_MENU_COUNT;
+        const struct RotomPhone_MenuOptions *menuOption = &sRotomPhoneOptions[i];
+        if (menuOption->unlockedFunc && menuOption->unlockedFunc())
+        {
+            // Check if it's already in the layout
+            bool32 found = FALSE;
+            for (j = 0; j < 20; j++)
+            {
+                if (gSaveBlock2Ptr->rotomRealityLayout[j] == i)
+                {
+                    found = TRUE;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                // Find empty slot and add
+                for (j = 0; j < 20; j++)
+                {
+                    if (gSaveBlock2Ptr->rotomRealityLayout[j] >= RP_MENU_COUNT)
+                    {
+                        gSaveBlock2Ptr->rotomRealityLayout[j] = i;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+static void RotomPhone_RotomRealityMenu_CreateIconSprites(void)
+{
+    u32 i;
+    u32 animNum;
+    u32 pageOffset = sRotomPhone_StartMenu->menuRotomRealityFirstOnScreenOption;
+
+    RotomPhone_SyncRotomRealityLayout();
+
+    for (i = 0; i < RP_RR_OPTION_COUNT; i++)
+    {
+        u8 menuId = RP_MENU_COUNT;
+        if (pageOffset + i < 20)
+            menuId = gSaveBlock2Ptr->rotomRealityLayout[pageOffset + i];
+        
+        sRotomPhone_StartMenu->menuRotomRealityOptions[i] = RP_MENU_COUNT;
+        sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] = SPRITE_NONE;
+
+        if (menuId < RP_MENU_COUNT)
+        {
+            const struct RotomPhone_MenuOptions *menuOption = &sRotomPhoneOptions[menuId];
+
+            if (menuOption->unlockedFunc && menuOption->unlockedFunc())
+            {
+                const struct SpriteTemplate *spriteTemplate;
+
+                animNum = menuOption->rrAnim;
+                spriteTemplate = menuOption->rrSpriteTemplate;
+
+                sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i] = CreateSprite(
+                    spriteTemplate,
+                    sRotomRealityOptionInfo[i].x,
+                    sRotomRealityOptionInfo[i].y,
+                    1
+                );
+                sRotomPhone_StartMenu->menuRotomRealityOptions[i] = menuId;
+                gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i]].oam.priority = 2;
+                StartSpriteAnim(&gSprites[sRotomPhone_StartMenu->menuRotomRealityIconSpriteId[i]], animNum);
+            }
+        }
     }
 }
 
@@ -3395,7 +3561,7 @@ static void RotomPhone_RotomRealityMenu_CursorCallback(struct Sprite *sprite)
     struct ComfyAnim *yAnim = &gComfyAnims[sComfyAnimIdY];
     struct ComfyAnimSpringConfig *xConfig = &xAnim->config.data.spring;
     struct ComfyAnimSpringConfig *yConfig = &yAnim->config.data.spring;
-    enum RotomPhone_RotomReality_Options optionCurrent = RP_RR_OPTION_1;
+    enum RotomPhone_RotomReality_Options optionCurrent = sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
     s32 xOffset;
 
     if (sprite->x > DISPLAY_WIDTH / 2)
@@ -3407,15 +3573,6 @@ static void RotomPhone_RotomRealityMenu_CursorCallback(struct Sprite *sprite)
     {
         sprite->hFlip = FALSE;
         xOffset = ROTOM_CURSOR_X_OFFSET;
-    }
-
-    for (enum RotomPhone_RotomReality_Options i = RP_RR_OPTION_1; i < RP_RR_OPTION_COUNT; i++)
-    {
-        if (sRotomPhone_StartMenu->menuRotomRealityOptions[i] == menuSelectedRotomReality)
-        {
-            optionCurrent = i;
-            break;
-        }
     }
 
     xConfig->to = Q_24_8(sRotomRealityOptionInfo[optionCurrent].x + xOffset);
@@ -3430,20 +3587,11 @@ static void RotomPhone_RotomRealityMenu_CursorCallback(struct Sprite *sprite)
 static void RotomPhone_RotomRealityMenu_CreateCursorSprite(void)
 {
     struct Sprite *sprite;
-    enum RotomPhone_RotomReality_Options optionCurrent = RP_RR_OPTION_1;
+    enum RotomPhone_RotomReality_Options optionCurrent = sRotomPhone_StartMenu->menuRotomRealityCurrentSlot;
     u8 x;
     u8 y;
     u8 xOffset;
     LoadMonIconPalette(SPECIES_ROTOM);
-
-    for (enum RotomPhone_RotomReality_Options i = RP_RR_OPTION_1; i < RP_RR_OPTION_COUNT; i++)
-    {
-        if (sRotomPhone_StartMenu->menuRotomRealityOptions[i] == menuSelectedRotomReality)
-        {
-            optionCurrent = i;
-            break;
-        }
-    }
 
     switch (optionCurrent)
     {
@@ -3561,10 +3709,13 @@ static void RotomPhone_RotomRealityMenu_PrintMenuName(void)
 {
     FillWindowPixelBuffer(RP_RR_WIN_MENU_NAME, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
 
-    AddTextPrinterParameterized4(RP_RR_WIN_MENU_NAME, FONT_SMALL_NARROWER,
-        GetStringCenterAlignXOffset(FONT_SMALL_NARROWER, sRotomPhoneOptions[menuSelectedRotomReality].menuName, sRotomPhone_RotomRealityMenuWindowTemplates[RP_RR_WIN_MENU_NAME].width * 8),
-        0, 0, 0,
-        sRotomPhone_StartMenu_FontColours[FONT_RR_ROTOM_PHONE], TEXT_SKIP_DRAW, sRotomPhoneOptions[menuSelectedRotomReality].menuName);
+    if (menuSelectedRotomReality != RP_MENU_COUNT)
+    {
+        AddTextPrinterParameterized4(RP_RR_WIN_MENU_NAME, FONT_SMALL_NARROWER,
+            GetStringCenterAlignXOffset(FONT_SMALL_NARROWER, sRotomPhoneOptions[menuSelectedRotomReality].menuName, sRotomPhone_RotomRealityMenuWindowTemplates[RP_RR_WIN_MENU_NAME].width * 8),
+            0, 0, 0,
+            sRotomPhone_StartMenu_FontColours[FONT_RR_ROTOM_PHONE], TEXT_SKIP_DRAW, sRotomPhoneOptions[menuSelectedRotomReality].menuName);
+    }
 
     CopyWindowToVram(RP_RR_WIN_MENU_NAME, COPYWIN_GFX);
 }

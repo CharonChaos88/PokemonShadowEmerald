@@ -677,6 +677,8 @@ struct SaveBlock2
     u8 oPowerFiller[3];
     
     u32 activeOPowerTimer;
+    u8 rotomRealityLayout[20];
+    u8 rotomRealityLayoutInitialized;
 }; 
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;

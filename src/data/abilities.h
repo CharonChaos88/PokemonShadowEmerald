@@ -27,6 +27,7 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
     {
         .name = _("Speed Boost"),
         .description = COMPOUND_STRING("Gradually boosts Speed."),
+        .extendedDescription = COMPOUND_STRING("Increases Speed stat by 1 stage at\nthe end of each turn."),
         .aiRating = 9,
     },
 
@@ -497,6 +498,7 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
     {
         .name = _("Overgrow"),
         .description = COMPOUND_STRING("Ups Grass moves in a pinch."),
+        .extendedDescription = COMPOUND_STRING("Powers up Grass-type moves\nwhen the Pokémon's HP is low.\n(Below 1/3 of max HP)"),
         .aiRating = 5,
     },
 

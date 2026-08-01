@@ -286,7 +286,7 @@
 #define VAR_OVERWORLD_SPEEDUP 0x4108
 #define VAR_JUKEBOX_MAP_OVERRIDE 0x4109
 #define VAR_JUKEBOX_BATTLE_OVERRIDE 0x410A
-
+#define VAR_PKMN_LEAGUE_REGISTRATION 0x410B // 0 = Not Registered, 1 = Failed first attempt, 2 = Successfully registered (Will redirect to the original Nurse Joy healing script if the player has already registered for the League)
 #define VARS_END                                         0x410B
 #define VARS_COUNT                                       (VARS_END - VARS_START + 1)
 

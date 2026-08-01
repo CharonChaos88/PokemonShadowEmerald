@@ -44,6 +44,7 @@
 #include "strings.h"
 #include "task.h"
 #include "text.h"
+#include "text_window.h"
 #include "tv.h"
 #include "window.h"
 #include "constants/battle_move_effects.h"
@@ -296,6 +297,7 @@ static void PrintMonOTID(void);
 static void PrintMonDexNumberSpecies(void);
 static void PrintMonAbilityName(void);
 static void PrintMonAbilityDescription(void);
+static void PrintTextOnWindow_BW_Font(u8 windowId, const u8 *string, u8 x, u8 y, u8 lineSpacing, u8 colorId);
 static void BufferMonTrainerMemo(void);
 static void PrintMonTrainerMemo(void);
 static void BufferNatureString(void);
@@ -722,6 +724,17 @@ static const struct WindowTemplate sPageSkillsTemplate[] =
         .baseBlock = 491,
     },
 };
+
+static const struct WindowTemplate sExtendedAbilityWindowTemplate = {
+    .bg = 0,
+    .tilemapLeft = 2,
+    .tilemapTop = 5,
+    .width = 26,
+    .height = 10,
+    .paletteNum = 14,
+    .baseBlock = 612,
+};
+
 static const struct WindowTemplate sPageMovesTemplate[] = // This is used for both battle and contest moves
 {
     [PSS_DATA_WINDOW_MOVE_NAMES_PP] = {
@@ -2592,6 +2605,54 @@ static void DrawNextSkillsButtonPrompt(u8 mode)
     ScheduleBgCopyTilemapToVram(0);
 }
 
+static void Task_ShowExtendedAbilityPopup(u8 taskId)
+{
+    u16 ability;
+    const u8 *extDesc;
+    u8 windowId;
+
+    if (gTasks[taskId].data[0] == 0)
+    {
+        gTasks[taskId].data[0] = 1;
+        windowId = AddWindow(&sExtendedAbilityWindowTemplate);
+        gTasks[taskId].data[1] = windowId;
+
+        LoadUserWindowBorderGfx(windowId, 0x368, BG_PLTT_ID(14));
+        DrawStdFrameWithCustomTileAndPalette(windowId, FALSE, 0x368, 14);
+
+        ability = GetAbilityBySpecies(sMonSummaryScreen->summary.species, sMonSummaryScreen->summary.abilityNum);
+        extDesc = gAbilitiesInfo[ability].extendedDescription;
+        if (extDesc == NULL)
+            extDesc = gAbilitiesInfo[ability].description;
+
+        {
+            u8 textColors[3] = {1, 14, 15}; // bg, fg, shadow (white text, black shadow)
+            u32 x = GetStringCenterAlignXOffset(FONT_BW_SUMMARY_SCREEN, gAbilitiesInfo[ability].name, 208);
+            AddTextPrinterParameterized4(windowId, FONT_BW_SUMMARY_SCREEN, x, 2, 0, 0, textColors, 0, gAbilitiesInfo[ability].name);
+            AddTextPrinterParameterized4(windowId, FONT_BW_SUMMARY_SCREEN, 4, 16, 0, 0, textColors, 0, extDesc);
+        }
+        CopyWindowToVram(windowId, COPYWIN_GFX);
+        ScheduleBgCopyTilemapToVram(0);
+    }
+    else
+    {
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            windowId = gTasks[taskId].data[1];
+            ClearStdWindowAndFrameToTransparent(windowId, FALSE);
+            RemoveWindow(windowId);
+            
+            PutPageWindowTilemaps(PSS_PAGE_SKILLS);
+            PutWindowTilemap(PSS_LABEL_WINDOW_PORTRAIT_NICKNAME_GENDER_LEVEL);
+            ScheduleBgCopyTilemapToVram(0);
+            
+            gTasks[taskId].data[0] = 0;
+            gTasks[taskId].func = Task_HandleInput;
+            PlaySE(SE_SELECT);
+        }
+    }
+}
+
 static void Task_HandleInput(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
@@ -2654,6 +2715,21 @@ static void Task_HandleInput(u8 taskId)
                     else
                         BufferAndPrintStats_HandleState(tSkillsState);
                 }
+                else
+                {
+                    gTasks[taskId].data[0] = 0;
+                    gTasks[taskId].func = Task_ShowExtendedAbilityPopup;
+                    PlaySE(SE_SELECT);
+                }
+            }
+        }
+        else if (JOY_NEW(SELECT_BUTTON))
+        {
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS)
+            {
+                gTasks[taskId].data[0] = 0;
+                gTasks[taskId].func = Task_ShowExtendedAbilityPopup;
+                PlaySE(SE_SELECT);
             }
         }
         else if (JOY_NEW(B_BUTTON))
