@@ -1728,7 +1728,6 @@ static void HandleMoveRelearnerInput(u8 taskId)
     {
         sMonSummaryScreen->callback = CB2_InitLearnMove;
         gRelearnMode = sMonSummaryScreen->currPageIndex;
-        gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
         if (sMonSummaryScreen->isBoxMon)
         {
             struct BoxPokemon *boxBase = (struct BoxPokemon *)sMonSummaryScreen->monList.mons;
@@ -1737,6 +1736,7 @@ static void HandleMoveRelearnerInput(u8 taskId)
             gSpecialVar_0x8004 = PC_MON_CHOSEN;
             gSpecialVar_MonBoxId = (boxBase - firstBox) / IN_BOX_COUNT;
             gSpecialVar_MonBoxPos = sMonSummaryScreen->curMonIndex;
+            gSpecialVar_MonBoxId = StorageGetCurrentBox();
         }
         else
         {
