@@ -6432,7 +6432,7 @@ static void DrawLevelUpBannerText(void)
     printerTemplate.currentChar = gStringVar4;
     printerTemplate.type = WINDOW_TEXT_PRINTER;
     printerTemplate.windowId = B_WIN_LEVEL_UP_BANNER;
-    printerTemplate.fontId = FONT_SMALL;
+    printerTemplate.fontId = FONT_OUTLINED_NARROW;
     printerTemplate.x = 32;
     printerTemplate.y = 0;
     printerTemplate.currentX = 32;
