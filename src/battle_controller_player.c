@@ -1786,6 +1786,11 @@ static void MoveSelectionDisplayMoveDescription(enum BattlerId battler)
     gBattlerAttacker = battler; // <--- ADD THIS LINE!
     enum DamageCategory cat = GetBattleMoveCategory(move);
 
+    if (gBattleMons[battler].attack >= gBattleMons[battler].spAttack)
+        cat = DAMAGE_CATEGORY_PHYSICAL;
+    else
+        cat = DAMAGE_CATEGORY_SPECIAL;
+
     if (GetActiveGimmick(battler) == GIMMICK_DYNAMAX || IsGimmickSelected(battler, GIMMICK_DYNAMAX))
     {
         pwr = GetMaxMovePower(move);

@@ -15,4 +15,6 @@ void LoadTypeIcons(enum BattlerId battler);
 #define TYPE_ICON_1_FRAME(monType) ((monType - 1) * 2)
 #define TYPE_ICON_2_FRAME(monType) ((monType - 11) * 2)
 
+void UpdateTypeIconOamPriority(enum BattlerId battlerId, u8 priority);
+
 #endif // GUARD_TYPE_ICONS_H

@@ -8956,9 +8956,8 @@ enum DamageCategory GetBattleMoveCategory(enum Move move)
 {
     if (gMain.inBattle)
     {
-        // Dynamically resolve Hybrid moves during battle based on the current attacker!
-        if (GetMoveCategory(move) == DAMAGE_CATEGORY_HYBRID)
-            return GetCategoryBasedOnStats(gBattlerAttacker);
+        if (IsBattleMoveStatus(move))
+            return DAMAGE_CATEGORY_STATUS;
 
         if (gBattleStruct->swapDamageCategory) // Photon Geyser, Shell Side Arm, etc.
             return SwapMoveDamageCategory(move);
@@ -8966,8 +8965,7 @@ enum DamageCategory GetBattleMoveCategory(enum Move move)
         if (IsZMove(move) || IsMaxMove(move)) 
             return gBattleStruct->categoryOverride;
             
-        if (IsBattleMoveStatus(move))
-            return DAMAGE_CATEGORY_STATUS;
+        return GetCategoryBasedOnStats(gBattlerAttacker);
     }
 
     if (B_PHYSICAL_SPECIAL_SPLIT < GEN_4)

@@ -203,14 +203,14 @@ const struct OamData sOamData_TypeIcons =
 const struct CompressedSpriteSheet sSpriteSheet_TypeIcons2 =
 {
     .data = gBattleIcons_Gfx2,
-    .size = (8*16) * 9,
+    .size = (8*16/2) * 9,
     .tag = TYPE_ICON_TAG_2,
 };
 
 const struct CompressedSpriteSheet sSpriteSheet_TypeIcons1 =
 {
     .data = gBattleIcons_Gfx1,
-    .size = (8*16) * 10,
+    .size = (8*16/2) * 10,
     .tag = TYPE_ICON_TAG,
 };
 
@@ -395,7 +395,7 @@ static void CreateSpriteAndSetTypeSpriteAttributes(enum Type type, u32 x, u32 y,
 {
     struct Sprite* sprite;
     const struct SpriteTemplate* spriteTemplate = gTypesInfo[type].useSecondTypeIconPalette ? &sSpriteTemplate_TypeIcons2 : &sSpriteTemplate_TypeIcons1;
-    u32 spriteId = CreateSpriteAtEnd(spriteTemplate, x, y, UCHAR_MAX);
+    u32 spriteId = CreateSpriteAtEnd(spriteTemplate, x, y, 0);
 
     if (spriteId == MAX_SPRITES)
         return;
@@ -562,3 +562,18 @@ static s32 GetTypeIconBounceMovement(s32 originalY, u32 position)
     struct Sprite *healthbox = &gSprites[gHealthboxSpriteIds[GetBattlerAtPosition(position)]];
     return originalY + healthbox->y2;
 }
+
+void UpdateTypeIconOamPriority(enum BattlerId battlerId, u8 priority)
+{
+    u8 i;
+    for (i = 0; i < MAX_SPRITES; i++)
+    {
+        if (gSprites[i].inUse 
+            && (gSprites[i].template->tileTag == TYPE_ICON_TAG || gSprites[i].template->tileTag == TYPE_ICON_TAG_2)
+            && gSprites[i].tBattlerId == battlerId)
+        {
+            gSprites[i].oam.priority = priority;
+        }
+    }
+}
+
