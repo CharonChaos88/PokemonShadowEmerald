@@ -12,13 +12,16 @@
 #include "battle.h"
 #include "battle_controllers.h"
 #include "battle_gimmick.h"
-#include "battle_message.h"
 #include "battle_z_move.h"
 #include "safari_zone.h"
 #include "battle_interface.h"
+#include "pokedex.h"
 #include "task.h"
 #include "sound.h"
+#include "gpu_regs.h"
+#include "item_icon.h"
 #include "malloc.h"
+#include "test_runner.h"
 #include "bw_battle_ui.h"
 #include "constants/songs.h"
 #include "constants/rgb.h"
@@ -27,13 +30,25 @@
 
 static EWRAM_INIT struct {
     u8 cursorSpriteId;
+    u8 abilityPopUpTaskId[MAX_BATTLERS_COUNT];
 } sBWBattleUI_Resources =
 {
     .cursorSpriteId = SPRITE_NONE,
+    .abilityPopUpTaskId = { TASK_NONE, TASK_NONE, TASK_NONE, TASK_NONE },
 };
 
 // declarations
 static void SpriteCB_BattleUICursor(struct Sprite *);
+static void SpriteCB_GimmickTrigger(struct Sprite *);
+static void SpriteCB_MoveInfoTrigger(struct Sprite *);
+static void SpriteCB_LastBallTrigger(struct Sprite *);
+static void SpriteCB_LastBallIcon(struct Sprite *);
+static void SpriteCB_BounceLastBallIcon(struct Sprite *);
+
+static void Task_BattleUITrackAbilityPopUpGfx(u8);
+static void Task_BattleUIHandleAbilityPopUp(u8);
+
+static inline u32 BattleUI_LoadBlankHealthbarGfx(enum BattlerPosition);
 
 static void BattleUI_SetCursorBattler(enum BattlerId);
 static u32 BattleUI_GetCursorBattler(void);
@@ -42,48 +57,146 @@ static void BattleUI_DisplayMoveBoxGraphics(enum BattlerId, u32);
 static void BattleUI_DisplayNormalMoveBox(enum BattlerId, struct ChooseMoveStruct *);
 static void BattleUI_DisplayZMoveBox(enum BattlerId, struct ChooseMoveStruct *);
 
+static void BattleUI_UpdateHealthboxLvlText(u32, struct Pokemon *);
+static void BattleUI_UpdateHealthboxNickText(u32, struct Pokemon *);
+static void BattleUI_UpdateHealthboxStatusIcon(u32, struct Pokemon *);
+static void BattleUI_UpdateHealthboxCaughtMonIndicator(u32, struct Pokemon *);
+static void BattleUI_PrintSafariBallText(u32);
+static void BattleUI_PrintNumOfSafariBallsText(u32);
+
+static s16 BattleUI_GetAbilityPopUpCoords(enum BattleCoordTypes, enum BattlerPosition, u32);
+static void BattleUI_PrepareTextForAbilityPopUp(enum BattlerId, enum Ability, u32);
+static void BattleUI_PrepareBattlerTextForAbilityPopUp(enum BattlerId, u32, u32);
+static void BattleUI_BufferBattlerTextForAbilityPopUp(enum BattlerId);
+static void BattleUI_PrepareAbilityTextForAbilityPopUp(enum BattlerId, enum Ability, u32, u32);
+
+static void BattleUI_CopyElementToSprite(u32, const u32 *, u32, u32);
 static void BattleUI_AddTextPrinter(u32, u32, u32, u32, enum BattleUITextColors, const u8 *);
+static void BattleUI_AddSpriteTextPrinter(u32, u32, u32, u32, enum BattleUITextColors, const u8 *);
+static bool32 BattleUI_PlayVerticalSlideAnim(bool32, s16 *, s32, s32);
 
 #include "data/bw_battle_ui.h"
 
 // code
-bool32 BattleUI_UsesInputBox(void)
-{
-    return (BW_BATTLE_UI && BW_BATTLE_UI_TEXTBOX && BW_BATTLE_UI_INPUTBOX
-         && gBattleScripting.windowsType == B_WIN_TYPE_NORMAL);
-}
-
 const u32 *BattleUI_GetTextboxTiles(void)
 {
     if (BW_BATTLE_UI && BW_BATTLE_UI_TEXTBOX)
+    {
         return sBWBattleUI_TextboxTiles;
-
-    return gBattleTextboxTiles;
+    }
+    else
+    {
+        return gBattleTextboxTiles;
+    }
 }
 
 const u16 *BattleUI_GetTextboxPalette(void)
 {
     if (BW_BATTLE_UI && BW_BATTLE_UI_TEXTBOX)
+    {
         return sBWBattleUI_TextboxPalette;
-
-    return gBattleTextboxPalette;
+    }
+    else
+    {
+        return gBattleTextboxPalette;
+    }
 }
 
 const u32 *BattleUI_GetTextboxTilemap(void)
 {
     if (BW_BATTLE_UI && BW_BATTLE_UI_TEXTBOX)
+    {
         return sBWBattleUI_TextboxTilemap;
+    }
+    else
+    {
+        return gBattleTextboxTilemap;
+    }
+}
 
-    return gBattleTextboxTilemap;
+bool32 BattleUI_LoadAllHealthboxGfx(u32 state)
+{
+    enum
+    {
+        LOAD_STATE_MISC,
+        LOAD_STATE_HPBOX_PLAYER_LEFT,
+        LOAD_STATE_HPBOX_OPPONENT_LEFT,
+        LOAD_STATE_HPBAR_PLAYER_LEFT,
+        LOAD_STATE_HPBAR_OPPONENT_LEFT,
+        LOAD_STATE_HPBOX_PLAYER_RIGHT,
+        LOAD_STATE_HPBOX_OPPONENT_RIGHT,
+        LOAD_STATE_HPBAR_PLAYER_RIGHT,
+        LOAD_STATE_HPBAR_OPPONENT_RIGHT,
+        LOAD_STATE_FINISH
+    };
+
+    switch (state)
+    {
+    case LOAD_STATE_MISC:
+        BattleUI_SetCursorSpriteId(SPRITE_NONE);
+        BattleUI_CreateCursorSprite(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
+        BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_HEALTH_BOX, TAG_HEALTHBOX_PAL);
+        BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_HEALTH_BAR, TAG_HEALTHBAR_PAL);
+        CategoryIcons_LoadSpritesGfx();
+        break;
+    case LOAD_STATE_HPBOX_PLAYER_LEFT:
+        {
+            enum BWBattleUISpriteGraphicsType type;
+            u32 tag;
+            if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
+                type = BUI_SPRITE_GFX_HPBOX_SAFARI, tag = TAG_HEALTHBOX_SAFARI_TILE;
+            else if (GetBattlerCoordsIndex(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT)) != BATTLE_COORDS_SINGLES)
+                type = BUI_SPRITE_GFX_HPBOX_D_PLAYER, tag = TAG_HEALTHBOX_PLAYER1_TILE;
+            else
+                type = BUI_SPRITE_GFX_HPBOX_S_PLAYER, tag = TAG_HEALTHBOX_PLAYER1_TILE;
+
+            BattleUI_LoadSpriteSheet(type, tag);
+            break;
+        }
+    case LOAD_STATE_HPBOX_OPPONENT_LEFT:
+        {
+            enum BWBattleUISpriteGraphicsType type;
+            if (GetBattlerCoordsIndex(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT)) != BATTLE_COORDS_SINGLES)
+                type = BUI_SPRITE_GFX_HPBOX_D_OPPONENT;
+            else
+                type = BUI_SPRITE_GFX_HPBOX_S_OPPONENT;
+
+            BattleUI_LoadSpriteSheet(type, TAG_HEALTHBOX_OPPONENT1_TILE);
+            break;
+        }
+    case LOAD_STATE_HPBAR_PLAYER_LEFT:
+        BattleUI_LoadBlankHealthbarGfx(B_POSITION_PLAYER_LEFT);
+        break;
+    case LOAD_STATE_HPBAR_OPPONENT_LEFT:
+        BattleUI_LoadBlankHealthbarGfx(B_POSITION_OPPONENT_LEFT);
+        break;
+    case LOAD_STATE_HPBOX_PLAYER_RIGHT:
+        if (!IsDoubleBattle())
+            return TRUE;
+        BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_HPBOX_D_PLAYER, TAG_HEALTHBOX_PLAYER2_TILE);
+        break;
+    case LOAD_STATE_HPBOX_OPPONENT_RIGHT:
+        BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_HPBOX_D_OPPONENT, TAG_HEALTHBOX_OPPONENT2_TILE);
+        break;
+    case LOAD_STATE_HPBAR_PLAYER_RIGHT:
+        BattleUI_LoadBlankHealthbarGfx(B_POSITION_PLAYER_RIGHT);
+        break;
+    case LOAD_STATE_HPBAR_OPPONENT_RIGHT:
+        BattleUI_LoadBlankHealthbarGfx(B_POSITION_OPPONENT_RIGHT);
+        break;
+    case LOAD_STATE_FINISH:
+    default:
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
 void BattleUI_PopulateActionBox(void)
 {
     u32 windowId = B_WIN_ACTION_MENU;
 
-    // The sheet is 4bpp tiles in the same order the window stores them, so it
-    // copies straight in. Blitting it walked all 6528 pixels one at a time.
-    CopyToWindowPixelBuffer(windowId, sBWBattleUI_ActionBox, BUI_ACTION_BOX_TILES * TILE_SIZE_4BPP, 0);
+    BlitBitmapToWindow(windowId, sBWBattleUI_ActionBox, 0, 0, TILE_TO_PIXELS(17), TILE_TO_PIXELS(6));
 
     bool32 safari = !!(gBattleTypeFlags & BATTLE_TYPE_SAFARI);
     u32 fontId = FONT_BATTLE_UI_ELEMENTS;
@@ -106,17 +219,9 @@ void BattleUI_CreateCursorSprite(enum BattlerId battler)
 {
     u32 spriteId = BattleUI_GetCursorSpriteId();
 
-    if (!BattleUI_UsesInputBox())
-        return;
-
-    // A battle can end through a path that resets sprite data without going
-    // through BattleUI_SetCursorMode, which leaves a stale id behind. Only
-    // reuse the sprite if it is still the cursor we created.
-    if (spriteId != SPRITE_NONE
-     && (!gSprites[spriteId].inUse || gSprites[spriteId].template->tileTag != TAG_CURSOR))
+    if (!(BW_BATTLE_UI && BW_BATTLE_UI_TEXTBOX && BW_BATTLE_UI_INPUTBOX))
     {
-        spriteId = SPRITE_NONE;
-        BattleUI_SetCursorSpriteId(SPRITE_NONE);
+        return;
     }
 
     if (spriteId != SPRITE_NONE)
@@ -125,18 +230,8 @@ void BattleUI_CreateCursorSprite(enum BattlerId battler)
         return;
     }
 
-    if (IndexOfSpriteTileTag(TAG_CURSOR) == 0xFF)
-    {
-        LoadCompressedSpriteSheet(&(const struct CompressedSpriteSheet){
-            .data = sBWBattleUI_CursorGfx,
-            .size = GetDecompressedDataSize(sBWBattleUI_CursorGfx),
-            .tag = TAG_CURSOR
-        });
-    }
-    LoadSpritePalette(&(const struct SpritePalette){
-        .data = sBWBattleUI_CursorPalette,
-        .tag = TAG_CURSOR
-    });
+    BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_CURSOR, TAG_CURSOR);
+    BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_CURSOR, TAG_CURSOR);
 
     spriteId = CreateSprite(&sBWBattleUI_CursorTemplate, 0, 0, 0);
     AGB_WARNING(spriteId != SPRITE_NONE);
@@ -157,7 +252,9 @@ void BattleUI_DestroyCursorSprite(void)
     u32 spriteId = BattleUI_GetCursorSpriteId();
 
     if (spriteId == SPRITE_NONE)
+    {
         return;
+    }
 
     DestroySpriteAndFreeResources(&gSprites[spriteId]);
     BattleUI_SetCursorSpriteId(SPRITE_NONE);
@@ -225,6 +322,428 @@ void BattleUI_DisplayMoveBox(enum BattlerId battler)
     CopyBgTilemapBufferToVram(0);
 }
 
+u32 BattleUI_LoadSpriteSheet(enum BWBattleUISpriteGraphicsType type, u32 tag)
+{
+    if (IndexOfSpriteTileTag(tag) != 0xFF)
+        return IndexOfSpriteTileTag(tag);
+
+    return LoadCompressedSpriteSheet(&(const struct CompressedSpriteSheet){
+        .data = sBWBattleUI_SpriteGraphics[type],
+        .size = GetDecompressedDataSize(sBWBattleUI_SpriteGraphics[type]),
+        .tag = tag
+    });
+}
+
+u32 BattleUI_LoadSpritePalette(enum BWBattleUISpritePaletteType type, u32 tag)
+{
+    return LoadSpritePalette(&(const struct SpritePalette){
+        .data = sBWBattleUI_SpritePalettes[type],
+        .tag = tag
+    });
+}
+
+s16 BattleUI_GetHealthboxCoords(enum BattleCoordTypes index, enum BattlerPosition position, u32 coord)
+{
+    // the base sprite size is typically 64x32 (spawned as two sprites so 128x32).
+    // for x/y coords, we divide them by 2 to get proper offset on the screen
+    // despite the player's base sprite size being 64x64 instead, it only works
+    // using 64x32 math.. and GetSpriteWidth/Height does not seem to work either
+    s16 offset;
+
+    if (coord == 0) // x
+        offset = TILE_TO_PIXELS(4);
+    else
+        offset = TILE_TO_PIXELS(2);
+
+    enum BattlerId battler = GetBattlerAtPosition(position);
+    if (!!(gBattleTypeFlags & BATTLE_TYPE_SAFARI) && IsOnPlayerSide(battler))
+        return sBWBattleUI_SafariPlayerHealthboxCoords[coord] + offset;
+
+    return sBWBattleUI_HealthboxCoords[index][position][coord] + offset;
+}
+
+void BattleUI_UpdateHealthbox(u8 spriteId, struct Pokemon *mon, enum BattleHealthboxElements element)
+{
+    enum BattlerId battler = gSprites[spriteId].hMain_Battler;
+    s32 maxHp = GetMonData(mon, MON_DATA_MAX_HP);
+    s32 currHp = GetMonData(mon, MON_DATA_HP);
+    u32 flag;
+
+    if (element == HEALTHBOX_ALL)
+        flag = HEALTHBOX_FLAG_ALL;
+    else if (element == HEALTHBOX_SAFARI_ALL_TEXT || element == HEALTHBOX_SAFARI_BALLS_TEXT)
+        flag = HEALTHBOX_FLAG_SAFARI_ALL_TEXT;
+    else
+        flag = 1 << element;
+
+    if (flag & (HEALTHBOX_FLAG_CURRENT_HP | HEALTHBOX_FLAG_MAX_HP))
+        BattleUI_UpdateHealthboxHPText(spriteId, currHp, maxHp);
+
+    if (flag & HEALTHBOX_FLAG_LEVEL)
+        BattleUI_UpdateHealthboxLvlText(spriteId, mon);
+
+    if (flag & HEALTHBOX_FLAG_HEALTH_BAR)
+    {
+        SetBattleBarStruct(battler, spriteId, maxHp, currHp, 0);
+        MoveBattleBar(battler, spriteId, HEALTH_BAR, 0);
+    }
+
+    bool32 isDoubles = GetBattlerCoordsIndex(battler) == BATTLE_COORDS_DOUBLES;
+
+    if (!isDoubles && (flag & HEALTHBOX_FLAG_EXP_BAR))
+    {
+        u32 species = GetMonData(mon, MON_DATA_SPECIES);
+        u32 level = GetMonData(mon, MON_DATA_LEVEL);
+        u32 exp = GetMonData(mon, MON_DATA_EXP);
+        enum GrowthRate growthRate = gSpeciesInfo[species].growthRate;
+        u32 currLevelExp = gExperienceTables[growthRate][level];
+
+        s32 currExpBarValue = exp - currLevelExp;
+        s32 maxExpBarValue = gExperienceTables[growthRate][level + 1] - currLevelExp;
+
+        SetBattleBarStruct(battler, spriteId, maxExpBarValue, currExpBarValue, isDoubles);
+        MoveBattleBar(battler, spriteId, EXP_BAR, 0);
+    }
+
+    if (flag & HEALTHBOX_FLAG_STATUS_ICON)
+        BattleUI_UpdateHealthboxStatusIcon(spriteId, mon);
+
+    if (flag & HEALTHBOX_FLAG_NICK)
+        BattleUI_UpdateHealthboxNickText(spriteId, mon);
+
+    if (!IsOnPlayerSide(battler))
+        return;
+
+    if (flag & HEALTHBOX_FLAG_SAFARI_ALL_TEXT)
+    {
+        u32 *gfx = malloc_and_decompress(sBWBattleUI_SpriteGraphics[BUI_SPRITE_GFX_HPBOX_SAFARI], 0);
+        BattleUI_CopyElementToSprite(spriteId, gfx, 0, 128);
+        Free(gfx);
+
+        BattleUI_PrintSafariBallText(spriteId);
+        BattleUI_PrintNumOfSafariBallsText(spriteId);
+    }
+}
+
+void BattleUI_UpdateHealthboxHPText(u32 spriteId, s32 currHp, s32 maxHp)
+{
+    struct Sprite *sprite = &gSprites[spriteId];
+    enum BattlerId battler = sprite->hMain_Battler;
+    bool32 isDoubles = IsDoubleBattle();
+
+    if (!IsOnPlayerSide(battler))
+        return;
+
+    u8 *strbuf = gDisplayedStringBattle, *txtPtr;
+    u32 maxDigits = MAX_DIGITS(9999);
+
+    txtPtr = ConvertIntToDecimalStringN(strbuf, currHp, STR_CONV_MODE_RIGHT_ALIGN, maxDigits);
+    *txtPtr++ = CHAR_SLASH;
+    ConvertIntToDecimalStringN(txtPtr, maxHp, STR_CONV_MODE_LEFT_ALIGN, maxDigits);
+
+    u32 spriteId2 = sprite->oam.affineParam;
+    struct Sprite *sprite2 = &gSprites[spriteId2];
+
+    // backup data[1] for sprite printer
+    s16 data1 = sprite->data[1];
+    s16 data2 = sprite2->data[1];
+
+    sprite->data[1] = spriteId2;
+    sprite2->data[1] = SPRITE_NONE;
+
+    u32 yOffset, fontId;
+    if (isDoubles)
+    {
+        yOffset = TILE_TO_PIXELS(2);
+        fontId = FONT_BATTLE_UI_ELEMENTS;
+
+        if (!gBattleSpritesDataPtr->battlerData[battler].hpNumbersNoBars)
+            return;
+
+        BattleUI_CopyElementToSprite(spriteId,  sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(1), 20, BUI_FILL_ELEMENT(4));
+        BattleUI_CopyElementToSprite(spriteId2, sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(1), 16, BUI_FILL_ELEMENT(6));
+        BattleUI_CopyElementToSprite(sprite->hMain_HealthBarSpriteId, sBWBattleUI_HPBoxEndFrames, 0, BUI_FILL_ELEMENT(8));
+    }
+    else
+    {
+        yOffset = TILE_TO_PIXELS(3) - 2;
+        fontId = FONT_SMALL;
+
+        FillSpriteRectColor(spriteId, TILE_TO_PIXELS(7), yOffset, TILE_TO_PIXELS(7), 8, 2);
+        yOffset -= 3; // text offset
+    }
+
+    u32 strWidth = GetStringWidth(fontId, strbuf, 0);
+    s32 letterSpacing = GetFontAttribute(fontId, FONTATTR_LETTER_SPACING);
+    s32 xOffset = TILE_TO_PIXELS(8) + (TILE_TO_PIXELS(4) - (strWidth + letterSpacing));
+
+    BattleUI_AddSpriteTextPrinter(spriteId, fontId, xOffset, yOffset, BUI_TXTCLR_HEALTHBOX, strbuf);
+
+    sprite->data[1] = data1;
+    sprite2->data[1] = data2;
+}
+
+void BattleUI_UpdateHpBarText(void)
+{
+    if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
+        return;
+
+    for (enum BattlerId i = 0; i < gBattlersCount; i++)
+    {
+        if (!IsOnPlayerSide(i))
+            continue;
+
+        if (GetBattlerCoordsIndex(i) == BATTLE_COORDS_SINGLES)
+            continue;
+
+        u32 boxSpriteId = gBattleSpritesDataPtr->battleBars[i].healthboxSpriteId;
+        struct Pokemon *mon = GetBattlerMon(i);
+
+        gBattleSpritesDataPtr->battlerData[i].hpNumbersNoBars ^= 1;
+
+        BattleUI_CopyElementToSprite(boxSpriteId,                           sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(1), 20, BUI_FILL_ELEMENT(4));
+        BattleUI_CopyElementToSprite(gSprites[boxSpriteId].oam.affineParam, sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(1), 16, BUI_FILL_ELEMENT(6));
+
+        UpdateHealthboxAttribute(boxSpriteId, mon, HEALTHBOX_CURRENT_HP);
+        UpdateHealthboxAttribute(boxSpriteId, mon, HEALTHBOX_HEALTH_BAR);
+    }
+}
+
+void BattleUI_UpdateHpBarGraphically(enum BattlerId battler, u32 currVal, u32 maxVal, u8 *pixelCountArray)
+{
+    u32 hpLevel = GetHPBarLevel(currVal, maxVal);
+
+    if (maxVal == 1 || hpLevel == HP_BAR_FULL)
+        hpLevel = HP_BAR_GREEN;
+
+    hpLevel *= 9;
+
+    const u32 *hpBarGfx = sBWBattleUI_HPBarAnims + TILE_TO_PIXELS(hpLevel);
+    u32 hpboxSpriteId = gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId;
+    u32 hpbarSpriteId = gSprites[hpboxSpriteId].hMain_HealthBarSpriteId;
+
+    BattleUI_CopyElementToSprite(hpbarSpriteId, sBWBattleUI_HPBarText, 0, 2); // HP |
+
+    // the redundant copies needs to be done manually for pixelCountArray
+    for (u32 i = 0; i < 6; i++)
+        BattleUI_CopyElementToSprite(hpbarSpriteId, hpBarGfx + TILE_TO_PIXELS(pixelCountArray[i]), 2 + i, 1);
+
+    if (IsOnPlayerSide(battler) && !gBattleSpritesDataPtr->battlerData[battler].hpNumbersNoBars)
+    {
+        BattleUI_CopyElementToSprite(gSprites[hpboxSpriteId].oam.affineParam, sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(2), 20, 1);
+    }
+}
+
+void BattleUI_UpdateExpBarGraphically(enum BattlerId battler, u8 *pixelCountArray)
+{
+    if (!IsOnPlayerSide(battler))
+        return;
+
+    if (GetBattlerCoordsIndex(battler) != BATTLE_COORDS_SINGLES)
+        return;
+
+    u32 hpboxSpriteId = gBattleSpritesDataPtr->battleBars[battler].healthboxSpriteId;
+    const u32 *expBarGfx = sBWBattleUI_EXPBarAnims;
+
+    for (u32 i = 0, tileNum = 36; i < 8; i++, tileNum++)
+    {
+        if (i == 4)
+            tileNum = 96;
+
+        BattleUI_CopyElementToSprite(hpboxSpriteId, expBarGfx + TILE_TO_PIXELS(pixelCountArray[i]), tileNum, 1);
+    }
+}
+
+void SpriteCB_BWBattleUI_HPBar(struct Sprite *sprite)
+{
+    u32 healthboxSpriteId = sprite->hBar_HealthBoxSpriteId;
+    enum BattlerId battler = sprite->hBar_Data6;
+    enum BattleCoordTypes coords = GetBattlerCoordsIndex(battler);
+
+    sprite->x = sBWBattleUI_HealthbarCoords[coords][battler][0] + 16;
+    sprite->y = sBWBattleUI_HealthbarCoords[coords][battler][1] + 4;
+
+    sprite->x2 = gSprites[healthboxSpriteId].x2;
+    sprite->y2 = gSprites[healthboxSpriteId].y2;
+}
+
+void BattleUI_CreateAbilityPopUp(enum BattlerId battler, enum Ability ability)
+{
+    if (gTestRunnerEnabled)
+    {
+        TestRunner_Battle_RecordAbilityPopUp(battler, ability);
+        if (gTestRunnerHeadless)
+            return;
+    }
+
+    bool32 playerSide = IsOnPlayerSide(battler);
+    u32 tileTag = TAG_ABILITY_POP_UP_PLAYER1 + battler;
+    const u32 *gfx = sBWBattleUI_AbilityPopUpGfx;
+    if (!playerSide) gfx += TILE_TO_PIXELS(64);
+
+    BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_ABILITY_POP_UP, TAG_ABILITY_POP_UP);
+    if (IndexOfSpriteTileTag(tileTag) == 0xFF)
+    {
+        LoadSpriteSheet(&(const struct SpriteSheet){ .data = gfx, .size = TILE_OFFSET_4BPP(64), .tag = tileTag, });
+    }
+
+    struct SpriteTemplate template = sBWBattleUI_AbilityPopUpTemplate;
+    template.tileTag = tileTag;
+
+    enum BattleCoordTypes coords = GetBattlerCoordsIndex(battler);
+    enum BattlerPosition position = GetBattlerPosition(battler);
+
+    u32 xCoord = BattleUI_GetAbilityPopUpCoords(coords, position, 0);
+    u32 yCoord = BattleUI_GetAbilityPopUpCoords(coords, position, 1);
+    u32 xSlide = playerSide ? (TILE_TO_PIXELS(-16)) : TILE_TO_PIXELS(16);
+
+    u8 *spriteIds = gBattleStruct->abilityPopUpSpriteIds[battler];
+    spriteIds[0] = CreateSprite(&template, xCoord + xSlide,                     yCoord, 0);
+    spriteIds[1] = CreateSprite(&template, xCoord + xSlide + TILE_TO_PIXELS(8), yCoord, 0);
+    gSprites[spriteIds[1]].oam.tileNum += 32;
+
+    if (!IsAnyAbilityPopUpActive())
+        CreateTask(Task_BattleUITrackAbilityPopUpGfx, 0);
+
+    gBattleStruct->battlerState[battler].activeAbilityPopUps = TRUE;
+
+    const u32 *spriteSrc[2] = { gfx, gfx + TILE_TO_PIXELS(32) };
+    SetupSpritesForTextPrinting(spriteIds, spriteSrc, 2, 1);
+
+    u32 taskId = CreateTask(Task_BattleUIHandleAbilityPopUp, 0);
+    struct Task *task = &gTasks[taskId];
+    task->tAPU_Battler = battler;
+    task->tAPU_SpriteId1 = spriteIds[0];
+    task->tAPU_SpriteId2 = spriteIds[1];
+    if (gBattleScripting.abilityPopupOverwrite)
+    {
+        task->tAPU_Ability = gBattleScripting.abilityPopupOverwrite;
+        task->tAPU_NewAbility = ability;
+    }
+    else
+    {
+        task->tAPU_Ability = ability;
+    }
+
+    sBWBattleUI_Resources.abilityPopUpTaskId[battler] = taskId;
+}
+
+void BattleUI_DestroyAbilityPopUp(enum BattlerId battler)
+{
+    u32 taskId = sBWBattleUI_Resources.abilityPopUpTaskId[battler];
+    if (taskId == TASK_NONE) return;
+
+    gTasks[taskId].tAPU_AutoDestroy = TRUE;
+}
+
+u32 BattleUI_CreateGimmickTriggerSprite(enum BattlerId battler)
+{
+    // decrement to exclude GIMMICK_NONE
+    enum Gimmick gimmick = gBattleStruct->gimmick.usableGimmick[battler] - 1;
+
+    BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_GIMMICK_TRIGGER_MEGA + gimmick, TAG_GIMMICK_TRIGGER_PAL);
+    BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_GIMMICK_TRIGGER_MEGA + gimmick, TAG_GIMMICK_TRIGGER_TILE);
+
+    return CreateSprite(&sBWBattleUI_GimmickTriggerTemplate, TILE_TO_PIXELS(4) + 16, TILE_TO_PIXELS(14) + 16, 0);
+}
+
+void BattleUI_GetGimmickIndicatorCoords(enum BattlerPosition position, s16 *x, s16 *y)
+{
+    *x = sBWBattleUI_GimmickIndicatorCoords[position][0];
+    *y = sBWBattleUI_GimmickIndicatorCoords[position][1];
+}
+
+s32 BattleUI_GetGimmickIndicatorXOffset(enum BattlerId battler)
+{
+    s32 x = 0;
+    u32 lvl = GetMonData(GetBattlerMon(battler), MON_DATA_LEVEL);
+
+    if (lvl < 10)
+        x += 8;
+    else if (lvl < 100)
+        x += 4;
+
+    return x;
+}
+
+u32 BattleUI_CreateMoveInfoTriggerSprite(void)
+{
+    BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_MOVE_INFO_TRIGGER, MOVE_INFO_WINDOW_TAG);
+    BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_TEXTBOX_0, TAG_ABILITY_POP_UP);
+
+    return CreateSprite(&sBWBattleUI_MoveInfoTriggerTemplate, 0 + 16, TILE_TO_PIXELS(14) + 16, 0);
+}
+
+u32 BattleUI_CreateLastBallTriggerSprite(void)
+{
+    BattleUI_LoadSpriteSheet(BUI_SPRITE_GFX_LAST_BALL_TRIGGER, TAG_LAST_BALL_WINDOW);
+    BattleUI_LoadSpritePalette(BUI_SPRITE_PAL_TEXTBOX_0, TAG_ABILITY_POP_UP);
+
+    return CreateSprite(&sBWBattleUI_LastBallTriggerTemplate, 0 + 16, TILE_TO_PIXELS(14) + 32, 1);
+}
+
+void BattleUI_SetLastBallIconAttributes(struct Sprite *sprite)
+{
+    sprite->x = (-1) + 16;
+    sprite->y = TILE_TO_PIXELS(14) + 16;
+    sprite->sWT_Hide = FALSE;
+    sprite->callback = SpriteCB_LastBallIcon;
+}
+
+void Task_BattleUIBounceLastBallIcon(u8 taskId)
+{
+    s16 *data = gTasks[taskId].data;
+    struct Sprite *sprite = &gSprites[gBattleStruct->ballSpriteIds[0]];
+
+    switch (tLBI_State)
+    {
+    case LBI_STATE_BOUNCE_UP:
+        sprite->sLBI_Y2 = sprite->y2;
+        sprite->sLBI_Bounce = TRUE;
+        sprite->sLBI_Moving = TRUE;
+        sprite->callback = SpriteCB_BounceLastBallIcon;
+        if (tLBI_SameBall)
+            tLBI_State = LBI_STATE_BOUNCE_DOWN;
+        else
+            tLBI_State = LBI_STATE_DESTROY;
+        break;
+    case LBI_STATE_DESTROY:
+        if (sprite->sLBI_Moving) return;
+        tLBI_Y2 = sprite->sLBI_Y2;
+        DestroyLastUsedBallGfx(sprite);
+        // fallthrough
+    case LBI_STATE_CREATE:
+        gBattleStruct->ballSpriteIds[0] = AddItemIconSprite(102, 102, gBallToDisplay);
+        sprite = &gSprites[gBattleStruct->ballSpriteIds[0]];
+        BattleUI_SetLastBallIconAttributes(sprite);
+        sprite->sLBI_Y2 = tLBI_Y2;
+        sprite->y2 = tLBI_Y2 - 2; // bounced up
+        sprite->callback = SpriteCallbackDummy;
+        // fallthrough
+    case LBI_STATE_BOUNCE_DOWN:
+        if (sprite->sLBI_Moving) return;
+        sprite->sLBI_Bounce = FALSE;
+        sprite->sLBI_Moving = TRUE;
+        sprite->callback = SpriteCB_BounceLastBallIcon;
+        tLBI_State = LBI_STATE_FINISH;
+        break;
+    case LBI_STATE_FINISH:
+        if (sprite->sLBI_Moving) return;
+        sprite->y2 = sprite->sLBI_Y2;
+        sprite->callback = SpriteCB_LastBallIcon;
+        DestroyTask(taskId);
+        break;
+    }
+
+    // Check if the R button was released before the animation was complete
+    if (!gLastUsedBallMenuPresent)
+    {
+        sprite->y2 = sprite->sLBI_Y2;
+        sprite->callback = SpriteCB_LastBallIcon;
+        DestroyTask(taskId);
+    }
+}
+
 // local
 static void SpriteCB_BattleUICursor(struct Sprite *sprite)
 {
@@ -232,8 +751,6 @@ static void SpriteCB_BattleUICursor(struct Sprite *sprite)
     enum BattlerId battler = BattleUI_GetCursorBattler();
     bool32 hasSubsprite = (sprite->sCursorMode >> BUI_CURSOR_CONVERT_FLAG);
 
-    // BG0 is scrolled a full screen per section, which is the cheapest reliable
-    // signal for which box the player is currently looking at.
     switch (gBattle_BG0_Y)
     {
     case 0: // textbox
@@ -294,7 +811,226 @@ static void SpriteCB_BattleUICursor(struct Sprite *sprite)
     }
 
     if (!hasSubsprite)
+    {
         sprite->sCursorMode |= (TRUE << BUI_CURSOR_CONVERT_FLAG);
+    }
+}
+
+static void SpriteCB_GimmickTrigger(struct Sprite *sprite)
+{
+    bool32 res = BattleUI_PlayVerticalSlideAnim(sprite->sGT_Hide, &sprite->y2, TILE_TO_PIXELS(-3), -12);
+    if (sprite->sGT_Hide && res)
+        DestroyGimmickTriggerSprite();
+}
+
+static void SpriteCB_MoveInfoTrigger(struct Sprite *sprite)
+{
+    bool32 res = BattleUI_PlayVerticalSlideAnim(sprite->sWT_Hide, &sprite->y2, TILE_TO_PIXELS(-3), -12);
+    if (sprite->sWT_Hide && res)
+        DestroyMoveInfoWinGfx(sprite);
+}
+
+static void SpriteCB_LastBallTrigger(struct Sprite *sprite)
+{
+    bool32 res = BattleUI_PlayVerticalSlideAnim(sprite->sWT_Hide, &sprite->y2, TILE_TO_PIXELS(-5), -20);
+    if (sprite->sWT_Hide && res)
+        DestroyLastUsedBallWinGfx(sprite);
+}
+
+static void SpriteCB_LastBallIcon(struct Sprite *sprite)
+{
+    bool32 res = BattleUI_PlayVerticalSlideAnim(sprite->sWT_Hide, &sprite->y2, TILE_TO_PIXELS(-3), -12);
+    if (sprite->sWT_Hide && res)
+        DestroyLastUsedBallGfx(sprite);
+}
+
+static void SpriteCB_BounceLastBallIcon(struct Sprite *sprite)
+{
+    if (!sprite->sLBI_Moving) return;
+
+    // can't use BattleUI_PlayVerticalSlideAnim as the target cannot be 0
+    s32 target = sprite->sLBI_Y2 - (2 * sprite->sLBI_Bounce);
+    s32 speed = sprite->sLBI_Bounce ? -1 : 1;
+
+    if (sprite->y2 == target)
+        sprite->sLBI_Moving = FALSE;
+    else
+        sprite->y2 += speed;
+}
+
+static void Task_BattleUITrackAbilityPopUpGfx(u8 taskId)
+{
+    if (!IsAnyAbilityPopUpActive())
+    {
+        for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
+        {
+            if (IndexOfSpriteTileTag(TAG_ABILITY_POP_UP_PLAYER1 + battler) != 0xFF)
+                FreeSpriteTilesByTag(TAG_ABILITY_POP_UP_PLAYER1 + battler);
+        }
+
+        FreeSpritePaletteByTag(TAG_ABILITY_POP_UP);
+        DestroyTask(taskId);
+    }
+}
+
+static void Task_BattleUIHandleAbilityPopUp(u8 taskId)
+{
+    s16 *data = gTasks[taskId].data;
+    enum BattlerId battler = tAPU_Battler;
+    bool32 isPlayerSide = IsOnPlayerSide(battler);
+
+    struct Sprite *sprite1 = &gSprites[tAPU_SpriteId1];
+    struct Sprite *sprite2 = &gSprites[tAPU_SpriteId2];
+
+    switch (tAPU_State)
+    {
+    case APU_STATE_SLIDE_IN:
+    {
+        if (++tAPU_Timer == 4)
+            PlaySE(SE_M_MIST);
+
+        u32 xCoord = BattleUI_GetAbilityPopUpCoords(
+                        GetBattlerCoordsIndex(battler), GetBattlerPosition(battler), 0);
+        u32 fullX = sprite1->x + sprite1->x2;
+
+        if (fullX == xCoord)
+        {
+            tAPU_Timer = 0;
+            tAPU_State = APU_STATE_PRINT;
+            break;
+        }
+
+        u32 speed = isPlayerSide ? TILE_TO_PIXELS(2) : TILE_TO_PIXELS(-2);
+        sprite1->x2 += speed, sprite2->x2 += speed;
+        break;
+    }
+    case APU_STATE_PRINT:
+    {
+        BattleUI_PrepareTextForAbilityPopUp(battler, tAPU_Ability, OPTIONS_TEXT_SPEED_INSTANT);
+        tAPU_State = tAPU_NewAbility ? APU_STATE_MOSAIC : APU_STATE_GLOW;
+        break;
+    }
+
+    // default
+    case APU_STATE_GLOW:
+    {
+        RunTextPrinters();
+        RunTextPrinters();
+        if (IsTextPrinterActiveOnSprite(tAPU_SpriteId1))
+            break;
+
+        PlaySE(SE_M_HARDEN);
+        BeginNormalPaletteFade(1 << (16 + sprite1->oam.paletteNum), 0, 0, 16, RGB_WHITE);
+        tAPU_State = APU_STATE_FADE;
+        // fallthrough
+    }
+    case APU_STATE_FADE:
+    {
+        UpdatePaletteFade();
+        UpdatePaletteFade();
+        UpdatePaletteFade();
+        UpdatePaletteFade();
+        if (gPaletteFade.active)
+            break;
+
+        BeginNormalPaletteFade(1 << (16 + sprite1->oam.paletteNum), 0, 16, 0, RGB_WHITE);
+        tAPU_State = APU_STATE_WAIT;
+        break;
+    }
+
+    // ability overwrite
+    case APU_STATE_MOSAIC:
+    {
+        RunTextPrinters();
+        RunTextPrinters();
+        if (IsTextPrinterActiveOnSprite(tAPU_SpriteId1))
+            break;
+
+        tAPU_Timer++;
+        if (tAPU_Timer < 8)
+            break;
+
+        PlaySE(SE_M_TELEPORT);
+        sprite1->oam.mosaic = TRUE;
+        sprite2->oam.mosaic = TRUE;
+        tAPU_Mosaic = 10;
+        SetGpuReg(REG_OFFSET_MOSAIC, (tAPU_Mosaic << 12) | (tAPU_Mosaic << 8));
+        tAPU_State = APU_STATE_REPRINT;
+        break;
+    }
+    case APU_STATE_REPRINT:
+    {
+        tAPU_Mosaic--;
+        SetGpuReg(REG_OFFSET_MOSAIC, (tAPU_Mosaic << 12) | (tAPU_Mosaic << 8));
+        if (tAPU_Mosaic > 5)
+            break;
+
+        BattleUI_PrepareTextForAbilityPopUp(battler, tAPU_NewAbility, TEXT_SKIP_DRAW);
+        tAPU_State = APU_STATE_WAIT;
+        break;
+    }
+
+    case APU_STATE_WAIT:
+    {
+        if (tAPU_NewAbility)
+        {
+            tAPU_Mosaic--;
+            SetGpuReg(REG_OFFSET_MOSAIC, (tAPU_Mosaic << 12) | (tAPU_Mosaic << 8));
+            if (tAPU_Mosaic > 0)
+                break;
+
+            tAPU_Mosaic = 0;
+            SetGpuReg(REG_OFFSET_MOSAIC, (tAPU_Mosaic << 12) | (tAPU_Mosaic << 8));
+            sprite1->oam.mosaic = FALSE;
+            sprite2->oam.mosaic = FALSE;
+        }
+        else
+        {
+            UpdatePaletteFade();
+            UpdatePaletteFade();
+            UpdatePaletteFade();
+            UpdatePaletteFade();
+            if (gPaletteFade.active)
+                break;
+        }
+
+        tAPU_Timer = 12;
+        tAPU_State = APU_STATE_IDLE;
+        break;
+    }
+    case APU_STATE_IDLE:
+    {
+        if (tAPU_Timer == 0 || tAPU_AutoDestroy)
+        {
+            tAPU_State = APU_STATE_END;
+            break;
+        }
+
+        if (!gBattleScripting.fixedPopup)
+            tAPU_Timer--;
+
+        break;
+    }
+    case APU_STATE_END:
+    {
+        gBattleStruct->battlerState[battler].activeAbilityPopUps = FALSE;
+        sBWBattleUI_Resources.abilityPopUpTaskId[battler] = TASK_NONE;
+        DestroySprite(sprite1);
+        DestroySprite(sprite2);
+        DestroyTask(taskId);
+        break;
+    }
+    }
+}
+
+static inline u32 BattleUI_LoadBlankHealthbarGfx(enum BattlerPosition position)
+{
+    u32 tileSize = 8 + (position % 2);
+    return LoadCompressedSpriteSheet(&(const struct CompressedSpriteSheet){
+        .data = gBlankGfxCompressed,
+        .size = TILE_OFFSET_4BPP(tileSize),
+        .tag = TAG_HEALTHBAR_PLAYER1_TILE + position,
+    });
 }
 
 static void BattleUI_SetCursorBattler(enum BattlerId battler)
@@ -309,33 +1045,21 @@ static u32 BattleUI_GetCursorBattler(void)
 
 static void BattleUI_DisplayMoveBoxGraphics(enum BattlerId battler, u32 windowId)
 {
-    // Both sheets are 4bpp tiles laid out to match the windows they fill, so
-    // they copy straight in rather than being blitted a pixel at a time.
     if (windowId == B_WIN_MOVE_NAME_1 && IsGimmickSelected(battler, GIMMICK_Z_MOVE))
     {
-        CopyToWindowPixelBuffer(windowId, sBWBattleUI_MoveBoxGraphicsZ,
-                                BUI_MOVE_BOX_TILES * TILE_SIZE_4BPP, 0);
+        BlitBitmapToWindow(windowId, sBWBattleUI_MoveBoxGraphicsZ,
+            0, 0,
+            TILE_TO_PIXELS(28), TILE_TO_PIXELS(6));
+
         return;
     }
 
     u32 slot = windowId - B_WIN_MOVE_NAME_1;
-    const u8 *panel = sBWBattleUI_MoveBoxGraphics + slot * BUI_MOVE_PANEL_TILES * TILE_SIZE_4BPP;
-
-    if (windowId != B_WIN_MOVE_NAME_1)
-    {
-        CopyToWindowPixelBuffer(windowId, panel, BUI_MOVE_PANEL_TILES * TILE_SIZE_4BPP, 0);
-        return;
-    }
-
-    // The first window spans the whole box so it can also hold the Z move
-    // layout, so its panel is the left half of each of the top three rows.
-    for (u32 row = 0; row < BUI_MOVE_PANEL_TILE_HEIGHT; row++)
-    {
-        CopyToWindowPixelBuffer(windowId,
-                                panel + row * BUI_MOVE_PANEL_TILE_WIDTH * TILE_SIZE_4BPP,
-                                BUI_MOVE_PANEL_TILE_WIDTH * TILE_SIZE_4BPP,
-                                row * BUI_MOVE_BOX_TILE_WIDTH);
-    }
+    BlitBitmapRectToWindow(windowId, sBWBattleUI_MoveBoxGraphics,
+        (slot & 1) ? TILE_TO_PIXELS(14) : 0, (slot & 2) ? TILE_TO_PIXELS(3) : 0,
+        TILE_TO_PIXELS(28), TILE_TO_PIXELS(6),
+        0, 0,
+        TILE_TO_PIXELS(14), TILE_TO_PIXELS(3));
 }
 
 static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseMoveStruct *moveInfo)
@@ -361,7 +1085,9 @@ static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseM
             // name
             StringCopy(gDisplayedStringBattle, GetMoveName(moveId));
             if (B_SHOW_EFFECTIVENESS)
+            {
                 StringAppend(gDisplayedStringBattle, BattleUI_GetTypeEffectivenessSymbol(battler, moveId));
+            }
 
             u32 x = TILE_TO_PIXELS(1);
             u32 fontId = GetFontIdToFit(gDisplayedStringBattle, FONT_SMALL, 0, TILE_TO_PIXELS(9));
@@ -398,7 +1124,9 @@ static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseM
         }
 
         if (moveId != MOVE_NONE)
+        {
             gNumberOfMovesToChoose++;
+        }
     }
 
     // must be copied separately, otherwise you can see this gets shown on screen before the z move box gets cleared.
@@ -437,7 +1165,9 @@ static void BattleUI_DisplayZMoveBox(enum BattlerId battler, struct ChooseMoveSt
     }
 
     if (B_SHOW_EFFECTIVENESS && !isStatusMove)
+    {
         StringAppend(gDisplayedStringBattle, BattleUI_GetTypeEffectivenessSymbol(battler, zMove));
+    }
 
     u32 x = GetStringCenterAlignXOffset(FONT_SMALL, gDisplayedStringBattle, TILE_TO_PIXELS(28));
 
@@ -457,9 +1187,13 @@ static void BattleUI_DisplayZMoveBox(enum BattlerId battler, struct ChooseMoveSt
             if (moveInfo->monTypes[0] == TYPE_GHOST
              || moveInfo->monTypes[1] == TYPE_GHOST
              || moveInfo->monTypes[2] == TYPE_GHOST)
+            {
                 zEffect = Z_EFFECT_RECOVER_HP;
+            }
             else
+            {
                 zEffect = Z_EFFECT_ATK_UP_1;
+            }
         }
 
         switch (zEffect)
@@ -526,7 +1260,9 @@ static void BattleUI_DisplayZMoveBox(enum BattlerId battler, struct ChooseMoveSt
             break;
         default:
             if (B_SHOW_USELESS_Z_MOVE_INFO == TRUE)
+            {
                 StringCopy(gDisplayedStringBattle, COMPOUND_STRING("No Additional Effect"));
+            }
             break;
         }
     }
@@ -539,7 +1275,9 @@ static void BattleUI_DisplayZMoveBox(enum BattlerId battler, struct ChooseMoveSt
         u32 power = GetZMovePower(move);
 
         if (zMove >= MOVE_CATASTROPIKA)
+        {
             power = GetMovePower(zMove);
+        }
 
         txtPtr = StringCopy(gDisplayedStringBattle, COMPOUND_STRING("Power: "));
         txtPtr = ConvertIntToDecimalStringN(txtPtr, power, STR_CONV_MODE_LEFT_ALIGN, 3);
@@ -567,7 +1305,345 @@ static void BattleUI_DisplayZMoveBox(enum BattlerId battler, struct ChooseMoveSt
     CopyWindowToVram(windowId, COPYWIN_GFX);
 }
 
+static void BattleUI_UpdateHealthboxLvlText(u32 spriteId, struct Pokemon *mon)
+{
+    struct Sprite *sprite = &gSprites[spriteId];
+    u32 spriteId2 = sprite->oam.affineParam;
+    struct Sprite *sprite2 = &gSprites[spriteId2];
+    u32 battler = sprite->hMain_Battler;
+
+    u32 species = GetMonData(mon, MON_DATA_SPECIES);
+    u32 gender = GetMonGender(mon);
+
+    GetMonData(mon, MON_DATA_NICKNAME, gDisplayedStringBattle);
+    StringGet_Nickname(gDisplayedStringBattle);
+    if (((species == SPECIES_NIDORAN_F || species == SPECIES_NIDORAN_M) && !StringCompare(gDisplayedStringBattle, GetSpeciesName(species)))
+     || (GetBattlerSide(battler) == B_SIDE_OPPONENT && IsGhostBattleWithoutScope()))
+    {
+        gender = 100;
+    }
+
+    // use StringCopy to override StringGet_Nickname
+    switch (gender)
+    {
+    case MON_MALE:
+        StringCopy(gDisplayedStringBattle, COMPOUND_STRING("{COLOR 11}♂"));
+        break;
+    case MON_FEMALE:
+        StringCopy(gDisplayedStringBattle, COMPOUND_STRING("{COLOR 10}♀"));
+        break;
+    default:
+        StringCopy(gDisplayedStringBattle, gText_EmptyString3);
+        break;
+    }
+
+    u32 lvl = GetMonData(mon, MON_DATA_LEVEL);
+    u8 *strbuf = StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{COLOR 8}{LV_2}{COLOR 1}"));
+    ConvertIntToDecimalStringN(strbuf, lvl, STR_CONV_MODE_LEFT_ALIGN, MAX_DIGITS(MAX_LEVEL));
+
+    u32 data1 = sprite->data[1];
+    u32 data2 = sprite2->data[1];
+
+    sprite->data[1] = spriteId2;
+    sprite2->data[1] = SPRITE_NONE;
+
+    u32 fontId = FONT_OUTLINED_NARROW;
+    u32 x = 0;
+    if (IsOnPlayerSide(battler))
+        x += TILE_TO_PIXELS(2) - 2;
+
+    FillSpriteRectColor(spriteId2, x, 0, TILE_TO_PIXELS(4), TILE_TO_PIXELS(2) - 2, 0);
+
+    x += GetStringRightAlignXOffset(fontId, gDisplayedStringBattle, TILE_TO_PIXELS(4) - 1);
+    BattleUI_AddSpriteTextPrinter(spriteId2, fontId, x, 0, BUI_TXTCLR_HBOX_NAME, gDisplayedStringBattle);
+
+    sprite->data[1] = data1;
+    sprite2->data[1] = data2;
+}
+
+static void BattleUI_UpdateHealthboxNickText(u32 spriteId, struct Pokemon *mon)
+{
+    struct Sprite *sprite = &gSprites[spriteId];
+    u32 spriteId2 = sprite->oam.affineParam;
+    struct Sprite *sprite2 = &gSprites[spriteId2];
+    enum BattlerId battler = sprite->hMain_Battler;
+
+    struct Pokemon *illusionMon = GetIllusionMonPtr(battler);
+    if (illusionMon != NULL)
+        mon = illusionMon;
+
+    GetMonData(mon, MON_DATA_NICKNAME, gDisplayedStringBattle);
+    StringGet_Nickname(gDisplayedStringBattle);
+
+    // backup data[1] for sprite printer
+    s16 data1 = sprite->data[1];
+    s16 data2 = sprite2->data[1];
+
+    sprite->data[1] = spriteId2;
+    sprite2->data[1] = SPRITE_NONE;
+
+    u32 x;
+    if (IsOnPlayerSide(battler))
+        x = TILE_TO_PIXELS(2);
+    else
+        x = TILE_TO_PIXELS(1);
+
+    FillSpriteRectColor(spriteId, x, 0, TILE_TO_PIXELS(6), TILE_TO_PIXELS(2) - 2, 0);
+
+    u32 fontId = GetFontIdToFit(gDisplayedStringBattle, FONT_OUTLINED, 0, TILE_TO_PIXELS(7));
+    BattleUI_AddSpriteTextPrinter(spriteId, fontId, x, 0, BUI_TXTCLR_HBOX_NAME, gDisplayedStringBattle);
+
+    sprite->data[1] = data1;
+    sprite2->data[1] = data2;
+}
+
+static void BattleUI_UpdateHealthboxStatusIcon(u32 spriteId, struct Pokemon *mon)
+{
+    struct Sprite *sprite = &gSprites[spriteId];
+    u32 spriteId2 = sprite->oam.affineParam;
+    struct Sprite *sprite2 = &gSprites[spriteId2];
+    enum BattlerId battler = sprite->hMain_Battler;
+
+    u32 battlerPalIdx = 12 + battler;
+    const u8 colorCode[5] = { EXT_CTRL_CODE_BEGIN, EXT_CTRL_CODE_COLOR, battlerPalIdx, EOS };
+    StringCopy(gDisplayedStringBattle, colorCode);
+
+    u32 statusTileNum = 17 + IsOnPlayerSide(battler);
+    BattleUI_CopyElementToSprite(spriteId, sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(1), statusTileNum, BUI_FILL_ELEMENT(2));
+    BattleUI_UpdateHealthboxCaughtMonIndicator(spriteId, mon);
+
+    u32 status = GetMonData(mon, MON_DATA_STATUS);
+    u32 statusPalIdx = 0;
+
+    if (status & STATUS1_SLEEP)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_SLP}"));
+        statusPalIdx = 7;
+    }
+    else if (status & STATUS1_PSN_ANY)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_PSN}"));
+        statusPalIdx = 5;
+    }
+    else if (status & STATUS1_BURN)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_BRN}"));
+        statusPalIdx = 9;
+    }
+    else if (status & STATUS1_FREEZE)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_FRZ}"));
+        statusPalIdx = 8;
+    }
+    else if (status & STATUS1_FROSTBITE)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_FBT}"));
+        statusPalIdx = 8;
+    }
+    else if (status & STATUS1_PARALYSIS)
+    {
+        StringAppend(gDisplayedStringBattle, COMPOUND_STRING("{STATUS_PAR}"));
+        statusPalIdx = 6;
+    }
+    else
+    {
+        return;
+    }
+
+    LoadPalette(&sBWBattleUI_StatusIconPalette[statusPalIdx],
+        OBJ_PLTT_ID(sprite->oam.paletteNum) + battlerPalIdx, PLTT_SIZEOF(1));
+
+    // backup data[1] for sprite printer
+    s16 data1 = sprite->data[1];
+    s16 data2 = sprite2->data[1];
+
+    sprite->data[1] = spriteId2;
+    sprite2->data[1] = SPRITE_NONE;
+
+    u32 x;
+    if (IsOnPlayerSide(battler))
+        x = TILE_TO_PIXELS(2) + 1;
+    else
+        x = TILE_TO_PIXELS(1);
+
+    BattleUI_AddSpriteTextPrinter(spriteId, FONT_BATTLE_UI_ELEMENTS,
+        x, TILE_TO_PIXELS(2),
+        BUI_TXTCLR_HBOX_STATUS, gDisplayedStringBattle);
+
+    sprite->data[1] = data1;
+    sprite2->data[1] = data2;
+}
+
+static void BattleUI_UpdateHealthboxCaughtMonIndicator(u32 spriteId, struct Pokemon *mon)
+{
+    if (gBattleTypeFlags & BATTLE_TYPE_CATCH_TUTORIAL)
+        return;
+
+    if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+        return;
+
+    u32 battler = gSprites[spriteId].hMain_Battler;
+
+    if (IsOnPlayerSide(battler))
+        return;
+
+    BattleUI_CopyElementToSprite(spriteId, sBWBattleUI_HPBoxEndFrames, 0, 1);
+    BattleUI_CopyElementToSprite(spriteId, sBWBattleUI_HPBoxEndFrames + TILE_TO_PIXELS(3), 8, 1);
+
+    if (GetBattlerSide(battler) == B_SIDE_OPPONENT && IsGhostBattleWithoutScope())
+        return;
+
+    if (!GetSetPokedexFlag(SpeciesToNationalPokedexNum(GetMonData(mon, MON_DATA_SPECIES)), FLAG_GET_CAUGHT))
+        return;
+
+    BattleUI_CopyElementToSprite(spriteId, sBWBattleUI_HPBoxCaughtIndicator, 0, 1);
+    BattleUI_CopyElementToSprite(spriteId, sBWBattleUI_HPBoxCaughtIndicator + TILE_TO_PIXELS(1), 8, 1);
+}
+
+static void BattleUI_PrintSafariBallText(u32 spriteId)
+{
+    struct Sprite *sprite1 = &gSprites[spriteId];
+    struct Sprite *sprite2 = &gSprites[sprite1->oam.affineParam];
+
+    s16 data1 = sprite1->data[1], data2 = sprite2->data[1];
+    sprite1->data[1] = sprite1->oam.affineParam, sprite2->data[1] = SPRITE_NONE;
+
+    CopyItemNameHandlePlural(ITEM_SAFARI_BALL, gDisplayedStringBattle, gNumSafariBalls);
+    BattleUI_AddSpriteTextPrinter(spriteId, FONT_OUTLINED_NARROW, TILE_TO_PIXELS(2), 0, BUI_TXTCLR_HBOX_SAFARI, gDisplayedStringBattle);
+
+    sprite1->data[1] = data1, sprite2->data[1] = data2;
+}
+
+static void BattleUI_PrintNumOfSafariBallsText(u32 spriteId)
+{
+    struct Sprite *sprite1 = &gSprites[spriteId];
+    u32 spriteId2 = sprite1->oam.affineParam;
+    struct Sprite *sprite2 = &gSprites[spriteId2];
+
+    s16 data1 = sprite1->data[1], data2 = sprite2->data[1];
+    sprite1->data[1] = spriteId2, sprite2->data[1] = SPRITE_NONE;
+
+    ConvertIntToDecimalStringN(gDisplayedStringBattle, gNumSafariBalls, STR_CONV_MODE_RIGHT_ALIGN, 2);
+    u32 x = GetStringRightAlignXOffset(FONT_OUTLINED, gDisplayedStringBattle, TILE_TO_PIXELS(2));
+
+    BattleUI_AddSpriteTextPrinter(spriteId2, FONT_OUTLINED,
+                                    x, TILE_TO_PIXELS(1) + 1,
+                                    BUI_TXTCLR_HBOX_SAFARI, gDisplayedStringBattle);
+
+    BattleUI_AddSpriteTextPrinter(spriteId2, FONT_OUTLINED_NARROW,
+                                    TILE_TO_PIXELS(2), TILE_TO_PIXELS(1) + 2,
+                                    BUI_TXTCLR_HBOX_SAFARI, COMPOUND_STRING("/30"));
+
+    sprite1->data[1] = data1, sprite2->data[1] = data2;
+}
+
+static s16 BattleUI_GetAbilityPopUpCoords(enum BattleCoordTypes index, enum BattlerPosition position, u32 coord)
+{
+    // the base sprite size is 64x32 (spawned as two sprites so 128x32).
+    // for x/y coords, we divide them by 2 to get proper offset on the screen
+    u32 offset;
+    if (coord == 0) // x
+        offset = TILE_TO_PIXELS(4);
+    else
+        offset = TILE_TO_PIXELS(2);
+
+    return sBWBattleUI_AbilityPopUpCoords[index][position][coord] + offset;
+}
+
+static void BattleUI_PrepareTextForAbilityPopUp(enum BattlerId battler, enum Ability ability, u32 speed)
+{
+    u8 *spriteIds = gBattleStruct->abilityPopUpSpriteIds[battler];
+
+    FillSpriteRectSprite(spriteIds[0], 0, 0, TILE_TO_PIXELS(14) - 1, TILE_TO_PIXELS(4));
+    BattleUI_PrepareBattlerTextForAbilityPopUp(battler, spriteIds[0], speed);
+    BattleUI_PrepareAbilityTextForAbilityPopUp(battler, ability, spriteIds[0], speed);
+}
+
+static void BattleUI_PrepareBattlerTextForAbilityPopUp(enum BattlerId battler, u32 spriteId, u32 speed)
+{
+    BattleUI_BufferBattlerTextForAbilityPopUp(battler);
+    AddSpriteTextPrinterParameterized6(
+            spriteId, FONT_OUTLINED,
+            TILE_TO_PIXELS(1) - 1, 0,
+            0, 0,
+            sBWBattleUI_TextColors[BUI_TXTCLR_ABILITY_POP_UP],
+            speed, gStringVar1);
+}
+
+static void BattleUI_BufferBattlerTextForAbilityPopUp(enum BattlerId battler)
+{
+    struct Pokemon *illusionMon = GetIllusionMonPtr(battler);
+    if (illusionMon != NULL)
+        GetMonData(illusionMon, MON_DATA_NICKNAME, gStringVar1);
+    else
+        GetMonData(GetBattlerMon(battler), MON_DATA_NICKNAME, gStringVar1);
+
+    u32 totalChar = StringLength(gStringVar1);
+    u32 lastChar = gStringVar1[totalChar];
+
+    StringAppend(gStringVar1, COMPOUND_STRING("'"));
+    if (lastChar != CHAR_S && lastChar != CHAR_s)
+        StringAppend(gStringVar1, COMPOUND_STRING("s"));
+}
+
+static void BattleUI_PrepareAbilityTextForAbilityPopUp(enum BattlerId battler, enum Ability ability, u32 spriteId, u32 speed)
+{
+    u32 x = TILE_TO_PIXELS(3) - 1;
+    if (!IsOnPlayerSide(battler))
+        x += TILE_TO_PIXELS(1);
+
+    AddSpriteTextPrinterParameterized6(
+            spriteId, FONT_OUTLINED,
+            x, TILE_TO_PIXELS(1) + 3,
+            0, 0,
+            sBWBattleUI_TextColors[BUI_TXTCLR_ABILITY_POP_UP],
+            speed, gAbilitiesInfo[ability].name);
+}
+
+static void BattleUI_CopyElementToSprite(u32 spriteId, const u32 *element, u32 tileNum, u32 tileTotal)
+{
+    tileNum = TILE_OFFSET_4BPP(gSprites[spriteId].oam.tileNum + tileNum);
+
+    if (tileTotal & BUI_FILL_ELEMENT_FLAG)
+    {
+        tileTotal &= ~(BUI_FILL_ELEMENT_FLAG);
+
+        for (u32 i = 0; i < tileTotal; i++)
+            CpuCopy32(element, (void *)(OBJ_VRAM0 + tileNum + TILE_OFFSET_4BPP(i)), TILE_SIZE_4BPP);
+    }
+    else
+    {
+        tileTotal *= TILE_SIZE_4BPP;
+        CpuCopy32(element, (void *)(OBJ_VRAM0 + tileNum), tileTotal);
+    }
+}
+
 static void BattleUI_AddTextPrinter(u32 windowId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
 {
     AddTextPrinterParameterized6(windowId, fontId, x, y, 0, 0, sBWBattleUI_TextColors[color], TEXT_SKIP_DRAW, str);
+}
+
+static void BattleUI_AddSpriteTextPrinter(u32 spriteId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
+{
+    AddSpriteTextPrinterParameterized6(spriteId, fontId, x, y, 0, 0, sBWBattleUI_TextColors[color], TEXT_SKIP_DRAW, str);
+}
+
+static bool32 BattleUI_PlayVerticalSlideAnim(bool32 hide, s16 *y, s32 target, s32 speed)
+{
+    if (hide)
+    {
+        target = 0;
+        speed = -speed;
+    }
+
+    if (*y == target)
+        return TRUE;
+    else
+        (*y) += speed;
+
+    // check again if we finally reached the target
+    if (*y == target)
+        return TRUE;
+
+    return FALSE;
 }

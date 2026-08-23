@@ -27,8 +27,10 @@
 #include "trainer_tower.h"
 #include "window.h"
 #include "line_break.h"
+// start bwBattleUI
 #include "bw_battle_ui.h"
 #include "config/bw_battle_ui.h"
+// end bwBattleUI
 #include "constants/abilities.h"
 #include "constants/battle_dome.h"
 #include "constants/battle_string_ids.h"
@@ -1577,10 +1579,10 @@ static const struct BattleWindowText sTextOnWindowsInfo_Normal[] =
         .x = 0,
         .y = 1,
         .speed = 1,
-        .color.foreground = 5,
+        .color.foreground = 1,
         .color.background = 15,
         .color.accent = 15,
-        .color.shadow = 7,
+        .color.shadow = 9,
     },
     [B_WIN_ACTION_PROMPT] = {
         .fillValue = PIXEL_FILL(0xF),
@@ -1588,10 +1590,10 @@ static const struct BattleWindowText sTextOnWindowsInfo_Normal[] =
         .x = 1,
         .y = 1,
         .speed = 0,
-        .color.foreground = 5,
+        .color.foreground = 1,
         .color.background = 15,
         .color.accent = 15,
-        .color.shadow = 7,
+        .color.shadow = 9,
     },
     [B_WIN_ACTION_MENU] = {
         .fillValue = PIXEL_FILL(0xE),
@@ -3841,11 +3843,8 @@ void BattlePutTextOnWindow(const u8 *text, u8 windowId)
     struct TextPrinterTemplate printerTemplate;
     u8 speed;
 
-    // The BW action box is a blitted bitmap rather than printed text, and the
-    // move box draws its own PP/type/prompt, so those windows are handled here.
-    // The Kanto tutorial and Battle Arena keep their own window sets, which are
-    // too small for the BW artwork, so they stay on the gen3 menu.
-    if (BattleUI_UsesInputBox())
+    // start bwBattleUI
+    if (BW_BATTLE_UI_TEXTBOX && BW_BATTLE_UI_INPUTBOX)
     {
         switch (windowId)
         {
@@ -3861,6 +3860,7 @@ void BattlePutTextOnWindow(const u8 *text, u8 windowId)
             break;
         }
     }
+    // end bwBattleUI
 
     if (windowId & B_WIN_COPYTOVRAM)
     {

@@ -36,7 +36,7 @@
 #include "trade.h"
 #include "data.h"
 #include "battle.h" // to get rid of later
-#include "bw_battle_ui.h"
+#include "bw_battle_ui.h" // bwBattleUI
 #include "constants/rgb.h"
 #include "party_menu.h"
 
@@ -531,9 +531,11 @@ static void CB2_LoadEggHatch(void)
         gMain.state++;
         break;
     case 2:
+        // start bwBattleUI
         DecompressAndLoadBgGfxUsingHeap(0, BattleUI_GetTextboxTiles(), 0, 0, 0);
         CopyToBgTilemapBuffer(0, BattleUI_GetTextboxTilemap(), 0, 0);
         LoadPalette(BattleUI_GetTextboxPalette(), BG_PLTT_ID(0), PLTT_SIZE_4BPP);
+        // end bwBattleUI
         gMain.state++;
         break;
     case 3:
