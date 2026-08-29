@@ -570,7 +570,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 17,
         .width = 5,
         .height = 2,
-        .paletteNum = 13,
+        .paletteNum = 12,
         .baseBlock = 0x21D,
     },
     [ITEMWIN_QUANTITY_WIDE] = { // Used for quantity and price of items to Sell

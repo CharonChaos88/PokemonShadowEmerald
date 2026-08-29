@@ -1392,7 +1392,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 17,
         .width = 7,
         .height = 2,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 475,
     },
     [ITEMWIN_1x2] = {
@@ -1401,7 +1401,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 7,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 475,
     },
     [ITEMWIN_2x2] = {
@@ -1410,7 +1410,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 14,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 475,
     },
     [ITEMWIN_2x3] = {
@@ -1419,7 +1419,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 13,
         .width = 14,
         .height = 6,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 475,
     },
     [ITEMWIN_MESSAGE] = {
@@ -1428,7 +1428,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 15,
         .width = 27,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 367,
     },
     [ITEMWIN_YESNO_HIGH] = { // Yes/No higher up, positioned above a lower message box
@@ -1437,7 +1437,7 @@ static const struct WindowTemplate sContextMenuWindowTemplates[] =
         .tilemapTop = 9,
         .width = 5,
         .height = 4,
-        .paletteNum = 15,
+        .paletteNum = 13,
         .baseBlock = 475,
     },
     [ITEMWIN_SELL_PRICE] = {
