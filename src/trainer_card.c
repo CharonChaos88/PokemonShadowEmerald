@@ -1040,6 +1040,7 @@ static void PrintMoneyOnCard(void)
 {
     s32 xOffset;
     u8 top;
+    u8 fontId = FONT_NORMAL;
 
     if (!sData->isHoenn)
         AddTextPrinterParameterized3(WIN_CARD_TEXT, FONT_NORMAL, 20, 56, sTrainerCardTextColors, TEXT_SKIP_DRAW, gText_TrainerCardMoney);
@@ -1048,17 +1049,21 @@ static void PrintMoneyOnCard(void)
 
     ConvertIntToDecimalStringN(gStringVar1, sData->trainerCard.money, STR_CONV_MODE_LEFT_ALIGN, MAX_MONEY_DIGITS);
     StringExpandPlaceholders(gStringVar4, gText_PokedollarVar1);
+
+    if (StringLength(gStringVar1) >= 8)
+        fontId = FONT_NARROWER;
+
     if (!sData->isHoenn)
     {
-        xOffset = GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 144);
+        xOffset = GetStringRightAlignXOffset(fontId, gStringVar4, 144);
         top = 56;
     }
     else
     {
-        xOffset = GetStringRightAlignXOffset(FONT_NORMAL, gStringVar4, 128);
+        xOffset = GetStringRightAlignXOffset(fontId, gStringVar4, 128);
         top = 57;
     }
-    AddTextPrinterParameterized3(WIN_CARD_TEXT, FONT_NORMAL, xOffset, top, sTrainerCardTextColors, TEXT_SKIP_DRAW, gStringVar4);
+    AddTextPrinterParameterized3(WIN_CARD_TEXT, fontId, xOffset, top, sTrainerCardTextColors, TEXT_SKIP_DRAW, gStringVar4);
 }
 
 static u16 GetCaughtMonsCount(void)
