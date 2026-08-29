@@ -12,7 +12,8 @@ Text_CraftTable_WantToCraft:
 
 Craft_EventScript_OpenCraftMenu::
     playse SE_WIN_OPEN
-    special StartCraftMenu
+    fadescreen FADE_TO_BLACK
+    special StartRecipeBookMenu
     waitstate
     releaseall
     end

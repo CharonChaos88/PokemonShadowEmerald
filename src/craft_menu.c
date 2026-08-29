@@ -225,6 +225,7 @@ static void OpenBagFromCraftMenu(void)
 
 static void OpenRecipeBookFromCraftMenu(void)
 {
+    GoToRecipeBookMenu(CB2_ReturnToFieldContinueScriptPlayMapMusic);
     OpenCraftMenuTarget(CRAFT_MENU_OPEN_RECIPE_BOOK);
 }
 

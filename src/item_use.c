@@ -55,6 +55,7 @@
 #include "region_map.h"
 #include "field_move.h"
 #include "field_control_avatar.h"
+#include "craft_recipe_book.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -1887,6 +1888,11 @@ void ItemUseOutOfBattle_Dive(u8 taskId)
     }
 }
 
+static void CB2_OpenRecipeBookFromBag(void)
+{
+    GoToRecipeBookMenu(CB2_ReturnToBagMenuPocket);
+}
+
 static void ItemUseOnFieldCB_CraftBundle(u8 taskId)
 {
     ScriptContext_SetupScript(Craft_EventScript_OpenCraftMenu);
@@ -1907,8 +1913,16 @@ void ItemUseOutOfBattle_CraftBundle(u8 taskId)
     else if (TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_UNDERWATER) || TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING) || gWeatherPtr->currWeather == 5 || gWeatherPtr->currWeather == 8 || gWeatherPtr->currWeather == 13) //thunder, sandstorm, downpour
         DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
     else {
-        sItemUseOnFieldCB = ItemUseOnFieldCB_CraftBundle;
-        SetUpItemUseOnFieldCallback(taskId);
+        if (gTasks[taskId].tUsingRegisteredKeyItem != TRUE)
+        {
+            gBagMenu->newScreenCallback = CB2_OpenRecipeBookFromBag;
+            Task_FadeAndCloseBagMenu(taskId);
+        }
+        else
+        {
+            sItemUseOnFieldCB = ItemUseOnFieldCB_CraftBundle;
+            SetUpItemUseOnFieldCallback(taskId);
+        }
     }
 }
 

@@ -1,0 +1,94 @@
+diff --git a/data/scripts/craft.inc b/data/scripts/craft.inc
+index bd43045251..bdc9e8be68 100644
+--- a/data/scripts/craft.inc
++++ b/data/scripts/craft.inc
+@@ -12,7 +12,8 @@ Text_CraftTable_WantToCraft:
+ 
+ Craft_EventScript_OpenCraftMenu::
+     playse SE_WIN_OPEN
+-    special StartCraftMenu
++    fadescreen FADE_TO_BLACK
++    special StartRecipeBookMenu
+     waitstate
+     releaseall
+     end
+diff --git a/data/specials.inc b/data/specials.inc
+index 2a7bdb6d12..5034c4eff2 100644
+--- a/data/specials.inc
++++ b/data/specials.inc
+@@ -563,7 +563,7 @@ gSpecials::
+ 	def_special UseBlankMessageToCancelPokemonPic
+ 	def_special EnterCode
+ 	def_special GetCodeFeedback
+-	def_special StartCraftMenu
++	def_special StartRecipeBookMenu
+ 	def_special SetHiddenNature
+ 	def_special SetAbility
+ 	def_special CanTeachMoveBoxMon
+diff --git a/include/craft_recipe_book.h b/include/craft_recipe_book.h
+index ed68b1936c..f75399d3d7 100644
+--- a/include/craft_recipe_book.h
++++ b/include/craft_recipe_book.h
+@@ -2,5 +2,6 @@
+ #define GUARD_CRAFT_RECIPE_BOOK_H
+ 
+ void CB2_CraftRecipeBookMenu(void);
++void GoToRecipeBookMenu(void (*returnCallback)(void));
+ 
+ #endif // GUARD_CRAFT_RECIPE_BOOK_H
+diff --git a/src/craft_recipe_book.c b/src/craft_recipe_book.c
+index ae06db18ed..9332f080f7 100644
+--- a/src/craft_recipe_book.c
++++ b/src/craft_recipe_book.c
+@@ -306,7 +306,7 @@ static const struct WindowTemplate sRecipeBookAutoCraftPromptWindowTemplate =
+     .tilemapTop = RECIPEBOOK_AUTO_CRAFT_PROMPT_TOP,
+     .width = RECIPEBOOK_AUTO_CRAFT_PROMPT_WIDTH,
+     .height = RECIPEBOOK_AUTO_CRAFT_PROMPT_HEIGHT,
+-    .paletteNum = 15,
++    .paletteNum = 13,
+     .baseBlock = RECIPEBOOK_AUTO_CRAFT_PROMPT_BASE_BLOCK
+ };
+ 
+diff --git a/src/item_use.c b/src/item_use.c
+index 1868d78d03..6043b4ddbf 100644
+--- a/src/item_use.c
++++ b/src/item_use.c
+@@ -55,6 +55,7 @@
+ #include "region_map.h"
+ #include "field_move.h"
+ #include "field_control_avatar.h"
++#include "craft_recipe_book.h"
+ 
+ static void SetUpItemUseCallback(u8);
+ static void FieldCB_UseItemOnField(void);
+@@ -1887,6 +1888,11 @@ void ItemUseOutOfBattle_Dive(u8 taskId)
+     }
+ }
+ 
++static void CB2_OpenRecipeBookFromBag(void)
++{
++    GoToRecipeBookMenu(CB2_ReturnToBagMenuPocket);
++}
++
+ static void ItemUseOnFieldCB_CraftBundle(u8 taskId)
+ {
+     ScriptContext_SetupScript(Craft_EventScript_OpenCraftMenu);
+@@ -1907,8 +1913,16 @@ void ItemUseOutOfBattle_CraftBundle(u8 taskId)
+     else if (TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_UNDERWATER) || TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING) || gWeatherPtr->currWeather == 5 || gWeatherPtr->currWeather == 8 || gWeatherPtr->currWeather == 13) //thunder, sandstorm, downpour
+         DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
+     else {
+-        sItemUseOnFieldCB = ItemUseOnFieldCB_CraftBundle;
+-        SetUpItemUseOnFieldCallback(taskId);
++        if (gTasks[taskId].tUsingRegisteredKeyItem != TRUE)
++        {
++            gBagMenu->newScreenCallback = CB2_OpenRecipeBookFromBag;
++            Task_FadeAndCloseBagMenu(taskId);
++        }
++        else
++        {
++            sItemUseOnFieldCB = ItemUseOnFieldCB_CraftBundle;
++            SetUpItemUseOnFieldCallback(taskId);
++        }
+     }
+ }
+ 

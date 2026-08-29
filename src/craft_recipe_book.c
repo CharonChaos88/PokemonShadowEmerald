@@ -5,6 +5,7 @@
 #include "bg.h"
 #include "gpu_regs.h"
 #include "window.h"
+#include "script.h"
 #include "sprite.h"
 #include "list_menu.h"
 #include "event_data.h"
@@ -306,7 +307,7 @@ static const struct WindowTemplate sRecipeBookAutoCraftPromptWindowTemplate =
     .tilemapTop = RECIPEBOOK_AUTO_CRAFT_PROMPT_TOP,
     .width = RECIPEBOOK_AUTO_CRAFT_PROMPT_WIDTH,
     .height = RECIPEBOOK_AUTO_CRAFT_PROMPT_HEIGHT,
-    .paletteNum = 15,
+    .paletteNum = RECIPEBOOK_WINDOW_FRAME_PALETTE,
     .baseBlock = RECIPEBOOK_AUTO_CRAFT_PROMPT_BASE_BLOCK
 };
 
@@ -317,7 +318,7 @@ static const struct WindowTemplate sRecipeBookAutoCraftQuantityWindowTemplate =
     .tilemapTop = RECIPEBOOK_AUTO_CRAFT_QTY_TOP,
     .width = RECIPEBOOK_AUTO_CRAFT_QTY_WIDTH,
     .height = RECIPEBOOK_AUTO_CRAFT_QTY_HEIGHT,
-    .paletteNum = 15,
+    .paletteNum = RECIPEBOOK_WINDOW_FRAME_PALETTE,
     .baseBlock = RECIPEBOOK_AUTO_CRAFT_QTY_BASE_BLOCK
 };
 
@@ -328,7 +329,7 @@ static const struct WindowTemplate sRecipeBookAutoCraftYesNoWindowTemplate =
     .tilemapTop = RECIPEBOOK_AUTO_CRAFT_YESNO_TOP,
     .width = RECIPEBOOK_AUTO_CRAFT_YESNO_WIDTH,
     .height = RECIPEBOOK_AUTO_CRAFT_YESNO_HEIGHT,
-    .paletteNum = 15,
+    .paletteNum = RECIPEBOOK_WINDOW_FRAME_PALETTE,
     .baseBlock = RECIPEBOOK_AUTO_CRAFT_YESNO_BASE_BLOCK
 };
 
@@ -454,12 +455,15 @@ static u16 sRecipeBookEnterExtendedVBlank;
 static bool8 sRecipeBookTimeBlendOverridden;
 static u8 sRecipeBookAutoCraftPromptWindowId;
 static u8 sRecipeBookAutoCraftQtyWindowId;
+static u8 sRecipeBookAutoCraftYesNoWindowId;
+static u8 sRecipeBookAutoCraftYesNoCursor;
 static u8 sRecipeBookAutoCraftState;
 static bool8 sRecipeBookAutoCraftYesNoActive;
 static u16 sRecipeBookAutoCraftItemId;
 static const struct CraftRecipe *sRecipeBookAutoCraftRecipe;
 static u16 sRecipeBookAutoCraftQty;
 static u16 sRecipeBookAutoCraftMaxQty;
+static void (*sRecipeBookReturnCallback)(void);
 
 static const struct BgTemplate sRecipeBookBgTemplates[] =
 {
@@ -514,6 +518,18 @@ static void RecipeBookVBlankCB(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
+}
+
+void StartRecipeBookMenu(void)
+{
+    GoToRecipeBookMenu(CB2_ReturnToFieldContinueScriptPlayMapMusic);
+    ScriptContext_Stop();
+}
+
+void GoToRecipeBookMenu(void (*returnCallback)(void))
+{
+    sRecipeBookReturnCallback = returnCallback;
+    SetMainCallback2(CB2_CraftRecipeBookMenu);
 }
 
 void CB2_CraftRecipeBookMenu(void)
@@ -1694,7 +1710,10 @@ static void RecipeBook_ShowAutoCraftPrompt(const u8 *text)
     DrawStdFrameWithCustomTileAndPalette(windowId, TRUE, RECIPEBOOK_WINDOW_FRAME_BASE_TILE,
                                          RECIPEBOOK_WINDOW_FRAME_PALETTE);
     FillWindowPixelBuffer(windowId, PIXEL_FILL(1));
-    AddTextPrinterParameterized(windowId, FONT_NORMAL, text, 0, 1, 0, NULL);
+    {
+        static const u8 sColors[] = {TEXT_COLOR_TRANSPARENT, 7, TEXT_COLOR_DARK_GRAY};
+        AddTextPrinterParameterized4(windowId, FONT_NORMAL, 0, 1, 0, 0, sColors, 0, text);
+    }
     PutWindowTilemap(windowId);
     CopyWindowToVram(windowId, COPYWIN_FULL);
 }
@@ -1706,14 +1725,93 @@ static void RecipeBook_ShowAutoCraftHowManyPrompt(void)
     RecipeBook_ShowAutoCraftPrompt(gStringVar4);
 }
 
+static void RecipeBook_RedrawYesNoCursor(u8 oldPos, u8 newPos)
+{
+    u8 windowId = sRecipeBookAutoCraftYesNoWindowId;
+    static const u8 sColors[] = {TEXT_COLOR_TRANSPARENT, 7, TEXT_COLOR_DARK_GRAY};
+    u8 width = GetMenuCursorDimensionByFont(FONT_NORMAL, 0);
+    u8 height = GetMenuCursorDimensionByFont(FONT_NORMAL, 1);
+
+    FillWindowPixelRect(windowId, PIXEL_FILL(1), 0, 16 * oldPos + 1, width, height);
+    AddTextPrinterParameterized4(windowId, FONT_NORMAL, 0, 16 * newPos + 1, 0, 0, sColors, 0, gText_SelectorArrow3);
+    CopyWindowToVram(windowId, COPYWIN_FULL);
+}
+
+static s8 RecipeBook_ProcessYesNoInput(void)
+{
+    if (JOY_NEW(DPAD_UP) && sRecipeBookAutoCraftYesNoCursor > 0)
+    {
+        PlaySE(SE_SELECT);
+        RecipeBook_RedrawYesNoCursor(sRecipeBookAutoCraftYesNoCursor, sRecipeBookAutoCraftYesNoCursor - 1);
+        sRecipeBookAutoCraftYesNoCursor--;
+        return MENU_NOTHING_CHOSEN;
+    }
+    if (JOY_NEW(DPAD_DOWN) && sRecipeBookAutoCraftYesNoCursor < 1)
+    {
+        PlaySE(SE_SELECT);
+        RecipeBook_RedrawYesNoCursor(sRecipeBookAutoCraftYesNoCursor, sRecipeBookAutoCraftYesNoCursor + 1);
+        sRecipeBookAutoCraftYesNoCursor++;
+        return MENU_NOTHING_CHOSEN;
+    }
+    if (JOY_NEW(A_BUTTON))
+    {
+        return sRecipeBookAutoCraftYesNoCursor;
+    }
+    if (JOY_NEW(B_BUTTON))
+    {
+        return MENU_B_PRESSED;
+    }
+
+    return MENU_NOTHING_CHOSEN;
+}
+
+static void RecipeBook_CreateYesNoMenu(void)
+{
+    struct TextPrinterTemplate printer;
+    u8 windowId = AddWindow(&sRecipeBookAutoCraftYesNoWindowTemplate);
+    sRecipeBookAutoCraftYesNoWindowId = windowId;
+
+    DrawStdFrameWithCustomTileAndPalette(windowId, TRUE, RECIPEBOOK_WINDOW_FRAME_BASE_TILE, RECIPEBOOK_WINDOW_FRAME_PALETTE);
+    FillWindowPixelBuffer(windowId, PIXEL_FILL(1));
+
+    printer.currentChar = gText_YesNo;
+    printer.type = WINDOW_TEXT_PRINTER;
+    printer.windowId = windowId;
+    printer.fontId = FONT_NORMAL;
+    printer.x = 8;
+    printer.y = 1;
+    printer.currentX = printer.x;
+    printer.currentY = printer.y;
+    printer.color.foreground = 7;
+    printer.color.background = 0;
+    printer.color.shadow = TEXT_COLOR_DARK_GRAY;
+    printer.color.accent = GetFontAttribute(FONT_NORMAL, FONTATTR_COLOR_ACCENT);
+    printer.letterSpacing = 0;
+    printer.lineSpacing = 0;
+
+    AddTextPrinter(&printer, TEXT_SKIP_DRAW, NULL);
+
+    sRecipeBookAutoCraftYesNoCursor = 0;
+    RecipeBook_RedrawYesNoCursor(0, 0);
+}
+
+static void RecipeBook_EraseYesNoWindow(void)
+{
+    if (sRecipeBookAutoCraftYesNoWindowId != WINDOW_NONE)
+    {
+        ClearStdWindowAndFrameToTransparent(sRecipeBookAutoCraftYesNoWindowId, TRUE);
+        RemoveWindow(sRecipeBookAutoCraftYesNoWindowId);
+        sRecipeBookAutoCraftYesNoWindowId = WINDOW_NONE;
+    }
+}
+
 static void RecipeBook_ShowAutoCraftConfirmPrompt(void)
 {
     ConvertIntToDecimalStringN(gStringVar1, sRecipeBookAutoCraftQty, STR_CONV_MODE_LEFT_ALIGN, 3);
     CopyItemNameHandlePlural(sRecipeBookAutoCraftItemId, gStringVar2, sRecipeBookAutoCraftQty);
     StringExpandPlaceholders(gStringVar4, gText_CraftConfirm);
     RecipeBook_ShowAutoCraftPrompt(gStringVar4);
-    CreateYesNoMenu(&sRecipeBookAutoCraftYesNoWindowTemplate, RECIPEBOOK_WINDOW_FRAME_BASE_TILE,
-                    RECIPEBOOK_WINDOW_FRAME_PALETTE, 0);
+    RecipeBook_CreateYesNoMenu();
     sRecipeBookAutoCraftYesNoActive = TRUE;
 }
 
@@ -1741,8 +1839,11 @@ static void RecipeBook_UpdateAutoCraftQuantityWindow(void)
     ConvertIntToDecimalStringN(gStringVar1, sRecipeBookAutoCraftQty, STR_CONV_MODE_LEADING_ZEROS, 3);
     StringExpandPlaceholders(gStringVar4, gText_xVar1);
     windowWidth = WindowWidthPx(windowId);
-    AddTextPrinterParameterized(windowId, FONT_NORMAL, gStringVar4,
-                                GetStringCenterAlignXOffset(FONT_NORMAL, gStringVar4, windowWidth), 2, 0, NULL);
+    {
+        static const u8 sColors[] = {TEXT_COLOR_TRANSPARENT, 7, TEXT_COLOR_DARK_GRAY};
+        AddTextPrinterParameterized4(windowId, FONT_NORMAL,
+                                    GetStringCenterAlignXOffset(FONT_NORMAL, gStringVar4, windowWidth), 2, 0, 0, sColors, 0, gStringVar4);
+    }
     PutWindowTilemap(windowId);
     CopyWindowToVram(windowId, COPYWIN_FULL);
 }
@@ -1771,7 +1872,7 @@ static void RecipeBook_RemoveAutoCraftWindows(void)
 {
     if (sRecipeBookAutoCraftYesNoActive)
     {
-        EraseYesNoWindow();
+        RecipeBook_EraseYesNoWindow();
         sRecipeBookAutoCraftYesNoActive = FALSE;
     }
 
@@ -1884,10 +1985,13 @@ static void RecipeBook_HandleAutoCraftInput(void)
         break;
     case RECIPEBOOK_AUTO_CRAFT_STATE_CONFIRM:
     {
-        s8 input = Menu_ProcessInputNoWrapClearOnChoose();
+        s8 input = RecipeBook_ProcessYesNoInput();
 
         if (input != MENU_NOTHING_CHOSEN)
+        {
+            RecipeBook_EraseYesNoWindow();
             sRecipeBookAutoCraftYesNoActive = FALSE;
+        }
 
         switch (input)
         {
@@ -2678,9 +2782,29 @@ static void Task_RecipeBookMenu(u8 taskId)
     case 3:
         if (!gPaletteFade.active)
         {
+            int row, col;
+
             RecipeBook_Cleanup();
             DestroyTask(taskId);
-            SetMainCallback2(CB2_ReturnToCraftMenu);
+
+            for (row = 0; row < CRAFT_ROWS; row++)
+            {
+                for (col = 0; col < CRAFT_COLS; col++)
+                {
+                    struct ItemSlot *slot = &gCraftSlots[row][col];
+                    if (slot->itemId != ITEM_NONE)
+                    {
+                        AddBagItem(slot->itemId, slot->quantity);
+                        slot->itemId = ITEM_NONE;
+                        slot->quantity = 0;
+                    }
+                }
+            }
+
+            if (sRecipeBookReturnCallback)
+                SetMainCallback2(sRecipeBookReturnCallback);
+            else
+                SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
         }
         break;
     }

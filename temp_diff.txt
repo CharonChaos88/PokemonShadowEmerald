@@ -1,0 +1,13 @@
+diff --git a/src/craft_recipe_book.c b/src/craft_recipe_book.c
+index ae06db18ed..9332f080f7 100644
+--- a/src/craft_recipe_book.c
++++ b/src/craft_recipe_book.c
+@@ -306,7 +306,7 @@ static const struct WindowTemplate sRecipeBookAutoCraftPromptWindowTemplate =
+     .tilemapTop = RECIPEBOOK_AUTO_CRAFT_PROMPT_TOP,
+     .width = RECIPEBOOK_AUTO_CRAFT_PROMPT_WIDTH,
+     .height = RECIPEBOOK_AUTO_CRAFT_PROMPT_HEIGHT,
+-    .paletteNum = 15,
++    .paletteNum = 13,
+     .baseBlock = RECIPEBOOK_AUTO_CRAFT_PROMPT_BASE_BLOCK
+ };
+ 
