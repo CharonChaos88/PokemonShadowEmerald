@@ -2047,7 +2047,7 @@ void UpdateNickInHealthbox(u8 healthboxSpriteId, struct Pokemon *mon)
     nameTile = IsOnPlayerSide(gSprites[healthboxSpriteId].hMain_Battler)
              ? BW_NAME_TILE_PLAYER
              : BW_NAME_TILE_OPPONENT;
-    CpuFill32(0, GetBwHealthboxTileDest(healthboxSpriteId, nameTile - 1), TILE_SIZE_4BPP);
+    CpuFill32(0, GetBwHealthboxTileDest(healthboxSpriteId, nameTile - 1), (BW_NAME_FONT_MAX_TILES + 1) * TILE_SIZE_4BPP);
     if (length > 10)
         DrawBwOutlinedFont(healthboxSpriteId, nameTile - 1, 7, text);
     else
