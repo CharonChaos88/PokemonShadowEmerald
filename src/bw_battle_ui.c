@@ -1384,12 +1384,16 @@ static void BattleUI_UpdateHealthboxNickText(u32 spriteId, struct Pokemon *mon)
 
     u32 x;
     if (IsOnPlayerSide(battler))
+    {
         x = TILE_TO_PIXELS(2);
+        FillSpriteRectColor(spriteId, x, 0, TILE_TO_PIXELS(8) - x, TILE_TO_PIXELS(2) - 2, 0);
+        FillSpriteRectColor(spriteId2, 0, 0, TILE_TO_PIXELS(2), TILE_TO_PIXELS(2) - 2, 0);
+    }
     else
+    {
         x = TILE_TO_PIXELS(1);
-
-    FillSpriteRectColor(spriteId, x, 0, TILE_TO_PIXELS(8) - x, TILE_TO_PIXELS(2) - 2, 0);
-    FillSpriteRectColor(spriteId2, 0, 0, TILE_TO_PIXELS(2), TILE_TO_PIXELS(2) - 2, 0);
+        FillSpriteRectColor(spriteId, x, 0, TILE_TO_PIXELS(8) - x, TILE_TO_PIXELS(2) - 2, 0);
+    }
 
     u32 fontId = GetFontIdToFit(gDisplayedStringBattle, FONT_OUTLINED, 0, TILE_TO_PIXELS(7));
     BattleUI_AddSpriteTextPrinter(spriteId, fontId, x, 0, BUI_TXTCLR_HBOX_NAME, gDisplayedStringBattle);

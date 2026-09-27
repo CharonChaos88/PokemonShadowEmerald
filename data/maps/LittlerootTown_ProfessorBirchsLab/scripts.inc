@@ -2801,77 +2801,83 @@ CheckSubquest2::
 # 1448 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_TEMP_1, 0
 # 1450 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_CATERPIE
+	checkspecies SPECIES_PINECO
 # 1451 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_2
 CheckSubquest2_1:
 # 1452 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_METAPOD
+	checkspecies SPECIES_CATERPIE
 # 1453 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_5
 CheckSubquest2_4:
 # 1454 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_BUTTERFREE
+	checkspecies SPECIES_COMBEE
 # 1455 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_8
 CheckSubquest2_7:
+# 1456 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_KARRABLAST
 # 1457 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_WEEDLE
-# 1458 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_11
 CheckSubquest2_10:
+# 1458 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SCATTERBUG
 # 1459 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_KAKUNA
-# 1460 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_14
 CheckSubquest2_13:
+# 1460 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_DEWPIDER
 # 1461 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_BEEDRILL
-# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_17
 CheckSubquest2_16:
-# 1464 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_PINECO
-# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_JOLTIK
+# 1463 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_20
 CheckSubquest2_19:
-# 1466 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_FORRETRESS
-# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1464 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SHUCKLE
+# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_23
 CheckSubquest2_22:
-# 1468 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_SCATTERBUG
-# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1466 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_DURANT
+# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_26
 CheckSubquest2_25:
-# 1470 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_SPINARAK
-# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1468 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_YANMA
+# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_29
 CheckSubquest2_28:
-# 1472 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	checkspecies SPECIES_ARIADOS
-# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1470 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_SHELMET
+# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq CheckSubquest2_32
 CheckSubquest2_31:
+# 1472 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	checkspecies SPECIES_VENIPEDE
+# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	compare VAR_RESULT, TRUE
+	goto_if_eq CheckSubquest2_35
+CheckSubquest2_34:
 # 1475 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_TEMP_1, 3
-	goto_if_ge CheckSubquest2_35
+	goto_if_ge CheckSubquest2_38
 # 1482 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox CheckSubquest2_Text_1
-CheckSubquest2_34:
+CheckSubquest2_37:
 # 1484 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	release
 	end
@@ -2892,46 +2898,51 @@ CheckSubquest2_8:
 	goto CheckSubquest2_7
 
 CheckSubquest2_11:
-# 1458 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1457 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_10
 
 CheckSubquest2_14:
-# 1460 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1459 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_13
 
 CheckSubquest2_17:
-# 1462 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1461 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_16
 
 CheckSubquest2_20:
-# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1463 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_19
 
 CheckSubquest2_23:
-# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1465 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_22
 
 CheckSubquest2_26:
-# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1467 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_25
 
 CheckSubquest2_29:
-# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1469 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_28
 
 CheckSubquest2_32:
-# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1471 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	addvar VAR_TEMP_1, 1
 	goto CheckSubquest2_31
 
 CheckSubquest2_35:
+# 1473 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	addvar VAR_TEMP_1, 1
+	goto CheckSubquest2_34
+
+CheckSubquest2_38:
 # 1476 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox CheckSubquest2_Text_0, MSGBOX_DEFAULT
 # 1477 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
@@ -2940,7 +2951,7 @@ CheckSubquest2_35:
 	waitfanfare
 # 1479 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	completesubquest RESEARCHING_BEV, 2
-	goto CheckSubquest2_34
+	goto CheckSubquest2_37
 
 
 CheckSubquest3::

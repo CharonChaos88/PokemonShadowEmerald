@@ -177,7 +177,7 @@ enum
 };
 
 static const u8 sText_RecipeBookNoRecipes[] = _("No recipes");
-static const u8 sText_RecipeBookClose[] = _("CLOSE RECIPE BOOK");
+static const u8 sText_RecipeBookClose[] = _("Close Recipe Book");
 static const u8 sText_RecipeBookIngredients[] = _("Required Ingredients");
 static const u8 sText_RecipeBookEllipsis[] = _("...");
 static const u8 sText_RecipeBookLButton[] = _("{L_BUTTON}");

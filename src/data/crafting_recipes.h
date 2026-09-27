@@ -234,7 +234,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_RED_APRICORN } },
+                .pattern = { {ITEM_YELLOW_APRICORN, ITEM_RED_APRICORN, ITEM_BLACK_APRICORN }, {ITEM_NONE, ITEM_ULTRA_BALL, ITEM_NONE} },
                 .resultQuantity = 1,
             },
         },
@@ -245,7 +245,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_BLUE_APRICORN } },
+                .pattern = { {ITEM_GREEN_APRICORN, ITEM_RED_APRICORN, ITEM_GREEN_APRICORN }, {ITEM_NONE, ITEM_ULTRA_BALL, ITEM_NONE} },
                 .resultQuantity = 1,
             },
         },
@@ -256,7 +256,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_YELLOW_APRICORN } },
+                .pattern = { {ITEM_BLUE_APRICORN, ITEM_YELLOW_APRICORN, ITEM_BLACK_APRICORN }, {ITEM_NONE, ITEM_POKE_BALL, ITEM_NONE}, {ITEM_NONE, ITEM_MOON_STONE, ITEM_NONE} },
                 .resultQuantity = 1,
             },
         },
@@ -267,7 +267,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_GREEN_APRICORN } },
+                .pattern = { {ITEM_GREEN_APRICORN, ITEM_YELLOW_APRICORN, ITEM_GREEN_APRICORN }, {ITEM_NONE, ITEM_GREAT_BALL, ITEM_NONE} },
                 .resultQuantity = 1,
             },
         },
@@ -278,7 +278,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_PINK_APRICORN } },
+                .pattern = { { ITEM_PINK_APRICORN, ITEM_PINK_APRICORN, ITEM_PINK_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL, ITEM_NONE }, { ITEM_NONE, ITEM_SOOTHE_BELL, ITEM_NONE } },
                 .resultQuantity = 1,
             },
         },
@@ -289,7 +289,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_WHITE_APRICORN } },
+                .pattern = { { ITEM_RED_APRICORN, ITEM_YELLOW_APRICORN, ITEM_RED_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL, ITEM_NONE } },
                 .resultQuantity = 1,
             },
         },
@@ -300,7 +300,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_BLACK_APRICORN } },
+                .pattern = { { ITEM_BLUE_APRICORN, ITEM_BLUE_APRICORN, ITEM_BLUE_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL, ITEM_NONE } },
                 .resultQuantity = 1,
             },
         },
@@ -311,7 +311,7 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_POKE_BALL }, { ITEM_POTION } },
+                .pattern = { { ITEM_WHITE_APRICORN , ITEM_PINK_APRICORN , ITEM_WHITE_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL, ITEM_NONE}, {ITEM_NONE, ITEM_HYPER_POTION, ITEM_NONE } },
                 .resultQuantity = 1,
             },
         },
@@ -322,8 +322,8 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_POKE_BALL, ITEM_POKE_BALL, ITEM_POKE_BALL } },
-                .resultQuantity = 2,
+                .pattern = { { ITEM_BLUE_APRICORN, ITEM_RED_APRICORN, ITEM_BLUE_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL } },
+                .resultQuantity = 1,
             },
         },
         .count = 1,
@@ -333,8 +333,140 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
         .recipes = (const struct CraftRecipe[])
         {
             {
-                .pattern = { { ITEM_GREAT_BALL, ITEM_GREAT_BALL, ITEM_GREAT_BALL } },
-                .resultQuantity = 2,
+                .pattern = { { ITEM_BLACK_APRICORN, ITEM_YELLOW_APRICORN, ITEM_BLACK_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_DUSK_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_GREEN_APRICORN, ITEM_BLACK_APRICORN, ITEM_GREEN_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_LUXURY_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_WHITE_APRICORN, ITEM_RED_APRICORN, ITEM_BLACK_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_NEST_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_GREEN_APRICORN, ITEM_YELLOW_APRICORN, ITEM_GREEN_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_NET_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_BLACK_APRICORN, ITEM_BLUE_APRICORN, ITEM_BLACK_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_DIVE_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_BLUE_APRICORN, ITEM_PINK_APRICORN, ITEM_BLUE_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_PREMIER_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_RED_APRICORN, ITEM_WHITE_APRICORN, ITEM_RED_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_POKE_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_RED_APRICORN, ITEM_RED_APRICORN, ITEM_RED_APRICORN } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_REPEAT_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_RED_APRICORN, ITEM_BLACK_APRICORN, ITEM_RED_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_SAFARI_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_GREEN_APRICORN, ITEM_GREEN_APRICORN, ITEM_YELLOW_APRICORN }, { ITEM_NONE, ITEM_POKE_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_TIMER_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_RED_APRICORN, ITEM_BLACK_APRICORN, ITEM_WHITE_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_SPORT_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_RED_APRICORN, ITEM_WHITE_APRICORN, ITEM_RED_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
+            },
+        },
+        .count = 1,
+    },
+    [ITEM_QUICK_BALL] =
+    {
+        .recipes = (const struct CraftRecipe[])
+        {
+            {
+                .pattern = { { ITEM_BLUE_APRICORN, ITEM_YELLOW_APRICORN, ITEM_BLUE_APRICORN }, { ITEM_NONE, ITEM_GREAT_BALL } },
+                .resultQuantity = 1,
             },
         },
         .count = 1,
@@ -436,27 +568,52 @@ static const struct CraftRecipeList gCraftRecipes[ITEMS_COUNT] =
     },
     [ITEM_SUN_STONE] =
     {
-        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_FIRE_STONE } }, .resultQuantity = 1 } },
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_FIRE_STONE, ITEM_YELLOW_SHARD } }, .resultQuantity = 1 } },
         .count = 1,
     },
     [ITEM_MOON_STONE] =
     {
-        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_WATER_STONE } }, .resultQuantity = 1 } },
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_GREEN_SHARD, ITEM_PEARL } }, .resultQuantity = 1 } },
         .count = 1,
     },
     [ITEM_FIRE_STONE] =
     {
-        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_CHARCOAL } }, .resultQuantity = 1 } },
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_CHARCOAL, ITEM_RED_SHARD } }, .resultQuantity = 1 } },
         .count = 1,
     },
     [ITEM_THUNDER_STONE] =
     {
-        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MAGNET } }, .resultQuantity = 1 } },
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MAGNET, ITEM_GREEN_SHARD } }, .resultQuantity = 1 } },
         .count = 1,
     },
     [ITEM_WATER_STONE] =
     {
-        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MYSTIC_WATER } }, .resultQuantity = 1 } },
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MYSTIC_WATER, ITEM_BLUE_SHARD } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_LEAF_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MIRACLE_SEED, ITEM_GREEN_SHARD } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_DUSK_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_BLACK_GLASSES, ITEM_MOON_STONE } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_DAWN_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_MOON_STONE, ITEM_BLUE_SHARD } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_SHINY_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_SUN_STONE, ITEM_YELLOW_SHARD } }, .resultQuantity = 1 } },
+        .count = 1,
+    },
+    [ITEM_ICE_STONE] =
+    {
+        .recipes = (const struct CraftRecipe[]) { { .pattern = { { ITEM_HARD_STONE, ITEM_NEVER_MELT_ICE, ITEM_WATER_STONE } }, .resultQuantity = 1 } },
         .count = 1,
     },
 };

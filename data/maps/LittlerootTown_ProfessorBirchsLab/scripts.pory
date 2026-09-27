@@ -1447,29 +1447,29 @@ script Subquest1_Evolved {
 script CheckSubquest2 {
     setvar(VAR_TEMP_1, 0)
     
-    checkspecies(SPECIES_CATERPIE)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_METAPOD)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_BUTTERFREE)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    
-    checkspecies(SPECIES_WEEDLE)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_KAKUNA)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_BEEDRILL)
-    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    
     checkspecies(SPECIES_PINECO)
     if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_FORRETRESS)
+    checkspecies(SPECIES_CATERPIE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_COMBEE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_KARRABLAST)
     if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
     checkspecies(SPECIES_SCATTERBUG)
     if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_SPINARAK)
+    checkspecies(SPECIES_DEWPIDER)
     if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
-    checkspecies(SPECIES_ARIADOS)
+    checkspecies(SPECIES_JOLTIK)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_SHUCKLE)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_DURANT)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+    checkspecies(SPECIES_YANMA)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+	checkspecies(SPECIES_SHELMET)
+    if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
+	checkspecies(SPECIES_VENIPEDE)
     if (var(VAR_RESULT) == TRUE) { addvar(VAR_TEMP_1, 1) }
     
     if (var(VAR_TEMP_1) >= 3) {
