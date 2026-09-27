@@ -93,17 +93,14 @@ bool32 ShouldTrainerBattlerUseGimmick(enum BattlerId battler, enum Gimmick gimmi
     #else
     // The player can bypass these checks because they can choose through the controller.
     if (IsOnPlayerSide(battler) && !((gBattleTypeFlags & BATTLE_TYPE_MULTI) && GetBattlerPosition(battler) == B_POSITION_PLAYER_RIGHT))
-    {
         return TRUE;
-    }
-    // Check the trainer party data to see if a gimmick is intended.
-    else
-    {
-        if (gimmick == GIMMICK_TERA && gBattleStruct->opponentMonCanTera & 1 << gBattlerPartyIndexes[battler])
-            return TRUE;
-        if (gimmick == GIMMICK_DYNAMAX && gBattleStruct->opponentMonCanDynamax & 1 << gBattlerPartyIndexes[battler])
-            return TRUE;
-    }
+
+    // When reading trainer party data, we load invalid values in struct Pokemon to indicate the gimmick should not be used
+    struct Pokemon *mon = GetBattlerMon(battler);
+    if (gimmick == GIMMICK_TERA && GetMonData(mon, MON_DATA_TERA_TYPE) != TYPE_MYSTERY)
+        return TRUE;
+    if (gimmick == GIMMICK_DYNAMAX && GetMonData(mon, MON_DATA_DYNAMAX_LEVEL) != BLOCK_AI_DYNAMAX)
+        return TRUE;
     #endif
 
     return FALSE;
@@ -118,22 +115,6 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
     if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
     {
         enum BattlerId partner = GetPartnerBattler(battler);
-        if ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick)
-            return TRUE;
-    }
-
-    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_ULTRA_BURST)
-    {
-        // Block the gimmick ONLY if this specific Pokemon has already transformed
-        u32 trainer = GetBattlerTrainer(battler);
-        u32 partyIndex = gBattlerPartyIndexes[battler];
-        return gBattleStruct->gimmick.pokemonUsedGimmick[trainer][partyIndex];
-    }
-
-    // Keep default engine behavior for Z-Moves
-    if (IsDoubleBattle() && IsPartnerMonFromSameTrainer(battler))
-    {
-        enum BattlerId partner = GetPartnerBattler(battler);
         if (gBattleStruct->gimmick.activated[partner][gimmick]
          || ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick))
             return TRUE;
@@ -145,20 +126,9 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
 // Sets a gimmick as used by a trainer with checks for Multi Battles.
 void SetGimmickAsActivated(enum BattlerId battler, enum Gimmick gimmick)
 {
-    if (gimmick == GIMMICK_TERA || gimmick == GIMMICK_DYNAMAX || gimmick == GIMMICK_MEGA || gimmick == GIMMICK_ULTRA_BURST)
-    {
-        // Mark this specific Pokemon as having used its gimmick
-        u32 trainer = GetBattlerTrainer(battler);
-        u32 partyIndex = gBattlerPartyIndexes[battler];
-        gBattleStruct->gimmick.pokemonUsedGimmick[trainer][partyIndex] = TRUE;
-    }
-    else
-    {
-        // Keep default engine behavior for Z-Moves
-        gBattleStruct->gimmick.activated[battler][gimmick] = TRUE;
+    gBattleStruct->gimmick.activated[battler][gimmick] = TRUE;
     if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || (gimmick == GIMMICK_DYNAMAX)))
         gBattleStruct->gimmick.activated[GetPartnerBattler(battler)][gimmick] = TRUE;
-    }
 }
 
 #define SINGLES_GIMMICK_TRIGGER_POS_X (76)

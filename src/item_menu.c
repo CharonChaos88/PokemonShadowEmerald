@@ -597,7 +597,7 @@ EWRAM_DATA struct BagMenu *gBagMenu = 0;
 EWRAM_DATA struct BagPosition gBagPosition = {0};
 static EWRAM_DATA struct ListBuffer1 *sListBuffer1 = 0;
 static EWRAM_DATA struct ListBuffer2 *sListBuffer2 = 0;
-EWRAM_DATA u16 gSpecialVar_ItemId = 0;
+EWRAM_DATA enum Item gSpecialVar_ItemId = 0;
 static EWRAM_DATA struct TempWallyBag *sTempWallyBag = 0;
 static void (*sBagPreOpenCallback)(void) = NULL;
 
@@ -662,6 +662,11 @@ void ChooseBerryForMachine(MainCallback exitCallback)
     GoToBagMenu(ITEMMENULOCATION_BERRY_BLENDER_CRUSH, POCKET_BERRIES, exitCallback);
 }
 
+void CB2_ChooseBall(void)
+{
+    GoToBagMenu(ITEMMENULOCATION_RAIDEND, POCKET_POKE_BALLS, CB2_SetUpReshowBattleScreenAfterMenu2);
+}
+
 void CB2_GoToSellMenu(void)
 {
     #ifdef MUDSKIP_SHOP_UI
@@ -711,9 +716,10 @@ void GoToBagMenu(u8 location, u8 pocket, MainCallback exitCallback)
             gBagPosition.exitCallback = exitCallback;
         if (pocket < POCKETS_COUNT)
             gBagPosition.pocket = pocket;
-        if (gBagPosition.location == ITEMMENULOCATION_BERRY_TREE ||
-            gBagPosition.location == ITEMMENULOCATION_BERRY_BLENDER_CRUSH ||
-            gBagPosition.location == ITEMMENULOCATION_BERRY_TREE_MULCH)
+        if (gBagPosition.location == ITEMMENULOCATION_BERRY_TREE
+         || gBagPosition.location == ITEMMENULOCATION_BERRY_BLENDER_CRUSH
+         || gBagPosition.location == ITEMMENULOCATION_BERRY_TREE_MULCH
+         || gBagPosition.location == ITEMMENULOCATION_RAIDEND)
             gBagMenu->pocketSwitchDisabled = TRUE;
         gBagMenu->newScreenCallback = NULL;
         gBagMenu->toSwapPos = NOT_SWAPPING;
@@ -1441,6 +1447,10 @@ static void ChangeBagPocketId(u8 *bagPocketId, s8 deltaBagPocketId)
         *bagPocketId = POCKETS_COUNT - 1;
     else
         *bagPocketId += deltaBagPocketId;
+
+    if (IsVictoryCatch() && *bagPocketId == POCKET_POKE_BALLS)
+        *bagPocketId += 1;
+
 }
 
 static void SwitchBagPocket(u8 taskId, s16 deltaBagPocketId, bool16 skipEraseList)
@@ -1665,6 +1675,7 @@ static void OpenContextMenu(u8 taskId)
     {
     case ITEMMENULOCATION_BATTLE:
     case ITEMMENULOCATION_WALLY:
+    case ITEMMENULOCATION_RAIDEND:
         if (GetItemBattleUsage(gSpecialVar_ItemId))
         {
             gBagMenu->contextMenuItemsPtr = sContextMenuItems_BattleUse;

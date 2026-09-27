@@ -1,4 +1,9 @@
 #include "global.h"
+#pragma GCC diagnostic ignored "-Wunused-function"
+extern unsigned short gSpecialVar_Result;
+extern unsigned short gSpecialVar_0x8000;
+extern unsigned short gSpecialVar_0x8004;
+extern unsigned short gSpecialVar_0x8005;
 #include "malloc.h"
 #include "battle.h"
 #include "battle_anim.h"
@@ -353,6 +358,7 @@ static bool16 IsMonAllowedInDodrioBerryPicking(struct Pokemon *);
 static void Task_CancelParticipationYesNo(u8);
 static void Task_HandleCancelParticipationYesNoInput(u8);
 static bool8 ShouldUseChooseMonText(void);
+
 static void SetPartyMonFieldSelectionActions(struct Pokemon *, u8);
 static void SetPartyMonLearnMoveSelectionActions(struct Pokemon*, u8);
 static u8 GetPartyMenuActionsTypeInBattle(struct Pokemon *);
@@ -483,6 +489,28 @@ static void CursorCb_StatEdit(u8);
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
 static void CursorCb_Item(u8);
+static void GetPartyAndSlotFromPartyMenuId(s8 menuId, struct Pokemon **party, s8 *partySlot);
+static struct Pokemon *GetPartyMonFromPartyMenuId(s8 menuId);
+static void GetMultiPartyForSummaryScreen(void);
+static void RestoreMultiPartyFromSummaryScreen(void);
+static void Task_FirstBattleEnterParty_WaitFadeIn(u8 taskId);
+static void Task_FirstBattleEnterParty_DarkenScreen(u8 taskId);
+static void Task_FirstBattleEnterParty_WaitDarken(u8 taskId);
+static void Task_FirstBattleEnterParty_CreatePrinter(u8 taskId);
+static void Task_FirstBattleEnterParty_RunPrinterMsg1(u8 taskId);
+static void Task_FirstBattleEnterParty_LightenFirstMonIcon(u8 taskId);
+static void Task_FirstBattleEnterParty_WaitLightenFirstMonIcon(u8 taskId);
+static void Task_FirstBattleEnterParty_StartPrintMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_RunPrinterMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_FadeNormal(u8 taskId);
+static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId);
+
+static void Task_FirstBattleEnterParty_StartPrintMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_RunPrinterMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_FadeNormal(u8 taskId);
+static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId);
+static u8 CombinedToIndividualPartyId(u8 index);
+static u8 IndividualToCombinedPartyId(u8 index, enum BattlerId battler);
 static void CursorCb_Give(u8);
 static void CursorCb_TakeItem(u8);
 static void CursorCb_MoveItem(u8);
@@ -520,6 +548,11 @@ static void Task_FirstBattleEnterParty_CreatePrinter(u8 taskId);
 static void Task_FirstBattleEnterParty_RunPrinterMsg1(u8 taskId);
 static void Task_FirstBattleEnterParty_LightenFirstMonIcon(u8 taskId);
 static void Task_FirstBattleEnterParty_WaitLightenFirstMonIcon(u8 taskId);
+static void Task_FirstBattleEnterParty_StartPrintMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_RunPrinterMsg2(u8 taskId);
+static void Task_FirstBattleEnterParty_FadeNormal(u8 taskId);
+static void Task_FirstBattleEnterParty_WaitFadeNormal(u8 taskId);
+
 static void Task_FirstBattleEnterParty_StartPrintMsg2(u8 taskId);
 static void Task_FirstBattleEnterParty_RunPrinterMsg2(u8 taskId);
 static void Task_FirstBattleEnterParty_FadeNormal(u8 taskId);
@@ -1548,8 +1581,12 @@ static void HandleChooseMonSelection(u8 taskId, s8 *slotPtr)
         case PARTY_ACTION_CHOOSE_FAINTED_MON:
         {
             u8 partyId = GetPartyIdFromBattleSlot((u8)*slotPtr);
-            if (GetMonData(&gParties[B_TRAINER_PLAYER][*slotPtr], MON_DATA_HP) > 0
-             || GetMonData(&gParties[B_TRAINER_PLAYER][*slotPtr], MON_DATA_SPECIES_OR_EGG) == SPECIES_EGG
+            struct Pokemon *party = NULL;
+            s8 partySlot = 0;
+            GetPartyAndSlotFromPartyMenuId(*slotPtr, &party, &partySlot);
+
+            if (GetMonData(&party[partySlot], MON_DATA_HP) > 0
+             || GetMonData(&party[partySlot], MON_DATA_SPECIES_OR_EGG) == SPECIES_EGG
              || ((gBattleTypeFlags & BATTLE_TYPE_MULTI) && !AreMultiPartiesFullTeams() && partyId >= (PARTY_SIZE / 2)))
             {
                 // Can't select if egg, alive, or doesn't belong to you
@@ -1745,7 +1782,7 @@ static u16 PartyMenuButtonHandler(s8 *slotPtr)
     if (movementDir && gPartiesCount[B_TRAINER_PLAYER] != 0)
     {
         UpdateCurrentPartySelection(slotPtr, movementDir);
-        return 0;
+     
     }
 
     // Pressed Cancel
@@ -2855,6 +2892,17 @@ static bool8 IsFieldMoveExcludedFromPartyMenu(u16 moveId)
     for (i = 0; i < ARRAY_COUNT(sItemBasedFieldMoves); i++)
     {
         if (sItemBasedFieldMoves[i] == moveId)
+            return TRUE;
+    }
+    return FALSE;
+}
+
+static bool32 CanBoxMonRelearnAnyMove(struct BoxPokemon *boxMon)
+{
+    u32 i;
+    for (i = 0; i < MOVE_RELEARNER_COUNT; i++)
+    {
+        if (CanBoxMonRelearnMoves(boxMon, i))
             return TRUE;
     }
     return FALSE;
@@ -4305,6 +4353,7 @@ static void Task_FieldMoveWaitForFade(u8 taskId)
 static u16 GetFieldMoveMonSpecies(void)
 {
     return GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_SPECIES);
+
 }
 
 static void Task_CancelAfterAorBPress(u8 taskId)
@@ -4446,6 +4495,7 @@ static void CreatePartyMonIconSpriteParameterized(u16 species, u32 pid, bool32 i
         gSprites[menuBox->monSpriteId].oam.priority = priority;
     }
 }
+ 
 
 static void UpdateHPBar(u8 spriteId, u16 hp, u16 maxhp)
 {
@@ -7528,7 +7578,9 @@ static u8 GetMaxBattleEntries(void)
     default: // Battle Frontier
         return gSpecialVar_0x8005;
     }
+
 }
+ 
 
 static u8 GetMinBattleEntries(void)
 {
@@ -7541,7 +7593,9 @@ static u8 GetMinBattleEntries(void)
     default: // Battle Frontier
         return gSpecialVar_0x8005;
     }
+
 }
+ 
 
 static u8 GetBattleEntryLevelCap(void)
 {
@@ -7556,6 +7610,7 @@ static u8 GetBattleEntryLevelCap(void)
             return FRONTIER_MAX_LEVEL_50;
         return FRONTIER_MAX_LEVEL_OPEN;
     }
+
 }
 
 static const u8 *GetFacilityCancelString(void)
@@ -7664,7 +7719,7 @@ static bool8 TrySwitchInPokemon(void)
         return FALSE;
     }
     if (BattlersShareParty(gBattlerInMenuId, GetPartnerBattler(gBattlerInMenuId))
-     && GetPartyIdFromBattleSlot(slot) == gBattleStruct->prevSelectedPartySlot)
+     && slot == gBattleStruct->prevSelectedPartySlot)
     {
         GetMonNickname(&gParties[B_TRAINER_PLAYER][slot], gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_PkmnAlreadySelected);
@@ -7856,6 +7911,8 @@ void SwitchPartyOrderLinkMulti(enum BattlerId battler, u8 slot, u8 slot2)
         }
     }
 }
+
+ 
 
 static u8 GetPartyIdFromBattleSlot(u8 slot)
 {
@@ -8575,5 +8632,58 @@ static void CursorCb_TakeSample(u8 taskId)
             DisplayPartyMenuMessage(gStringVar4, TRUE);
         }
         gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+    }
+}
+static void GetPartyAndSlotFromPartyMenuId(s8 menuId, struct Pokemon **party, s8 *partySlot)
+{
+    switch (gPartyMenu.layout)
+    {
+    case PARTY_LAYOUT_MULTI_FULL_PARTNER:
+    case PARTY_LAYOUT_MULTI_FULL_SHOWCASE_PARTNER:
+        *party = gParties[B_TRAINER_PARTNER];
+        *partySlot = menuId;
+        break;
+    case PARTY_LAYOUT_MULTI_SHOWCASE:
+        switch (menuId)
+        {
+        case 3:
+        case 4:
+        case 5:
+            *party = gParties[B_TRAINER_PARTNER];
+            *partySlot = menuId - MULTI_PARTY_SIZE;
+            break;
+        default:
+            *party = gParties[B_TRAINER_PLAYER];
+            *partySlot = menuId;
+            break;
+        }
+        break;
+    case PARTY_LAYOUT_MULTI:
+        switch (menuId)
+        {
+        case 1:
+            *party = gParties[B_TRAINER_PARTNER];
+            *partySlot = 0;
+            break;
+        case 4:
+        case 5:
+            *party = gParties[B_TRAINER_PARTNER];
+            *partySlot = menuId - MULTI_PARTY_SIZE;
+            break;
+        case 2:
+        case 3:
+            *party = gParties[B_TRAINER_PLAYER];
+            *partySlot = menuId - 1;
+            break;
+        default:
+            *party = gParties[B_TRAINER_PLAYER];
+            *partySlot = menuId;
+            break;
+        }
+        break;
+    default:
+        *party = gParties[B_TRAINER_PLAYER];
+        *partySlot = menuId;
+        break;
     }
 }

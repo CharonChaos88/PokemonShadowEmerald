@@ -31,11 +31,6 @@ void PlayTimeCounter_Start(void)
         PlayTimeCounter_SetToMax();
 }
 
-void PlayTimeCounter_Stop(void)
-{
-    sPlayTimeCounterState = STOPPED;
-}
-
 void PlayTimeCounter_Update(void)
 {
     if (sPlayTimeCounterState != RUNNING)

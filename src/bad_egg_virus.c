@@ -439,7 +439,7 @@ void ApplyBadEggVirusBattleEffects(u8 battlerId)
 
     if (strain == STRAIN_Y)
     {
-        if (gBattleMons[battlerId].volatiles.confusionTurns > 0)
+        if (gBattleMons[battlerId].volatiles.confusionTimer > 0)
         {
             sWasConfused[battlerId] = TRUE;
             sVirusCooldown[battlerId] = 0;
@@ -458,7 +458,7 @@ void ApplyBadEggVirusBattleEffects(u8 battlerId)
             {
                 if ((Random() % 100) < 30)
                 {
-                    gBattleMons[battlerId].volatiles.confusionTurns = (Random() % 4 + 2);
+                    gBattleMons[battlerId].volatiles.confusionTimer = (Random() % 4 + 2);
                     sWasConfused[battlerId] = TRUE;
                 }
             }
@@ -467,11 +467,11 @@ void ApplyBadEggVirusBattleEffects(u8 battlerId)
 
     if (strain == STRAIN_Z)
     {
-        if (gBattleMons[battlerId].volatiles.confusionTurns > 0)
+        if (gBattleMons[battlerId].volatiles.confusionTimer > 0)
         {
             sWasConfused[battlerId] = TRUE;
             sVirusCooldown[battlerId] = 0;
-            gBattleMons[battlerId].volatiles.confusionTurns = 5;
+            gBattleMons[battlerId].volatiles.confusionTimer = 5;
 
             if (gBattleMons[battlerId].statStages[STAT_ACC] > 0)
                 gBattleMons[battlerId].statStages[STAT_ACC]--;
@@ -490,7 +490,7 @@ void ApplyBadEggVirusBattleEffects(u8 battlerId)
             
             if (sVirusCooldown[battlerId] == 0)
             {
-                gBattleMons[battlerId].volatiles.confusionTurns = 5;
+                gBattleMons[battlerId].volatiles.confusionTimer = 5;
                 sWasConfused[battlerId] = TRUE;
             }
         }

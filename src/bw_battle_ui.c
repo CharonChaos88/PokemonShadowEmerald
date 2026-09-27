@@ -1109,10 +1109,11 @@ static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseM
                 clr.foreground = state + 1;
 
                 // can't use BattleUI_AddTextPrinter directly
-                AddTextPrinterParameterized6(windowId, FONT_SMALL,
+                u8 colorArray[3] = { clr.background, clr.foreground, clr.shadow };
+                AddTextPrinterParameterized4(windowId, FONT_SMALL,
                     x, 4,
                     0, 0,
-                    clr,
+                    colorArray,
                     TEXT_SKIP_DRAW, gDisplayedStringBattle);
             }
         }
@@ -1625,7 +1626,8 @@ static void BattleUI_CopyElementToSprite(u32 spriteId, const u32 *element, u32 t
 
 static void BattleUI_AddTextPrinter(u32 windowId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
 {
-    AddTextPrinterParameterized6(windowId, fontId, x, y, 0, 0, sBWBattleUI_TextColors[color], TEXT_SKIP_DRAW, str);
+    u8 colorArray[3] = { sBWBattleUI_TextColors[color].background, sBWBattleUI_TextColors[color].foreground, sBWBattleUI_TextColors[color].shadow };
+    AddTextPrinterParameterized4(windowId, fontId, x, y, 0, 0, colorArray, TEXT_SKIP_DRAW, str);
 }
 
 static void BattleUI_AddSpriteTextPrinter(u32 spriteId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
@@ -1651,4 +1653,15 @@ static bool32 BattleUI_PlayVerticalSlideAnim(bool32 hide, s16 *y, s32 target, s3
         return TRUE;
 
     return FALSE;
+}
+
+// Dummy functions for pokeemerald-expansion item popups
+void CreateItemPopUp(enum BattlerId battler)
+{
+    // Item popups not yet supported in BW Battle UI
+}
+
+void FreeAbilityPopUpGfx(void)
+{
+    // Freeing handled by Task_BattleUITrackAbilityPopUpGfx in BW Battle UI
 }
