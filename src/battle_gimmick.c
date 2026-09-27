@@ -117,7 +117,7 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
 
     if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
     {
-        enum BattlerId partner = BATTLE_PARTNER(battler);
+        enum BattlerId partner = GetPartnerBattler(battler);
         if ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick)
             return TRUE;
     }
@@ -133,8 +133,9 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
     // Keep default engine behavior for Z-Moves
     if (IsDoubleBattle() && IsPartnerMonFromSameTrainer(battler))
     {
-        enum BattlerId partner = BATTLE_PARTNER(battler);
-        if (gBattleStruct->gimmick.activated[partner][gimmick])
+        enum BattlerId partner = GetPartnerBattler(battler);
+        if (gBattleStruct->gimmick.activated[partner][gimmick]
+         || ((gBattleStruct->gimmick.toActivate & (1u << partner)) && gBattleStruct->gimmick.usableGimmick[partner] == gimmick))
             return TRUE;
     }
 
@@ -155,8 +156,8 @@ void SetGimmickAsActivated(enum BattlerId battler, enum Gimmick gimmick)
     {
         // Keep default engine behavior for Z-Moves
         gBattleStruct->gimmick.activated[battler][gimmick] = TRUE;
-        if (IsDoubleBattle() && IsPartnerMonFromSameTrainer(battler))
-            gBattleStruct->gimmick.activated[BATTLE_PARTNER(battler)][gimmick] = TRUE;
+    if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || (gimmick == GIMMICK_DYNAMAX)))
+        gBattleStruct->gimmick.activated[GetPartnerBattler(battler)][gimmick] = TRUE;
     }
 }
 

@@ -3984,3 +3984,18 @@ bool8 ScrCmd_giveopower(struct ScriptContext *ctx)
     }
     return FALSE;
 }
+bool8 ScrCmd_signmsg(struct ScriptContext *ctx)
+{
+    Script_RequestEffects(SCREFF_V1);
+
+    gMsgIsSignPost = TRUE;
+    return FALSE;
+}
+
+bool8 ScrCmd_normalmsg(struct ScriptContext *ctx)
+{
+    Script_RequestEffects(SCREFF_V1);
+
+    gMsgIsSignPost = FALSE;
+    return FALSE;
+}
