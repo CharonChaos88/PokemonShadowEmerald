@@ -1109,11 +1109,10 @@ static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseM
                 clr.foreground = state + 1;
 
                 // can't use BattleUI_AddTextPrinter directly
-                u8 colorArray[3] = { clr.background, clr.foreground, clr.shadow };
-                AddTextPrinterParameterized4(windowId, FONT_SMALL,
+                AddTextPrinterParameterized6(windowId, FONT_SMALL,
                     x, 4,
                     0, 0,
-                    colorArray,
+                    clr,
                     TEXT_SKIP_DRAW, gDisplayedStringBattle);
             }
         }
@@ -1626,8 +1625,7 @@ static void BattleUI_CopyElementToSprite(u32 spriteId, const u32 *element, u32 t
 
 static void BattleUI_AddTextPrinter(u32 windowId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
 {
-    u8 colorArray[3] = { sBWBattleUI_TextColors[color].background, sBWBattleUI_TextColors[color].foreground, sBWBattleUI_TextColors[color].shadow };
-    AddTextPrinterParameterized4(windowId, fontId, x, y, 0, 0, colorArray, TEXT_SKIP_DRAW, str);
+    AddTextPrinterParameterized6(windowId, fontId, x, y, 0, 0, sBWBattleUI_TextColors[color], TEXT_SKIP_DRAW, str);
 }
 
 static void BattleUI_AddSpriteTextPrinter(u32 spriteId, u32 fontId, u32 x, u32 y, enum BattleUITextColors color, const u8 *str)
