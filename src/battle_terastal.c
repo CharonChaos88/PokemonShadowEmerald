@@ -77,8 +77,18 @@ bool32 CanTerastallize(enum BattlerId battler)
     if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE && !IsOnPlayerSide(battler))
         return FALSE;
 
-    // Tera Orb (bag item + charge) requirement removed: Terastallization is available in every battle.
-    // Skip straight to the remaining checks (already Tera'd, other gimmick, held Z-Crystal/Mega Stone).
+    if (TESTING || !IsOnPlayerSide(battler))
+    {
+        // Skip all other checks in this block, go to HasTrainerUsedGimmick
+    }
+    else if (!CheckBagHasItem(ITEM_TERA_ORB, 1))
+    {
+        return FALSE;
+    }
+    else if (!IsTeraOrbCharged())
+    {
+        return FALSE;
+    }
 
     // Check if Trainer has already Terastallized.
     if (HasTrainerUsedGimmick(battler, GIMMICK_TERA))
