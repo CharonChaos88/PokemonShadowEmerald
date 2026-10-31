@@ -112,6 +112,9 @@ bool32 HasTrainerUsedGimmick(enum BattlerId battler, enum Gimmick gimmick)
     if (gimmick == GIMMICK_MEGA)
         return FALSE; // No restrictions for Mega Evolution
 
+    if (gimmick == GIMMICK_TERA)
+        return FALSE; // No once-per-battle restriction: every mon can Terastallize (each mon still only once, see CanTerastallize)
+
     if (IsDoubleBattle() && (IsPartnerMonFromSameTrainer(battler) || gimmick == GIMMICK_DYNAMAX))
     {
         enum BattlerId partner = GetPartnerBattler(battler);
