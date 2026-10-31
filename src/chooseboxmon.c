@@ -25,6 +25,8 @@
 #include "constants/rgb.h"
 extern const u8 gText_SavingDontTurnOffPower[];
 
+#include "sound.h"
+
 #define VALID_MON 0
 #define INVALID_MON 1
 
@@ -434,7 +436,8 @@ s32 LearnMove(const struct MoveLearnUI *ui, u8 taskId)
     default:
         errorf("Unknown LearnMove state %d\nEnding move learning ...", state);
     case LEARN_MOVE_END:
-        ui->endTask(taskId);
+        if (IsFanfareTaskInactive())
+            ui->endTask(taskId);
         return LEARN_MOVE_END;
     }
 }
