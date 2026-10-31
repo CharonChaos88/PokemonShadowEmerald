@@ -5267,12 +5267,19 @@ static void ShowCategoryIcon(u16 move)
         category = GetBattleMoveCategory(move);
     }
 
+    if (category == DAMAGE_CATEGORY_NONE)
+    {
+        if (sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY] != SPRITE_NONE)
+            gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]].invisible = TRUE;
+        return;
+    }
+
     if (sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY] == SPRITE_NONE)
         sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY] = CreateSprite(&sSpriteTemplate_CategoryIcons, 223, 96, 0);
     
     gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]].invisible = FALSE;
 
-    StartSpriteAnim(&gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]], category);
+    StartSpriteAnim(&gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_CATEGORY]], category - 1);
 }
 
 static void DestroyCategoryIcon(void)
